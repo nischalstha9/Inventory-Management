@@ -1,0 +1,31 @@
+{% extends 'partial/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<h1>Profile</h1>
+<hr>
+<div class="container" style="max-width: 40rem">
+    <div class='content-section'>
+        <div class="media">
+            <a target="_blank" class="mr-4 mb-2" style="width: 10rem;" href='{{ user.profile.dp.url }}'>
+                <img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="{{ user.profile.dp.url }}">
+            </a>
+            <div class="media-body">
+                <h2 class="account-heading">@{{ user.first_name }} {{ user.last_name }}</h2><hr>
+                <a href="{% url 'account_email' %}" >{{ user.email }}</a><br>
+                <a href="{% url 'account_change_password' %}" >Change Password?</a><br>
+                {% if user.is_staff %}
+                    <a href="{% url 'admin:index' %}" >Visit office</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <hr>
+    <form method='POST' enctype='multipart/form-data'>
+        {{ u_form|crispy }}
+        {{ p_form|crispy }}
+        {% csrf_token %}<hr>
+        <input type='submit' value="Update"class='btn btn-success'>
+    </form><br>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,82 @@
+{% load static %}
+{% load crispy_forms_tags %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <link rel="icon" type="image/x-icon" href="{% static '../media/favicon.ico' %}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="google-site-verification" content="3BL5oDUrimj7_HtcgQ6paZv8QMxYx-_l5mjfRy0_RWk" />
+    <script data-ad-client="ca-pub-3393843869097583" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <meta name="description" content="KhulaKhabar is simple news feed website where you can find link to new nepali news.">
+    <meta name="author" content="Nischal Shrestha">
+    {% if title %}
+      <meta property="og:title" content="{{ title }} | BlogName">
+    {% else %}
+      <meta property="og:title" content="BlogName">
+    {% endif %}
+    <meta property="og:description" content="KhulaKhabar is simple news feed website where you can find link to new nepali news.">
+    <meta property="og:url" content="https://khulakhabar.herokuapp.com">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="http://khulakhabar.herokuapp.com/media/ogimage.png">
+    <meta property="og:image:secure_url" content="https://khulakhabar.herokuapp.com/media/ogimage.png">
+    <meta property="fb:app_id" content="2907846842661370">
+    <meta property="og:site_name" content="KhulaKhabar | खुलाखबर २०७७">
+
+    {% block style %}
+    {% endblock style %}
+
+    
+    <!-- CUSTOM CSS -->
+    <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" crossorigin="anonymous"></script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'news/main.css' %}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+    <title>{% if title %}{{ title }} | BlogName{% else %}BlogName{% endif %}</title>
+  </head>
+  <body>
+          {% include 'partial/navbar.html' %}
+          <div class='container' id='page-top'>
+          
+            <div>
+            {% block header %}
+                <br>
+                <br>
+                <br>
+            {% endblock header %}
+            {% if messages %}
+              {% for message in messages %}
+                <div class='alert alert-{{ message.tags }}'>
+                  {{ message }} 
+                </div>
+              {% endfor %}
+            {% endif %}
+            </div>
+
+            {% block content %}
+                <h1>Hello, world!</h1>
+            {% endblock content %}
+            <div class='container'>
+              {% include 'partial/searchbox.html' %}
+            </div>
+            
+          </div>
+        {% include 'partial/footer.html' %}
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    
+    {% comment %} <script src='{% static 'news/jquery.min.js' %}'></script> {% endcomment %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    <script src='{% static 'news/main.js' %}'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <!-- Optional JavaScript -->
+    {% block javascript %}
+    {% endblock javascript %}
+  </body>
+</html>
