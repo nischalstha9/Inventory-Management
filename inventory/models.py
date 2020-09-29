@@ -2,16 +2,16 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-class CommentManager(models.Manager):
-    def all(self):
-        qs = super(CommentManager, self).filter(parent = None)
+class CategoryManager(models.Manager):
+    def parents(self):
+        qs = super(CategoryManager, self).filter(parent = None)
         return qs
 
 # Create your models here.
 class Category(models.Model):
     name = models.CharField(max_length = 128, unique=True)
     parent = models.ForeignKey("self", null=True, blank=True, on_delete=models.SET_NULL)
-    objects = CommentManager()
+    objects = CategoryManager()
 
     def __str__(self):
         return str(self.name)
@@ -37,12 +37,15 @@ class Category(models.Model):
         return reverse('comment-api:comment-detail-api', kwargs ={'pk':self.pk})
 
 class Item(models.Model):
-    name = models.CharField(max_length = 240, unique = True)
-    brand = models.CharField(max_length = 50, null=True, blank=True)
-    category = models.ForeignKey("inventory.Category", verbose_name=_("category"), on_delete=models.CASCADE)
-    description = models.TextField(_(""))
-    image = models.ImageField(_(""), upload_to="item_images", height_field=None, width_field=None, max_length=None, null=True, blank=True)
-    cost_price = models.IntegerField(_(""))
-    quantity = models.IntegerField(_(""))
-    selling_price = models.IntegerField(_(""))
-    about_seller = models.TextField(_(""))
+    name = models.CharField(_("Product Name"),max_length = 240, unique = True)
+    brand = models.CharField(_("Product Brand"), max_length = 50, null=True, blank=True)
+    category = models.ForeignKey("inventory.Category", verbose_name=_("category"), on_delete=models.CASCADE, related_name='categories')
+    description = models.TextField(_("Product Description"))
+    image = models.ImageField(_("Product Image"), upload_to="item_images", height_field=None, width_field=None, max_length=None, null=True, blank=True)
+    cost_price = models.IntegerField(_("Cost Price"))
+    quantity = models.IntegerField(_("Available Quantity"))
+    selling_price = models.IntegerField(_("Selling Price"))
+    about_seller = models.TextField(_("About Seller"))
+
+    def __str__(self):
+        return self.name

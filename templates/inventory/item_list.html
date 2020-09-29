@@ -1,0 +1,42 @@
+{% extends 'partial/base.html' %}
+{% block style %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+{% endblock style %}
+{% block content %}
+<a href="{% url 'inventory:new-item' %}" class="btn btn-primary" style="float:right;">Add New Item</a>
+<h1>Inventory</h1>
+<hr>
+<table id="table_id" class="display">
+    <thead>
+        <tr>
+            <th>Product Name</th>
+            <th>Brand</th>
+            <th>Cost Price</th>
+            <th>Selling Price</th>
+            <th>Quantity</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in items %}
+        <tr>
+            <td><a href="{% url 'inventory:item-update' item.id %}">{{item.name}}</a></td>
+            <td>{{item.brand}}</td>
+            <td>{{item.cost_price}}</td>
+            <td>{{item.selling_price}}</td>
+            <td>{{item.quantity}}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% include "partial/pagination.html" %}
+{% endblock content %}
+{% block javascript %}
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+<script>
+$(document).ready( function () {
+    $('#table_id').DataTable({
+        "paging": false
+    });
+} );
+</script>
+{% endblock javascript %}

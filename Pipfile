@@ -23,6 +23,7 @@ urllib3 = "==1.25.9"
 python-dotenv = "==0.14.0"
 Django = "==3.0.7"
 Pillow = "==7.1.2"
+djangorestframework = "*"
 
 [requires]
 python_version = "3.8"
