@@ -19,7 +19,14 @@
     <tbody>
     {% for item in items %}
         <tr>
-            <td><a href="{% url 'inventory:item-update' item.id %}">{{item.name}}</a></td>
+            <td>
+                <a href="{% url 'inventory:item-update' item.id %}">{{item.name}}</a>
+                {% if item.quantity <= 0 %}
+                    <span class="badge badge-danger">Out of Stock</span>
+                {% elif item.quantity < 10 %}
+                    <span class="badge badge-warning">Only {{item.quantity}} remaining.</span>
+                {% endif %}
+            </td>
             <td>{{item.brand}}</td>
             <td>{{item.cost_price}}</td>
             <td>{{item.selling_price}}</td>

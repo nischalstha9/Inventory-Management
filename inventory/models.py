@@ -6,6 +6,9 @@ class CategoryManager(models.Manager):
     def parents(self):
         qs = super(CategoryManager, self).filter(parent = None)
         return qs
+    def childrens(self):
+        qs = super(CategoryManager, self).filter(parent__isnull=False)
+        return qs
 
 # Create your models here.
 class Category(models.Model):

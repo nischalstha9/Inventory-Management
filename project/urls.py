@@ -28,6 +28,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('accounts/', include('allauth.urls')),
     path('', include('main.urls')),
+    path('invoice/', include('invoice.urls')),
     path('inventory/', include('inventory.urls')),
     path('profile/', include('Userprofile.urls')),
     url(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}), 

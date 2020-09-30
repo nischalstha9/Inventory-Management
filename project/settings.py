@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'accounts',
     'Userprofile',
     'inventory',
+    'invoice',
     'rest_framework',
     #django-allauth
     'django.contrib.sites',

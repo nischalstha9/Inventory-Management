@@ -7,7 +7,7 @@ class CategoryChartSerializer(ModelSerializer):
     items_count = serializers.SerializerMethodField(read_only=True)
 
     def get_items_count(self, obj):
-        return obj.categories.count()#here categories is related_name on Item Model
+        return sum([i.quantity for i in obj.categories.all()])#here categories is related_name on Item Model
 
     class Meta:
         model = Category

@@ -1,0 +1,70 @@
+{% extends 'partial/base.html' %}
+{% load crispy_forms_tags %}
+{% block style %}
+<style>
+.callout-info{
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    text-align: left;
+    box-sizing: border-box;
+    position: relative;
+    width: 100%;
+    border-radius: .25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24);
+    background-color: #fff;
+    border-left: 5px solid #e9ecef;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-left-color: #117a8b;
+}
+.btn-circle{
+    margin: 10;
+    paddint: 10px;
+}
+</style>
+{% endblock style %}
+{% block content %}
+
+    <h1>New Invoice</h1>
+    <hr>
+    <form method='post'>
+    {% csrf_token %}
+    {{form|crispy}}
+    {{inv_item_form.management_form}}
+    <table class="table callout-info">
+    <thead>
+        <tr>
+        <th scope="col">Item</th>
+        <th scope="col">Quantity</th>
+        <th scope="col">Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in inv_item_form %}
+        <tr class='items-group'>
+        {{item.id}}
+        <td>{{ item.item}}</td>
+        <td>{{ item.quantity}}</td>
+        <td>{{ item.sp}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+    <input type="submit" value='Create Invoice' name="" class='btn btn-primary' id="">
+    </form>
+
+{% endblock content %}
+{% block javascript %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.formset/1.2.2/jquery.formset.js" integrity="sha512-Tsdobfrx6IMRPi8d5z3AtjWNSbZxGm58IZFnblaRaepw562ZITlRhUM2Zu87vbvZjQxGmmto+31zEBLZ4wjs+w==" crossorigin="anonymous"></script>
+<script>
+  $(".items-group").formset(
+    {
+      prefix: '{{ inv_item_form.prefix }}',
+      deleteText: "<div class='btn btn-danger btn-circle ml-2'><i class='fas fa-trash'></i></div>",
+      addText: "<div class='btn btn-success btn-circle mx-2 my-2'><i class='fas fa-plus'></i></div>"
+    }
+  )
+</script>
+{% endblock javascript %}

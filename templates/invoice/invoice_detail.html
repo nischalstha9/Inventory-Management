@@ -1,0 +1,30 @@
+{% extends 'partial/base.html' %}
+{% block content %}
+<h1>Sold To: {{invoice.buyer_name}}</h1>
+<hr>
+<table class="table">
+<thead>
+<th>#</th>
+<th>Product</th>
+<th>Quantity</th>
+<th>Price per Quantity</th>
+<th>Total</th>
+</thead>
+<tbody>
+{% for item in invoice.get_items %}
+<tr>
+    <td>{{forloop.counter}}</td>
+    <td>{{item.item}}</td>
+    <td>{{item.quantity}}</td>
+    <td>Rs. {{item.sp}}</td>
+    <td>Rs. {{item.total}}</td>
+</tr>
+{% endfor %}
+<tr>
+    <td></td>
+    <td colspan="3"><strong>Grand Total</strong></td>
+    <td colspan=""><strong class=''>Rs. {{invoice.get_total_of_items}}</strong></td>
+</tr>
+</tbody>
+</table>
+{% endblock content %}
