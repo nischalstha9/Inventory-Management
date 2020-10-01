@@ -1,0 +1,10 @@
+{% extends 'partial/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<h1>Add/Update Stock</h1><hr>
+<form action="" method="post">
+    {% csrf_token %}
+    {{form|crispy}}
+    <input type="submit" name="" id="" class='btn btn-primary'>
+</form>
+{% endblock content %}

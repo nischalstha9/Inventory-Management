@@ -1,11 +1,12 @@
 from django.forms import ModelForm
-from .models import Item, Category
+from .models import Item, Category, DebitTransaction
 from django.core.exceptions import ValidationError
 
 class ItemCreationForm(ModelForm):
     class Meta:
         model = Item
         fields = "__all__"
+        exclude = ("cost_price", "quantity")
 
     def clean_qty(self):
         qty = self.cleaned_data['quantity']
@@ -22,3 +23,8 @@ class ItemCreationForm(ModelForm):
         if sp <= 0:
             raise ValidationError("Selling Price cannot be 0")
         return sp
+
+class DebitTransactionForm(ModelForm): 
+    class Meta:
+        model = DebitTransaction
+        fields = '__all__'

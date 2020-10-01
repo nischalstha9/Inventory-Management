@@ -45,10 +45,37 @@ class Item(models.Model):
     category = models.ForeignKey("inventory.Category", verbose_name=_("category"), on_delete=models.CASCADE, related_name='categories')
     description = models.TextField(_("Product Description"))
     image = models.ImageField(_("Product Image"), upload_to="item_images", height_field=None, width_field=None, max_length=None, null=True, blank=True)
-    cost_price = models.IntegerField(_("Cost Price"))
-    quantity = models.IntegerField(_("Available Quantity"))
-    selling_price = models.IntegerField(_("Selling Price"))
+    cost_price = models.IntegerField(_("Cost Price"), default=0)
+    quantity = models.IntegerField(_("Available Quantity"), default=0)
+    selling_price = models.IntegerField(_("Selling Price"), default=0)
     about_seller = models.TextField(_("About Seller"))
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ['name']
+
+class DebitTransaction(models.Model):
+    item = models.ForeignKey("inventory.Item", verbose_name=_("Inventory Item"), on_delete=models.CASCADE)
+    seller = models.CharField(_("Seller Name"), max_length=128)
+    cost = models.IntegerField(_("Cost Price Per Quantity Unit"))
+    paid = models.IntegerField(_("Paid Amount"), default = 0)
+    sp = models.IntegerField(_("Selling Price"), default=0)
+    quantity = models.IntegerField(_("Quantity"), default=0)
+    remarks = models.TextField(_("Remarks on Deal"), null=True, blank=True)
+    date = models.DateTimeField(_("Date Bought"), auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.item} from {self.seller}"
+
+    class Meta:
+        ordering=["-date"]
+
+    @property
+    def remaining_payment(self):
+        return self.cost*self.quantity - self.paid
+
+    @property
+    def total_payable(self):
+        return self.cost*self.quantity

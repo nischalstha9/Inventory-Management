@@ -1,0 +1,53 @@
+{% extends 'partial/base.html' %}
+{% block style %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+{% endblock style %}
+{% block content %}
+<a href="{% url 'inventory:add-stock' %}" class="mx-2 btn btn-success" style="float:right;">Add Stock</a>
+<h1>Stock In Transactions</h1>
+<hr>
+<table id="table_id" class="display">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Cost Price (Rs.) Per Unit</th>
+            <th>Total Payable</th>
+            <th>Paid Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for transaction in transactions %}
+        <tr>
+            <td>{{transaction.date|date}}</td>
+            <td><a href="{% url 'inventory:transaction-update' transaction.id%}">{{transaction.item}}</a></td>
+            <td>{{transaction.quantity}}</td>
+            <td>Rs. {{transaction.cost}}</td>
+            <td>Rs. {{transaction.total_payable}}</td>
+            <td>
+                Rs. {{transaction.paid}}
+                {% if transaction.remaining_payment > 0 %}
+                    <span class="badge badge-warning">Rs. {{ transaction.remaining_payment }} Remaining</span>
+                {% elif transaction.remaining_payment < 0 %}
+                    <span class="badge badge-danger">Rs. {{ transaction.remaining_payment }} Overpaid</span>
+                {% else %}
+                    <span class="badge badge-success">Balanced</span>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% include "partial/pagination.html" %}
+{% endblock content %}
+{% block javascript %}
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+<script>
+$(document).ready( function () {
+    $('#table_id').DataTable({
+        "paging": false
+    });
+} );
+</script>
+{% endblock javascript %}

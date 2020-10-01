@@ -1,34 +1,90 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import CreateView, ListView, UpdateView
-from .forms import ItemCreationForm
-from .models import Item
-from django.http import JsonResponse
-from .models import Category
-from rest_framework.generics import ListAPIView
-from .serializers import CategoryChartSerializer
+from .forms import ItemCreationForm, DebitTransactionForm
+from .models import Item, DebitTransaction, Category
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
+import math
+from django.urls import reverse
+
+def allowed_users(allowed_types=[]):
+    def decorator(view_func):
+        def wrapper_func(request, *args, **kwargs):
+            if request.user.is_authenticated:
+                if request.user._type in allowed_types[0]:
+                    return view_func(request, *args, **kwargs)
+            else:
+                return redirect('/')
+        return wrapper_func
+    return decorator
 
 # Create your views here.
 def index(request):
     return render(request, "inventory/item_list.html")
 
-class ItemCreationVIew(CreateView):
+class ItemCreationVIew(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = ItemCreationForm
     template_name = 'inventory/item_creation.html'
     success_url = "../"
 
-class ItemListView(ListView):
+    def test_func(self):
+        return self.request.user._type == 'ADMIN'
+
+class ItemListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Item
     template_name = "inventory/item_list.html"
     context_object_name = 'items'
     paginate_by = 50
 
-class ItemUpdateVIew(UpdateView):
+    def test_func(self):
+        return self.request.user._type == 'ADMIN'
+
+class ItemUpdateVIew(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     form_class = ItemCreationForm
     template_name = 'inventory/item_creation.html'
     success_url = "../../"
     queryset = Item.objects.all()
 
-class CategoryNcount(ListAPIView):
-    queryset = Category.objects.all()
-    serializer_class = CategoryChartSerializer
+    def test_func(self):
+        return self.request.user._type == 'ADMIN'
+
+@allowed_users(allowed_types = ['ADMIN'])
+def add_to_inventory(request):
+    context = {}
+    form = DebitTransactionForm(request.POST or None)
+    context['form']= form
+    if request.method == 'POST':
+        item = request.POST.get('item')
+        cp = int(request.POST.get('cost'))
+        sp = int(request.POST.get('sp'))
+        qty = int(request.POST.get('quantity'))
+        item = Item.objects.get(id=item)
+        item.cost_price = cp
+        item.quantity = item.quantity+qty
+        if sp==0:
+            item.selling_price = cp+cp*0.2
+        else:
+            item.selling_price = sp
+        form.save(request.POST)
+        item.save()
+        return redirect("inventory:items-list")
+    return render(request, "inventory/add_stock.html", context)
+
+class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = DebitTransaction
+    template_name = "inventory/dr_transactions.html"
+    context_object_name = 'transactions'
+    paginate_by=50
+    def test_func(self):
+        return self.request.user._type == 'ADMIN'
+
+class DebitTransactionUpdateView(UpdateView):
+    model = DebitTransaction
+    fields = ['seller','paid','remarks']
+    template_name = "inventory/add_stock.html"
+
+    def get_success_url(self):
+        return reverse('inventory:transactions')
+
+
+
     

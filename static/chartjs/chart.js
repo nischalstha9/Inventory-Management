@@ -1,6 +1,6 @@
 var host = window.location.host
-var url = `http://${host}/inventory/cat_Count/?format=json`
-var Categories = []
+var url = `http://${host}/inventory/item-quantity/?format=json`
+var Items = []
 var Item_count = []
 $.ajax({
     url: url,
@@ -8,17 +8,17 @@ $.ajax({
     data:{},
     success: function(data){
         data.forEach(element => {
-            Categories.push(element.name)
-            Item_count.push(element.items_count)
+            Items.push(element.name)
+            Item_count.push(element.quantity)
         });
 
-        var ctx = document.getElementById('categoryChart');
+        var ctx = document.getElementById('itemChart');
         var myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: Categories,
+                labels: Items,
                 datasets: [{
-                    label: 'Items Per Categories',
+                    label: 'Items in Inventory',
                     data: Item_count,
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',

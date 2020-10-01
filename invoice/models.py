@@ -27,6 +27,7 @@ class InvoiceItem(models.Model):
     item = models.ForeignKey("inventory.Item", verbose_name=_("Item Name"), on_delete=models.CASCADE)
     quantity = models.IntegerField(_("Quantity"))
     sp = models.IntegerField(_("Selling Price / Quantity"))
+    #use disount instead of sp tat way you idiot can use default selling_price
 
     def __str__(self):
         return f"{self.invoice} => {self.item}"

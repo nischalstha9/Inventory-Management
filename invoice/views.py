@@ -2,11 +2,15 @@ from django.shortcuts import render, reverse
 from .forms import ItemFormSet, InvoiceForm
 from .models import Invoice, InvoiceItem
 from django.views.generic import CreateView, ListView, UpdateView, DetailView
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 
-class InvoiceCreateView(CreateView):
+class InvoiceCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Invoice
     fields = '__all__'
     template_name = 'invoice/create_invoice.html'
+
+    def test_func(self):
+        return self.request.user._type == 'ADMIN'
 
     def get_context_data(self, **kwargs):
         context = super(InvoiceCreateView, self).get_context_data(**kwargs)
@@ -51,10 +55,13 @@ class InvoiceListView(ListView):
     context_object_name = 'invoices'
     paginate_by = 50
 
-class InvoiceDetailView(DetailView):
+class InvoiceDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Invoice
     template_name = "invoice/invoice_detail.html"
     context_object_name = 'invoice'
+
+    def test_func(self):
+        return self.request.user._type == 'ADMIN'
 
 
 

@@ -12,3 +12,8 @@ class CategoryChartSerializer(ModelSerializer):
     class Meta:
         model = Category
         fields = ('name','items_count',)
+
+class ItemQuantitySerializer(ModelSerializer):
+    class Meta:
+        model = Item
+        fields = ('name','quantity')
