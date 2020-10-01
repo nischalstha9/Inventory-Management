@@ -58,7 +58,7 @@ class Item(models.Model):
 
 class DebitTransaction(models.Model):
     item = models.ForeignKey("inventory.Item", verbose_name=_("Inventory Item"), on_delete=models.CASCADE)
-    seller = models.CharField(_("Seller Name"), max_length=128)
+    seller = models.CharField(_("Seller Name or Company"), max_length=128)
     cost = models.IntegerField(_("Cost Price Per Quantity Unit"))
     paid = models.IntegerField(_("Paid Amount"), default = 0)
     sp = models.IntegerField(_("Selling Price"), default=0)
@@ -79,3 +79,33 @@ class DebitTransaction(models.Model):
     @property
     def total_payable(self):
         return self.cost*self.quantity
+
+#rather than making Credit and Debit Transaction model use proxy mdoel and make 2 types
+class CreditTransaction(models.Model):
+    item = models.ForeignKey("inventory.Item", verbose_name=_("Inventory Item"), on_delete=models.CASCADE)
+    buyer = models.CharField(_("Buyer Name or Company"), max_length=128)
+    paid = models.IntegerField(_("Paid Amount"), default = 0)
+    quantity = models.IntegerField(_("Quantity"), default=0)
+    discount = models.FloatField(_("Discount Percentage"), default=0)
+    remarks = models.TextField(_("Remarks on Deal"), null=True, blank=True)
+    date = models.DateTimeField(_("Date Sold"), auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.item} from {self.buyer}"
+
+    class Meta:
+        ordering=["-date"]
+
+    @property
+    def remaining_payment(self):
+        p = (self.item.selling_price*self.quantity)
+        return (p-self.discount/100*p) - self.paid
+
+    @property
+    def total_payable(self):
+        p = (self.item.selling_price*self.quantity)
+        return p-self.discount/100*p
+
+    @property
+    def sp(self):#selling_price
+        return self.item.selling_price

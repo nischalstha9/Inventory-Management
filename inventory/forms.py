@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from .models import Item, Category, DebitTransaction
+from .models import Item, Category, DebitTransaction, CreditTransaction
 from django.core.exceptions import ValidationError
 
 class ItemCreationForm(ModelForm):
@@ -27,4 +27,9 @@ class ItemCreationForm(ModelForm):
 class DebitTransactionForm(ModelForm): 
     class Meta:
         model = DebitTransaction
+        fields = '__all__'
+
+class CreditTransactionForm(ModelForm): 
+    class Meta:
+        model = CreditTransaction
         fields = '__all__'

@@ -24,7 +24,7 @@ class InvoiceCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def form_valid(self, form):
         context = self.get_context_data()
         formset = context['inv_item_form']
-        print(formset.data)
+        print(formset)
         # self.buyer = form.save()
         # if self.buyer.id != None:
         #     if form.is_valid() and formset.is_valid():

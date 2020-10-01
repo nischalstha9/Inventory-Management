@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.generic import CreateView, ListView, UpdateView
-from .forms import ItemCreationForm, DebitTransactionForm
-from .models import Item, DebitTransaction, Category
+from .forms import ItemCreationForm, DebitTransactionForm, CreditTransactionForm
+from .models import Item, DebitTransaction, Category, CreditTransaction
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 import math
 from django.urls import reverse
@@ -49,7 +49,7 @@ class ItemUpdateVIew(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 @allowed_users(allowed_types = ['ADMIN'])
 def add_to_inventory(request):
-    context = {}
+    context = {'header' : 'Add Stock'}
     form = DebitTransactionForm(request.POST or None)
     context['form']= form
     if request.method == 'POST':
@@ -82,8 +82,49 @@ class DebitTransactionUpdateView(UpdateView):
     fields = ['seller','paid','remarks']
     template_name = "inventory/add_stock.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["header"] = 'Update Transaction Info'
+        return context
+    
     def get_success_url(self):
-        return reverse('inventory:transactions')
+        return reverse('inventory:debit-transactions')
+
+@allowed_users(allowed_types = ['ADMIN'])
+def sell_from_inventory(request):
+    context = {'header' : 'Sell Stock'}
+    form = CreditTransactionForm(request.POST or None)
+    context['form']= form
+    if request.method == 'POST':
+        item = request.POST.get('item')
+        qty = int(request.POST.get('quantity'))
+        item = Item.objects.get(id=item)
+        item.quantity = item.quantity-qty
+        form.save(request.POST)
+        item.save()
+        return redirect("inventory:credit-transactions")
+    return render(request, "inventory/add_stock.html", context)
+
+class CreditTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = CreditTransaction
+    template_name = "inventory/cr_transactions.html"
+    context_object_name = 'transactions'
+    paginate_by=50
+    def test_func(self):
+        return self.request.user._type == 'ADMIN'
+
+class CreditTransactionUpdateView(UpdateView):
+    model = CreditTransaction
+    fields = ['paid','remarks']
+    template_name = "inventory/add_stock.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["header"] = 'Update Transaction Info'
+        return context
+    
+    def get_success_url(self):
+        return reverse('inventory:credit-transactions')
 
 
 

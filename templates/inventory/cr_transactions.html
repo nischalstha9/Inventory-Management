@@ -6,7 +6,7 @@
 <a href="{% url 'inventory:add-stock' %}" class="mx-2 btn btn-success" style="float:right;">Add Stock</a>
 <a href="{% url 'inventory:sell-stock' %}" class="mx-2 btn btn-outline-success" style="float:right;">Sell Stock</a>
 <a href="{% url 'inventory:credit-transactions' %}" class="mx-2 btn btn-outline-success" style="float:right;">View Sold Transaction</a>
-<h1>Stock In Transactions</h1>
+<h1>Stock Out Transactions</h1>
 <hr>
 <table id="table_id" class="display">
     <thead>
@@ -23,9 +23,9 @@
     {% for transaction in transactions %}
         <tr>
             <td>{{transaction.date|date}}</td>
-            <td><a href="{% url 'inventory:dr-transaction-update' transaction.id%}">{{transaction.item}}</a></td>
+            <td><a href="{% url 'inventory:cr-transaction-update' transaction.id%}">{{transaction.item}}</a></td>
             <td>{{transaction.quantity}}</td>
-            <td>Rs. {{transaction.cost}}</td>
+            <td>Rs. {{transaction.sp}}</td>
             <td>Rs. {{transaction.total_payable}}</td>
             <td>
                 Rs. {{transaction.paid}}
