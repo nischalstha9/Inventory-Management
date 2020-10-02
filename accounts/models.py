@@ -35,6 +35,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     class Types(models.TextChoices):
+        #TYPE_SNTX = TYPE_VALUE, TYPE_NAME
         ADMIN = "ADMIN", "Admin"
         STUDENT = "STUDENT", "Student"
         TEACHER = "TEACHER", "Teacher"

@@ -5,6 +5,7 @@
 <form action="" method="post">
     {% csrf_token %}
     {{form|crispy}}
+    {{form2|crispy}}
     <input type="submit" name="" id="" class='btn btn-primary'>
 </form>
 {% endblock content %}

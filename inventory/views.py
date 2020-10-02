@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic import CreateView, ListView, UpdateView
-from .forms import ItemCreationForm, DebitTransactionForm, CreditTransactionForm
+from .forms import ItemCreationForm, DebitTransactionForm, CreditTransactionForm, DebitTransactionInfoForm, CreditTransactionInfoForm
 from .models import Item, DebitTransaction, Category, CreditTransaction
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 import math
@@ -51,12 +51,16 @@ class ItemUpdateVIew(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 def add_to_inventory(request):
     context = {'header' : 'Add Stock'}
     form = DebitTransactionForm(request.POST or None)
+    dform = DebitTransactionInfoForm(request.POST or None)
     context['form']= form
+    context['form2']= dform
     if request.method == 'POST':
+        print(request.POST)
         item = request.POST.get('item')
         cp = int(request.POST.get('cost'))
         sp = int(request.POST.get('sp'))
         qty = int(request.POST.get('quantity'))
+        paid = int(request.POST.get('paid'))
         item = Item.objects.get(id=item)
         item.cost_price = cp
         item.quantity = item.quantity+qty
@@ -64,8 +68,10 @@ def add_to_inventory(request):
             item.selling_price = cp+cp*0.2
         else:
             item.selling_price = sp
-        form.save(request.POST)
         item.save()
+        trans = form.save(request.POST)
+        dform.instance.transaction = trans
+        dform.save()
         return redirect("inventory:items-list")
     return render(request, "inventory/add_stock.html", context)
 
@@ -79,7 +85,7 @@ class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListView
 
 class DebitTransactionUpdateView(UpdateView):
     model = DebitTransaction
-    fields = ['seller','paid','remarks']
+    fields = ['paid','remarks']
     template_name = "inventory/add_stock.html"
 
     def get_context_data(self, **kwargs):
@@ -94,14 +100,20 @@ class DebitTransactionUpdateView(UpdateView):
 def sell_from_inventory(request):
     context = {'header' : 'Sell Stock'}
     form = CreditTransactionForm(request.POST or None)
+    cform = CreditTransactionInfoForm(request.POST or None)
     context['form']= form
+    context['form2']= cform
     if request.method == 'POST':
+        print(request.POST)
         item = request.POST.get('item')
         qty = int(request.POST.get('quantity'))
         item = Item.objects.get(id=item)
         item.quantity = item.quantity-qty
-        form.save(request.POST)
         item.save()
+        form.instance._type = 'STOCK OUT'
+        trans = form.save()
+        cform.instance.transaction = trans
+        cform.save()
         return redirect("inventory:credit-transactions")
     return render(request, "inventory/add_stock.html", context)
 

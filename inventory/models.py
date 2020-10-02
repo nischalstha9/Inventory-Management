@@ -45,9 +45,9 @@ class Item(models.Model):
     category = models.ForeignKey("inventory.Category", verbose_name=_("category"), on_delete=models.CASCADE, related_name='categories')
     description = models.TextField(_("Product Description"))
     image = models.ImageField(_("Product Image"), upload_to="item_images", height_field=None, width_field=None, max_length=None, null=True, blank=True)
-    cost_price = models.IntegerField(_("Cost Price"), default=0)
+    cost_price = models.IntegerField(_("Latest Cost Price"), default=0)
     quantity = models.IntegerField(_("Available Quantity"), default=0)
-    selling_price = models.IntegerField(_("Selling Price"), default=0)
+    selling_price = models.IntegerField(_("Current Selling Price"), default=0)
     about_seller = models.TextField(_("About Seller"))
 
     def __str__(self):
@@ -56,63 +56,105 @@ class Item(models.Model):
     class Meta:
         ordering = ['name']
 
-class DebitTransaction(models.Model):
+class Transaction(models.Model):
+    class Types(models.TextChoices):
+        #TYPE_SNTX = TYPE_VALUE, TYPE_NAME
+        STOCK_OUT = "STOCK OUT", "Stock Out"
+        STOCK_IN = "STOCK IN", "Stock In"
+
+    base_type = Types.STOCK_IN
+    _type = models.CharField(
+        _("Type"), max_length=50, choices=Types.choices, default=base_type
+    )
+
     item = models.ForeignKey("inventory.Item", verbose_name=_("Inventory Item"), on_delete=models.CASCADE)
+    quantity = models.IntegerField(_("Quantity"), default=0)
+    paid = models.IntegerField(_("Paid Amount"), default = 0)
+    remarks = models.TextField(_("Remarks on Deal"), null=True, blank=True)
+    date = models.DateTimeField(_("Date of Transaction"), auto_now_add=True)
+
+    def __str__(self):
+        return f" {self.quantity} of {self.item} and paid {self.paid}"
+
+class DebitTransactionManager(models.Manager):
+    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).filter(_type=Transaction.Types.STOCK_IN)
+
+class DebitTransaction(Transaction):
+    base_type = Transaction.Types.STOCK_IN
+    objects = DebitTransactionManager()
+
+    class Meta:
+        proxy = True
+
+    @property
+    def more(self):
+        return self.debitInfo #here info is related with related name of transaction in DebitTransactionInfo Below
+
+class DebitTransactionInfo(models.Model):
+    transaction = models.OneToOneField("inventory.Transaction", verbose_name=_("info"), on_delete=models.CASCADE, related_name='debitInfo')
     seller = models.CharField(_("Seller Name or Company"), max_length=128)
     cost = models.IntegerField(_("Cost Price Per Quantity Unit"))
-    paid = models.IntegerField(_("Paid Amount"), default = 0)
-    sp = models.IntegerField(_("Selling Price"), default=0)
-    quantity = models.IntegerField(_("Quantity"), default=0)
-    remarks = models.TextField(_("Remarks on Deal"), null=True, blank=True)
-    date = models.DateTimeField(_("Date Bought"), auto_now_add=True)
+    sp = models.IntegerField(_("Selling Price per Quantity Unit"), default=0)
 
     def __str__(self):
-        return f"{self.item} from {self.seller}"
+        return f"Bought {self.transaction.item} from {self.seller}"
 
     class Meta:
-        ordering=["-date"]
+        ordering=["-transaction__date"]
 
     @property
     def remaining_payment(self):
-        return self.cost*self.quantity - self.paid
+        return self.cost*self.transaction.quantity - self.transaction.paid
 
     @property
     def total_payable(self):
-        return self.cost*self.quantity
+        return self.cost*self.transaction.quantity
+
+
+class CreditTransactionManager(models.Manager):
+    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).filter(_type=Transaction.Types.STOCK_OUT)
+
+class CreditTransaction(Transaction):
+    base_type = Transaction.Types.STOCK_OUT
+    objects = CreditTransactionManager()
+
+    class Meta:
+        proxy = True
+
+    @property
+    def more(self):
+        return self.creditInfo #here info is related with related name of transaction in CreditTransactionInfo Below
 
 #rather than making Credit and Debit Transaction model use proxy mdoel and make 2 types
-class CreditTransaction(models.Model):
-    item = models.ForeignKey("inventory.Item", verbose_name=_("Inventory Item"), on_delete=models.CASCADE)
+class CreditTransactionInfo(models.Model):
+    transaction = models.OneToOneField("inventory.Transaction", verbose_name=_("info"), on_delete=models.CASCADE, related_name='creditInfo')
     buyer = models.CharField(_("Buyer Name or Company"), max_length=128)
-    paid = models.IntegerField(_("Paid Amount"), default = 0)
-    quantity = models.IntegerField(_("Quantity"), default=0)
     discount = models.FloatField(_("Discount Percentage"), default=0)
-    remarks = models.TextField(_("Remarks on Deal"), null=True, blank=True)
-    date = models.DateTimeField(_("Date Sold"), auto_now_add=True)
 
     def __str__(self):
-        return f"{self.item} from {self.buyer}"
+        return f"Sold {self.transaction.item} to {self.buyer}"
 
     class Meta:
-        ordering=["-date"]
+        ordering=["-transaction__date"]
 
     @property
     def remaining_payment(self):
-        p = (self.item.selling_price*self.quantity)
-        return (p-self.discount/100*p) - self.paid
+        p = (self.transaction.item.selling_price*self.transaction.quantity)
+        return (p-self.discount/100*p) - self.transaction.paid
 
     @property
     def total_payable(self):
-        p = (self.item.selling_price*self.quantity)
+        p = (self.transaction.item.selling_price*self.transaction.quantity)
         return p-self.discount/100*p
 
     @property
     def sp(self):#selling_price
-        return self.item.selling_price
+        return self.transaction.item.selling_price
 
 #add payment model too it will be awesome
-class Payment(models.Model):
-    cr_transaction = models.ForeignKey("inventory.CreditTransaction", verbose_name=_("Payment Received For"), on_delete=models.CASCADE)
-    dr_transaction = models.ForeignKey("inventory.DebitTransaction", verbose_name=_("Payment Paid To"), on_delete=models.CASCADE)
-    
-    pass
+# class Payment(models.Model):
+#     cr_transaction = models.ForeignKey("inventory.CreditTransaction", verbose_name=_("Payment Received For"), on_delete=models.CASCADE)
+#     dr_transaction = models.ForeignKey("inventory.DebitTransaction", verbose_name=_("Payment Paid To"), on_delete=models.CASCADE)
+#     pass
