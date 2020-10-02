@@ -109,3 +109,10 @@ class CreditTransaction(models.Model):
     @property
     def sp(self):#selling_price
         return self.item.selling_price
+
+#add payment model too it will be awesome
+class Payment(models.Model):
+    cr_transaction = models.ForeignKey("inventory.CreditTransaction", verbose_name=_("Payment Received For"), on_delete=models.CASCADE)
+    dr_transaction = models.ForeignKey("inventory.DebitTransaction", verbose_name=_("Payment Paid To"), on_delete=models.CASCADE)
+    
+    pass

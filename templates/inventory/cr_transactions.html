@@ -30,9 +30,9 @@
             <td>
                 Rs. {{transaction.paid}}
                 {% if transaction.remaining_payment > 0 %}
-                    <span class="badge badge-warning">Rs. {{ transaction.remaining_payment }} Remaining</span>
+                    <span class="badge badge-danger">Rs. {{ transaction.remaining_payment }} Remaining</span>
                 {% elif transaction.remaining_payment < 0 %}
-                    <span class="badge badge-danger">Rs. {{ transaction.remaining_payment }} Overpaid</span>
+                    <span class="badge badge-warning">Rs. {{ transaction.remaining_payment }} Overpaid</span>
                 {% else %}
                     <span class="badge badge-success">Balanced</span>
                 {% endif %}
