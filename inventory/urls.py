@@ -1,9 +1,12 @@
 from django.urls import path, include
 from .views import index, ItemCreationVIew, ItemListView, ItemUpdateVIew, add_to_inventory, DebitTransactionListView, DebitTransactionUpdateView, sell_from_inventory, CreditTransactionListView, CreditTransactionUpdateView, CreditTransactionPaymentCreateView, DebitTransactionPaymentCreateView, DebitPaymentListView, CreditPaymentListView
-from .api_views import ItemQuantity
+from .api_views import ItemQuantity, TransactionDetailAPIView, ItemDetailAPIView
 
 app_name = 'inventory'
 urlpatterns = [
+    #api urls
+    path("item/<int:pk>/", ItemDetailAPIView.as_view(), name="item-detail-api"),
+    path("transaction/<int:pk>/", TransactionDetailAPIView.as_view(), name="transaction-detail-api"),
     path("item-quantity/", ItemQuantity.as_view(), name="cat-cnt"), 
     # path("unpaid-dr/", UnpaidDebitInfoListView.as_view(), name="unpaid_drs"), 
 

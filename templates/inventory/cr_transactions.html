@@ -8,6 +8,18 @@
 <a href="{% url 'inventory:credit-transactions' %}" class="mx-2 btn btn-outline-success" style="float:right;">View Sold Transaction</a>
 <h1>Stock Out Transactions</h1>
 <hr>
+<form action="" method="get">
+    <div class="col-md-4">
+      <label for="inputState"><h5>State:</h5></label>
+      <select id="inputState" class="form-control" name='state'>
+        <option selected>All</option>
+        <option value='balanced'>Balanced</option>
+        <option value='unbalanced'>Unpaid</option>
+      </select>
+    <input type="submit" class='my-2 btn btn-secondary' value='Filter'>
+    </div>
+</form>
+<hr>
 <table id="table_id" class="display">
     <thead>
         <tr>

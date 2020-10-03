@@ -82,6 +82,14 @@ class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListView
     paginate_by=50
     def test_func(self):
         return self.request.user._type == 'ADMIN'
+    def get_queryset(self):
+        qs = super().get_queryset()
+        sts = self.request.GET.get('state')
+        if sts=='balanced':
+            qs = qs.filter(balanced=True)
+        elif sts=='unbalanced':
+            qs = qs.filter(balanced=False)
+        return qs    
 
 class DebitTransactionUpdateView(UpdateView):
     model = DebitTransaction
@@ -108,6 +116,9 @@ def sell_from_inventory(request):
         paid = int(request.POST.get('paid'))
         item = Item.objects.get(id=item)
         item.quantity = item.quantity-qty
+        if item.quantity < 0:
+            messages.warning(request, "Not Enough Stock To Sell")
+            return render(request, "inventory/add_stock.html", context)
         item.save()
         form.instance._type = 'STOCK OUT'
         trans = form.save()
@@ -122,6 +133,14 @@ class CreditTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListVie
     paginate_by=50
     def test_func(self):
         return self.request.user._type == 'ADMIN'
+    def get_queryset(self):
+        qs = super().get_queryset()
+        sts = self.request.GET.get('state')
+        if sts=='balanced':
+            qs = qs.filter(balanced=True)
+        elif sts=='unbalanced':
+            qs = qs.filter(balanced=False)
+        return qs
 
 class CreditTransactionUpdateView(UpdateView):
     model = CreditTransaction
@@ -179,6 +198,11 @@ class DebitPaymentListView(ListView):
     paginate_by=50
     def get_queryset(self):
         qs = super().get_queryset().filter(transaction___type="STOCK IN")
+        sts = self.request.GET.get('state')
+        if sts=='balanced':
+            qs = qs.filter(transaction__balanced=True)
+        elif sts=='unbalanced':
+            qs = qs.filter(transaction__balanced=False)
         return qs
 
 class CreditPaymentListView(ListView):
@@ -188,6 +212,11 @@ class CreditPaymentListView(ListView):
     paginate_by=50
     def get_queryset(self):
         qs = super().get_queryset().filter(transaction___type="STOCK OUT")
+        sts = self.request.GET.get('state')
+        if sts=='balanced':
+            qs = qs.filter(transaction__balanced=True)
+        elif sts=='unbalanced':
+            qs = qs.filter(transaction__balanced=False)
         return qs
     
 

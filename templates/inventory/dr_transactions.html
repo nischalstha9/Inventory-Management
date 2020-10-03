@@ -8,13 +8,26 @@
 <a href="{% url 'inventory:credit-transactions' %}" class="mx-2 btn btn-outline-success" style="float:right;">View Sold Transaction</a>
 <h1>Stock In Transactions</h1>
 <hr>
+<form action="" method="get">
+    <div class="col-md-4">
+      <label for="inputState"><h5>State:</h5></label>
+      <select id="inputState" class="form-control" name='state'>
+        <option selected>All</option>
+        <option value='balanced'>Balanced</option>
+        <option value='unbalanced'>Unpaid</option>
+      </select>
+    <input type="submit" class='my-2 btn btn-secondary' value='Filter'>
+    </div>
+</form>
+<hr>
 <table id="table_id" class="display">
     <thead>
         <tr>
             <th>Date</th>
+            <th>Transaction ID</th>
             <th>Item</th>
             <th>Quantity</th>
-            <th>Cost Price (Rs.) Per Unit</th>
+            <th>Cost Price Per Unit</th>
             <th>Total Payable</th>
             <th>Paid Amount</th>
         </tr>
@@ -23,6 +36,7 @@
     {% for transaction in transactions %}
         <tr>
             <td>{{transaction.date|date}}</td>
+            <td>{{transaction.id}}</td>
             <td><a href="{% url 'inventory:dr-transaction-update' transaction.id%}">{{transaction.item}}</a></td>
             <td>{{transaction.quantity}}</td>
             <td>Rs. {{transaction.cost}}</td>

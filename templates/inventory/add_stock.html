@@ -2,10 +2,82 @@
 {% load crispy_forms_tags %}
 {% block content %}
 <h1>{{header}}</h1><hr>
+<span class='trans-info'></span>
 <form action="" method="post">
     {% csrf_token %}
     {{form|crispy}}
-    {{form2|crispy}}
     <input type="submit" name="" id="" class='btn btn-primary'>
 </form>
 {% endblock content %}
+{% block javascript %}
+<script>
+$(function() {
+    $('#id_transaction').change(function(e){
+        var trans_id = e.target.value
+        var url = `http://${window.location.host}/inventory/transaction/${trans_id}`
+        $.ajax({
+            url: url,
+            method : "GET",
+            data:{},
+            success: function(data){
+                var html = `
+                <div class="container col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        Transaction ID: ${data.transaction_id} - ${data.item}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Payment For Item: ${data.item}</h5><hr>
+                        <h6>Date of Transaction: ${data.date}</h6>
+                        <h6>Vendor/ Client Name: ${data.vendor_client}</h6>
+                        <h6>Quantity: <span class='badge badge-success'>${data.quantity} Units</span></h6>
+                        <h6>Total Payable: <span class='text-warning'>Rs. ${data.payable}</span></h6>
+                        <h6>Total Paid: <span class='text-success'>Rs. ${data.paid}</span></h6>
+                        <h6>Payment Remaining: <span class='text-danger'>Rs. ${data.remaining_payment}</span></h6>
+                        <h6 class="card-text"></h6>
+                    </div>
+                </div>
+                </div>
+                `
+                $(".trans-info").html(html)
+            },
+            error: function(error){
+                console.log(error)
+            }
+        });
+    });
+    $('#id_item').change(function(e){
+        var item_id = e.target.value
+        console.log(item_id)
+        var url = `http://${window.location.host}/inventory/item/${item_id}/`
+        $.ajax({
+            url: url,
+            method : "GET",
+            data:{},
+            success: function(data){
+                var html = `
+                <div class="container col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        Product Info: ${data.id} - ${data.name}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Product Name: ${data.name}</h5><hr>
+                        <h6 class="">Brand: ${data.brand}</h6>
+                        <h6 class="">Category: ${data.category}</h6>
+                        <h6>Product Selling Price: Rs. ${data.selling_price}</h6>
+                        <h6>Remaining Quantity: ${data.quantity}</h6>
+                        <h6 class="card-text"></h6>
+                    </div>
+                </div>
+                </div>
+                `
+                $(".trans-info").html(html)
+                $("#id_cost").val(data.selling_price)
+            }
+        });
+    });
+
+});
+</script>
+{% endblock javascript %}
