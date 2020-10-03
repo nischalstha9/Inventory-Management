@@ -101,7 +101,7 @@ class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListView
 
 class DebitTransactionUpdateView(UpdateView):
     model = DebitTransaction
-    fields = ['remarks']
+    fields = ['contact','remarks']
     template_name = "inventory/small-form.html"
 
     def get_context_data(self, **kwargs):
@@ -152,7 +152,7 @@ class CreditTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListVie
 
 class CreditTransactionUpdateView(UpdateView):
     model = CreditTransaction
-    fields = ['remarks']
+    fields = ['contact','remarks']
     template_name = "inventory/small-form.html"
 
     def get_context_data(self, **kwargs):
@@ -204,6 +204,8 @@ class DebitPaymentListView(ListView):
     context_object_name = 'payments'
     template_name = "inventory/dr-payments.html"
     paginate_by=50
+    queryset = Payment.objects.all()
+
     def get_queryset(self):
         qs = super().get_queryset().filter(transaction___type="STOCK IN")
         sts = self.request.GET.get('state')
@@ -218,6 +220,7 @@ class CreditPaymentListView(ListView):
     context_object_name = 'payments'
     template_name = "inventory/dr-payments.html"
     paginate_by=50
+    
     def get_queryset(self):
         qs = super().get_queryset().filter(transaction___type="STOCK OUT")
         sts = self.request.GET.get('state')

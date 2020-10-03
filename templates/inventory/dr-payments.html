@@ -25,6 +25,7 @@
             <th>Transaction</th>
             <th>Item</th>
             <th>Amount (Rs.)</th>
+            <th>Remaining Payment</th>
         </tr>
     </thead>
     <tbody>
@@ -33,21 +34,75 @@
             <td>{% if payment.transaction.balanced %}<span class='badge badge-success'>{% else %}<span class='badge badge-danger'>{% endif %}{{payment.transaction.balanced}}</span></td>
             <td>{{payment.date}}</td>
             <td>{{payment.transaction.id}}</td>
-            <td>{{payment.transaction}}</td>
-            <td>{{payment.transaction.item}}</td>
+            <td><a href="{% url 'inventory:dr-transaction-update' payment.transaction.id%}">{{payment.transaction}}</a></td>
+            <td><a href="#" value="{{payment.transaction.item.id}}" id='item_name' class='item_name'>{{payment.transaction.item}}</a></td>
             <td>Rs. {{payment.amount}}</td>
+            <td>Rs. {{payment.transaction.remaining_payment}}</td>
         </tr>
     {% endfor %}
     </tbody>
 </table>
 {% include "partial/pagination.html" %}
+
+<!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div id="content-main">
+            
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+<!--Modal end-->
+
 {% endblock content %}
 {% block javascript %}
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
 <script>
 $(document).ready( function () {
+    //for jquery table filter
     $('#table_id').DataTable({
         "paging": false
+    });
+
+    //for product detail
+    $(".item_name").click(function(e){
+        e.preventDefault();
+        var item_id = e.target.attributes.value.value
+        var url = `http://${window.location.host}/inventory/item/${item_id}/`
+        $.ajax({
+            url: url,
+            method : "GET",
+            data:{},
+            success: function(data){
+                var html = `
+                    <div class="card">
+                        <div class="card-header">
+                            Product Info: ${data.id} - ${data.name}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Product Name: <span class='text-secondary'>${data.name}</span></h5><hr>
+                            <h6 class="">Brand: <span class='text-secondary'>${data.brand}</span></h6>
+                            <h6 class="">Category: <span class='text-secondary'>${data.category}</span></h6>
+                            <h6>Product Selling Price: <span class='text-secondary'>Rs. ${data.selling_price}</span></h6>
+                            <h6>Remaining Quantity: <span class='text-secondary'>${data.quantity}</span></h6>
+                        </div>
+                    </div>
+                `
+                $("#content-main").html(html)
+                $("#myModal").modal();
+            },
+            error: function(error){
+                console.log(error)
+            }
+        });
     });
 } );
 </script>

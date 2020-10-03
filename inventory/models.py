@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.core.validators import RegexValidator
 
 class CategoryManager(models.Manager):
     def parents(self):
@@ -44,7 +45,7 @@ class Item(models.Model):
     brand = models.CharField(_("Product Brand"), max_length = 50, null=True, blank=True)
     category = models.ForeignKey("inventory.Category", verbose_name=_("category"), on_delete=models.CASCADE, related_name='categories')
     description = models.TextField(_("Product Description"))
-    image = models.ImageField(_("Product Image"), upload_to="item_images", height_field=None, width_field=None, max_length=None, null=True, blank=True)
+    image = models.ImageField(_("Product Image"), upload_to="product_images", height_field=None, width_field=None, max_length=None, null=True, blank=True)
     cost_price = models.FloatField(_("Latest Cost Price"), default=0)
     quantity = models.IntegerField(_("Available Quantity"), default=0)
     selling_price = models.FloatField(_("Current Selling Price"), default=0)
@@ -75,6 +76,8 @@ class Transaction(models.Model):
     remarks = models.TextField(_("Remarks on Deal"), null=True, blank=True)
     date = models.DateTimeField(_("Date of Transaction"), auto_now_add=True)
     balanced = models.BooleanField(_("Balanced"), editable = False)
+    mobile_num_regex = RegexValidator(regex="^[0-9]{10,15}$", message="Entered mobile number isn't in a right format!")
+    contact  = models.CharField(validators=[mobile_num_regex], max_length=13)
 
     def save(self, *args, **kwargs): 
         self.balanced = self.cost*self.quantity == self.paid
@@ -82,6 +85,18 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f" {self.quantity} of {self.item}"
+
+    @property
+    def total_payable(self):
+        return self.cost*self.quantity
+
+    @property
+    def remaining_payment(self):
+        return self.total_payable - self.paid
+    
+    @property
+    def unpaid(self):
+        return self.remaining_payment > 0
 
 class DebitTransactionManager(models.Manager):
     def unpaid(self):
@@ -95,18 +110,6 @@ class DebitTransaction(Transaction):
 
     class Meta:
         proxy = True
-
-    @property
-    def total_payable(self):
-        return self.cost*self.quantity
-
-    @property
-    def remaining_payment(self):
-        return self.total_payable - self.paid
-    
-    @property
-    def unpaid(self):
-        return self.remaining_payment > 0
 
     # @property
     # def more(self):
@@ -126,18 +129,6 @@ class CreditTransaction(Transaction):
     class Meta:
         proxy = True
 
-    @property
-    def total_payable(self):
-        return self.cost*self.quantity
-
-    @property
-    def remaining_payment(self):
-        return self.total_payable - self.paid
-    
-    @property
-    def unpaid(self):
-        return self.remaining_payment > 0
-
     # @property
     # def more(self):
     #     return self.creditInfo #here info is related with related name of transaction in CreditTransactionInfo Below
@@ -149,6 +140,9 @@ class Payment(models.Model):
     transaction = models.ForeignKey("inventory.Transaction", verbose_name=_("Payment For Transaction"), on_delete=models.CASCADE)
     amount = models.FloatField(_("Amount To add in Transaction"))
     date = models.DateField(_("Date of Payment"), auto_now_add=True)
+
+    class Meta:
+        ordering = ['-date']
 
     def __str__(self):
         return f"{self.amount} for {self.transaction}"

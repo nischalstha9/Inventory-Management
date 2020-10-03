@@ -11,18 +11,20 @@
 <table id="table_id" class="display">
     <thead>
         <tr>
+            <th>id</th>
             <th>Product Name</th>
             <th>Brand</th>
             <th>Cost Price (Rs.)</th>
             <th>Selling Price (Rs.)</th>
             <th>Remaining Quantity</th>
         </tr>
-    </thead>
+    </thead>    
     <tbody>
     {% for item in items %}
         <tr>
+            <td>{{item.id}}</td>
             <td>
-                <a href="{% url 'inventory:item-update' item.id %}">{{item.name}}</a>
+                <a href="#" value="{{item.id}}" id='item_name' class='item_name'>{{item.name}}</a>
                 {% if item.quantity <= 0 %}
                     <span class="badge badge-danger">Out of Stock</span>
                 {% elif item.quantity < 10 %}
@@ -38,6 +40,25 @@
     </tbody>
 </table>
 {% include "partial/pagination.html" %}
+
+<!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div id="content-main">
+            
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+<!--Modal end-->
+
 {% endblock content %}
 {% block javascript %}
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
@@ -46,6 +67,39 @@ $(document).ready( function () {
     $('#table_id').DataTable({
         "paging": false
     });
-} );
+
+    $(".item_name").click(function(e){
+        e.preventDefault();
+        var item_id = e.target.attributes.value.value
+        var url = `http://${window.location.host}/inventory/item/${item_id}/`
+        $.ajax({
+            url: url,
+            method : "GET",
+            data:{},
+            success: function(data){
+                var html = `
+                    <div class="card">
+                        <div class="card-header">
+                            Product Info: ${data.id} - ${data.name}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Product Name: <span class='text-secondary'>${data.name}</span></h5><hr>
+                            <h6 class="">Brand: <span class='text-secondary'>${data.brand}</span></h6>
+                            <h6 class="">Category: <span class='text-secondary'>${data.category}</span></h6>
+                            <h6>Cost Price: <span class='text-secondary'>Rs. ${data.cost_price}</span></h6>
+                            <h6>Product Selling Price: <span class='text-secondary'>Rs. ${data.selling_price}</span></h6>
+                            <h6>Remaining Quantity: <span class='text-secondary'>${data.quantity}</span></h6>
+                        </div>
+                    </div>
+                `
+                $("#content-main").html(html)
+                $("#myModal").modal();
+            },
+            error: function(error){
+                console.log(error)
+            }
+        });
+    });
+  });
 </script>
 {% endblock javascript %}

@@ -47,6 +47,6 @@ class ItemDetailSerializer(ModelSerializer):
     category = SerializerMethodField()
     class Meta:
         model = Item
-        fields = ['id','name', 'brand', 'category', 'quantity', 'selling_price']
+        fields = ['id','name', 'brand', 'category', 'quantity', 'selling_price', 'cost_price']
     def get_category(self, obj):
         return obj.category.name
