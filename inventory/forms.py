@@ -1,6 +1,8 @@
-from django.forms import ModelForm
-from .models import Item, Category, DebitTransaction, CreditTransaction, DebitTransactionInfo, CreditTransactionInfo
+from django.forms import ModelForm, Form
+from django import forms
+from .models import Item, Category, DebitTransaction, CreditTransaction, DebitTransactionInfo, CreditTransactionInfo, Payment, Transaction
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 
 class ItemCreationForm(ModelForm):
     class Meta:
@@ -31,10 +33,12 @@ class DebitTransactionForm(ModelForm):
         exclude = ['_type']
 
 class DebitTransactionInfoForm(ModelForm): 
+    sp = forms.IntegerField(label='New Selling Price', required=True)
     class Meta:
         model = DebitTransactionInfo
         fields = '__all__'
         exclude = ['transaction']
+
 
 class CreditTransactionForm(ModelForm): 
     class Meta:
@@ -47,3 +51,9 @@ class CreditTransactionInfoForm(ModelForm):
         model = CreditTransactionInfo
         fields = '__all__'
         exclude = ['transaction']
+
+class DebitPaymentForm(forms.Form):
+    # transaction = forms.ModelChoiceField(queryset = DebitTransactionInfo.objects.unpaid().filter(remaining_payment__gt=0))
+    amount = forms.IntegerField(required=True)
+    
+    

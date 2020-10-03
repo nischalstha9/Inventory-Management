@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.views.generic import CreateView, ListView, UpdateView
-from .forms import ItemCreationForm, DebitTransactionForm, CreditTransactionForm, DebitTransactionInfoForm, CreditTransactionInfoForm
-from .models import Item, DebitTransaction, Category, CreditTransaction
+from .forms import ItemCreationForm, DebitTransactionForm, CreditTransactionForm, DebitTransactionInfoForm, CreditTransactionInfoForm, DebitPaymentForm
+from .models import Item, DebitTransaction, Category, CreditTransaction, Payment
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
-import math
 from django.urls import reverse
+from django.core.exceptions import ValidationError
 
 def allowed_users(allowed_types=[]):
     def decorator(view_func):
@@ -64,8 +65,9 @@ def add_to_inventory(request):
         item = Item.objects.get(id=item)
         item.cost_price = cp
         item.quantity = item.quantity+qty
-        if sp==0:
-            item.selling_price = cp+cp*0.2
+        if sp < cp:
+            messages.warning(request, 'Selling Price cannot be less than Cost Price.')
+            return render(request, "inventory/add_stock.html", context)            
         else:
             item.selling_price = sp
         item.save()
@@ -137,6 +139,22 @@ class CreditTransactionUpdateView(UpdateView):
     
     def get_success_url(self):
         return reverse('inventory:credit-transactions')
+    
+def DebitTransactionInfoCreateView(request):
+    form = DebitPaymentForm
+    context = {}
+    context['form'] = form
+    context['header'] = "Add Payment"
+    if request.method=="POST":
+        trans = request.POST.get('transaction')
+        amt = request.POST.get('amount')
+        trans = DebitTransaction.objects.get(id=trans)
+        trans.paid += amt
+        Payment.objects.create(transaction = trans, amount = amt)
+        # return reverse("inventory:")
+# 
+    return render(request, "inventory/add_stock.html", context)
+
 
 
 

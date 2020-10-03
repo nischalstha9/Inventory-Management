@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer, Serializer, SerializerMethodField
 from rest_framework import serializers
-from .models import Category, Item
+from .models import Category, Item, Payment, DebitTransactionInfo, CreditTransactionInfo
 from django.db.models import Count
 
 class CategoryChartSerializer(ModelSerializer):
@@ -17,3 +17,11 @@ class ItemQuantitySerializer(ModelSerializer):
     class Meta:
         model = Item
         fields = ('name','quantity')
+
+class DebitTransactionSerializer(ModelSerializer):
+    # transaction = SerializerMethodField()
+    class Meta:
+        model = DebitTransactionInfo
+        fields = ('transaction', )
+    # def get_transaction(self, obj):
+    #     return obj
