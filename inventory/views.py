@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views.generic import CreateView, ListView, UpdateView
-from .forms import ItemCreationForm, DebitTransactionForm, CreditTransactionForm, DebitTransactionInfoForm, CreditTransactionInfoForm, DebitPaymentForm
+from .forms import ItemCreationForm, DebitTransactionForm, CreditTransactionForm, DebitPaymentForm
 from .models import Item, DebitTransaction, Category, CreditTransaction, Payment
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.urls import reverse
@@ -52,14 +52,12 @@ class ItemUpdateVIew(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 def add_to_inventory(request):
     context = {'header' : 'Add Stock'}
     form = DebitTransactionForm(request.POST or None)
-    dform = DebitTransactionInfoForm(request.POST or None)
     context['form']= form
-    context['form2']= dform
     if request.method == 'POST':
         print(request.POST)
         item = request.POST.get('item')
         cp = int(request.POST.get('cost'))
-        sp = int(request.POST.get('sp'))
+        sp = int(request.POST.get('selling_price'))
         qty = int(request.POST.get('quantity'))
         paid = int(request.POST.get('paid'))
         item = Item.objects.get(id=item)
@@ -72,8 +70,8 @@ def add_to_inventory(request):
             item.selling_price = sp
         item.save()
         trans = form.save(request.POST)
-        dform.instance.transaction = trans
-        dform.save()
+        payment = Payment.objects.create(transaction = trans, amount=paid)
+        payment.save()
         return redirect("inventory:items-list")
     return render(request, "inventory/add_stock.html", context)
 
@@ -87,7 +85,7 @@ class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListView
 
 class DebitTransactionUpdateView(UpdateView):
     model = DebitTransaction
-    fields = ['paid','remarks']
+    fields = ['remarks']
     template_name = "inventory/add_stock.html"
 
     def get_context_data(self, **kwargs):
@@ -102,21 +100,19 @@ class DebitTransactionUpdateView(UpdateView):
 def sell_from_inventory(request):
     context = {'header' : 'Sell Stock'}
     form = CreditTransactionForm(request.POST or None)
-    cform = CreditTransactionInfoForm(request.POST or None)
     context['form']= form
-    context['form2']= cform
     if request.method == 'POST':
         print(request.POST)
         item = request.POST.get('item')
         qty = int(request.POST.get('quantity'))
+        paid = int(request.POST.get('paid'))
         item = Item.objects.get(id=item)
         item.quantity = item.quantity-qty
         item.save()
         form.instance._type = 'STOCK OUT'
         trans = form.save()
-        cform.instance.transaction = trans
-        cform.save()
-        return redirect("inventory:credit-transactions")
+        Payment.objects.create(transaction = trans, amount = paid)
+        return redirect("inventory:items-list")
     return render(request, "inventory/add_stock.html", context)
 
 class CreditTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -129,7 +125,7 @@ class CreditTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListVie
 
 class CreditTransactionUpdateView(UpdateView):
     model = CreditTransaction
-    fields = ['paid','remarks']
+    fields = ['remarks']
     template_name = "inventory/add_stock.html"
 
     def get_context_data(self, **kwargs):
@@ -140,19 +136,19 @@ class CreditTransactionUpdateView(UpdateView):
     def get_success_url(self):
         return reverse('inventory:credit-transactions')
     
-def DebitTransactionInfoCreateView(request):
+def DebitTransactionPaymentCreateView(request):
     form = DebitPaymentForm
     context = {}
     context['form'] = form
-    context['header'] = "Add Payment"
+    context['header'] = "Add Payment for Stock In"
     if request.method=="POST":
         trans = request.POST.get('transaction')
-        amt = request.POST.get('amount')
+        amt = int(request.POST.get('amount'))
         trans = DebitTransaction.objects.get(id=trans)
-        trans.paid += amt
+        trans.paid = trans.paid + amt
+        trans.save()
         Payment.objects.create(transaction = trans, amount = amt)
-        # return reverse("inventory:")
-# 
+        # return reverse("inventory:debit-transactions")
     return render(request, "inventory/add_stock.html", context)
 
 

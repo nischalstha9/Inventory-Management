@@ -67,16 +67,25 @@ class Transaction(models.Model):
         _("Type"), max_length=50, choices=Types.choices, default=base_type
     )
 
+    vendor_client = models.CharField(_("Vendor or Client"), max_length=240)
     item = models.ForeignKey("inventory.Item", verbose_name=_("Inventory Item"), on_delete=models.CASCADE)
     quantity = models.IntegerField(_("Quantity"), default=0)
+    cost = models.IntegerField(_("Cost Price Per Quantity Unit"), default=0)
     paid = models.IntegerField(_("Paid Amount"), default = 0)
     remarks = models.TextField(_("Remarks on Deal"), null=True, blank=True)
     date = models.DateTimeField(_("Date of Transaction"), auto_now_add=True)
+    balanced = models.BooleanField(_("Balanced"), editable = False)
+
+    def save(self, *args, **kwargs): 
+        self.balanced = self.cost*self.quantity == self.paid
+        super(Transaction, self).save(*args, **kwargs)
 
     def __str__(self):
         return f" {self.quantity} of {self.item} and paid {self.paid}"
 
 class DebitTransactionManager(models.Manager):
+    def unpaid(self):
+        return self.get_queryset().filter(balanced=False)
     def get_queryset(self, *args, **kwargs):
         return super().get_queryset(*args, **kwargs).filter(_type=Transaction.Types.STOCK_IN)
 
@@ -88,44 +97,20 @@ class DebitTransaction(Transaction):
         proxy = True
 
     @property
-    def more(self):
-        return self.debitInfo #here info is related with related name of transaction in DebitTransactionInfo Below
-
-from django.db.models import F
-class DebitTransactionInfoManager(models.Manager):
-    def unpaid(self):
-        # return [i for i in DebitTransactionInfo.objects.all() if i.unpaid]
-        return self.annotate(remaining_payment = F('transaction__quantity')*F('cost')-F('transaction__paid'))
-    pass
-
-class DebitTransactionInfo(models.Model):
-    transaction = models.OneToOneField("inventory.DebitTransaction", verbose_name=_("info"), on_delete=models.CASCADE, related_name='debitInfo')
-    seller = models.CharField(_("Seller Name or Company"), max_length=128)
-    cost = models.IntegerField(_("Cost Price Per Quantity Unit"))
-    remaining_payment = models.IntegerField(_("Remaining Payment"))
-    objects = DebitTransactionInfoManager()  
-
-    def save(self, *args, **kwargs): 
-        self.remaining_payment = self.cost*self.transaction.quantity - self.transaction.paid
-        super(DebitTransactionInfo, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return f"Bought {self.transaction.item} from {self.seller}"
-
-    class Meta:
-        ordering=["-transaction__date"]
-
-    @property
     def total_payable(self):
-        return self.cost*self.transaction.quantity
+        return self.cost*self.quantity
 
     @property
     def remaining_payment(self):
-        return self.total_payable - self.transaction.paid
+        return self.total_payable - self.paid
     
     @property
     def unpaid(self):
         return self.remaining_payment > 0
+
+    # @property
+    # def more(self):
+    #     return self.debitInfo #here info is related with related name of transaction in DebitTransactionInfo Below
 
 
 class CreditTransactionManager(models.Manager):
@@ -140,34 +125,22 @@ class CreditTransaction(Transaction):
         proxy = True
 
     @property
-    def more(self):
-        return self.creditInfo #here info is related with related name of transaction in CreditTransactionInfo Below
-
-#rather than making Credit and Debit Transaction model use proxy mdoel and make 2 types
-class CreditTransactionInfo(models.Model):
-    transaction = models.OneToOneField("inventory.CreditTransaction", verbose_name=_("info"), on_delete=models.CASCADE, related_name='creditInfo')
-    buyer = models.CharField(_("Buyer Name or Company"), max_length=128)
-    discount = models.FloatField(_("Discount Percentage"), default=0)
-
-    def __str__(self):
-        return f"Sold {self.transaction.item} to {self.buyer}"
-
-    class Meta:
-        ordering=["-transaction__date"]
+    def total_payable(self):
+        return self.cost*self.quantity
 
     @property
     def remaining_payment(self):
-        p = (self.transaction.item.selling_price*self.transaction.quantity)
-        return (p-self.discount/100*p) - self.transaction.paid
-
+        return self.total_payable - self.paid
+    
     @property
-    def total_payable(self):
-        p = (self.transaction.item.selling_price*self.transaction.quantity)
-        return p-self.discount/100*p
+    def unpaid(self):
+        return self.remaining_payment > 0
 
-    @property
-    def sp(self):#selling_price
-        return self.transaction.item.selling_price
+    # @property
+    # def more(self):
+    #     return self.creditInfo #here info is related with related name of transaction in CreditTransactionInfo Below
+
+
 
 #add payment model too it will be awesome
 class Payment(models.Model):
@@ -177,3 +150,66 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"{self.amount} for {self.transaction}"
+
+# from django.db.models import F
+# class DebitTransactionInfoManager(models.Manager):
+#     def unpaid(self):
+#         # return [i for i in DebitTransactionInfo.objects.all() if i.unpaid]
+#         return self.annotate(remaining_payment = F('transaction__quantity')*F('cost')-F('transaction__paid'))
+#     pass
+
+# class DebitTransactionInfo(models.Model):
+#     transaction = models.OneToOneField("inventory.DebitTransaction", verbose_name=_("info"), on_delete=models.CASCADE, related_name='debitInfo')
+#     seller = models.CharField(_("Seller Name or Company"), max_length=128)
+#     cost = models.IntegerField(_("Cost Price Per Quantity Unit"))
+#     # remaining_payment = models.IntegerField(_("Remaining Payment"))
+#     objects = DebitTransactionInfoManager()  
+
+#     def save(self, *args, **kwargs): 
+#         self.remaining_payment = self.cost*self.transaction.quantity - self.transaction.paid
+#         super(DebitTransactionInfo, self).save(*args, **kwargs)
+
+#     def __str__(self):
+#         return f"Bought {self.transaction.item} from {self.seller}"
+
+#     class Meta:
+#         ordering=["-transaction__date"]
+
+#     @property
+#     def total_payable(self):
+#         return self.cost*self.transaction.quantity
+
+#     @property
+#     def remaining_payment(self):
+#         return self.total_payable - self.transaction.paid
+    
+#     @property
+#     def unpaid(self):
+#         return self.remaining_payment > 0
+
+
+# #rather than making Credit and Debit Transaction model use proxy mdoel and make 2 types
+# class CreditTransactionInfo(models.Model):
+#     transaction = models.OneToOneField("inventory.CreditTransaction", verbose_name=_("info"), on_delete=models.CASCADE, related_name='creditInfo')
+#     buyer = models.CharField(_("Buyer Name or Company"), max_length=128)
+#     discount = models.FloatField(_("Discount Percentage"), default=0)
+
+#     def __str__(self):
+#         return f"Sold {self.transaction.item} to {self.buyer}"
+
+#     class Meta:
+#         ordering=["-transaction__date"]
+
+#     @property
+#     def remaining_payment(self):
+#         p = (self.transaction.item.selling_price*self.transaction.quantity)
+#         return (p-self.discount/100*p) - self.transaction.paid
+
+#     @property
+#     def total_payable(self):
+#         p = (self.transaction.item.selling_price*self.transaction.quantity)
+#         return p-self.discount/100*p
+
+#     @property
+#     def sp(self):#selling_price
+#         return self.transaction.item.selling_price

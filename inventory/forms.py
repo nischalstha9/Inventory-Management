@@ -1,6 +1,6 @@
 from django.forms import ModelForm, Form
 from django import forms
-from .models import Item, Category, DebitTransaction, CreditTransaction, DebitTransactionInfo, CreditTransactionInfo, Payment, Transaction
+from .models import Item, Category, DebitTransaction, CreditTransaction, Payment, Transaction
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 
@@ -26,34 +26,32 @@ class ItemCreationForm(ModelForm):
             raise ValidationError("Selling Price cannot be 0")
         return sp
 
-class DebitTransactionForm(ModelForm): 
+class DebitTransactionForm(ModelForm):
+    selling_price = forms.IntegerField(initial=0, required=True)
     class Meta:
         model = DebitTransaction
         fields = '__all__'
         exclude = ['_type']
-
-class DebitTransactionInfoForm(ModelForm): 
-    sp = forms.IntegerField(label='New Selling Price', required=True)
-    class Meta:
-        model = DebitTransactionInfo
-        fields = '__all__'
-        exclude = ['transaction']
-
+        labels = {
+            'vendor_client':'Vendor'
+        }
 
 class CreditTransactionForm(ModelForm): 
     class Meta:
         model = CreditTransaction
         fields = '__all__'
         exclude = ['_type']
-
-class CreditTransactionInfoForm(ModelForm): 
-    class Meta:
-        model = CreditTransactionInfo
-        fields = '__all__'
-        exclude = ['transaction']
+        labels = {
+            'vendor_client':'Client',
+            'cost':'Price Per Quantity Unit'
+        }
+    def __init__(self, *args, **kwargs):
+        super(CreditTransactionForm, self).__init__(*args, **kwargs)
+        # access object through self.instance...
+        self.fields['item'].queryset = Item.objects.filter(quantity__gt=0)
 
 class DebitPaymentForm(forms.Form):
-    # transaction = forms.ModelChoiceField(queryset = DebitTransactionInfo.objects.unpaid().filter(remaining_payment__gt=0))
+    transaction = forms.ModelChoiceField(queryset = DebitTransaction.objects.unpaid())
     amount = forms.IntegerField(required=True)
     
     

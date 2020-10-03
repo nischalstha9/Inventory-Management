@@ -25,14 +25,14 @@
             <td>{{transaction.date|date}}</td>
             <td><a href="{% url 'inventory:dr-transaction-update' transaction.id%}">{{transaction.item}}</a></td>
             <td>{{transaction.quantity}}</td>
-            <td>Rs. {{transaction.more.cost}}</td>
-            <td>Rs. {{transaction.more.total_payable}}</td>
+            <td>Rs. {{transaction.cost}}</td>
+            <td>Rs. {{transaction.total_payable}}</td>
             <td>
                 Rs. {{transaction.paid}}
-                {% if transaction.more.remaining_payment > 0 %}
-                    <span class="badge badge-warning">Rs. {{ transaction.more.remaining_payment }} Remaining</span>
-                {% elif transaction.more.remaining_payment < 0 %}
-                    <span class="badge badge-danger">Rs. {{ transaction.more.remaining_payment }} Overpaid</span>
+                {% if transaction.remaining_payment > 0 %}
+                    <span class="badge badge-warning">Rs. {{ transaction.remaining_payment }} Remaining</span>
+                {% elif transaction.remaining_payment < 0 %}
+                    <span class="badge badge-danger">Rs. {{ transaction.remaining_payment }} Overpaid</span>
                 {% else %}
                     <span class="badge badge-success">Balanced</span>
                 {% endif %}
