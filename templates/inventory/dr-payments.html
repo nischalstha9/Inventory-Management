@@ -1,0 +1,42 @@
+{% extends 'partial/base.html' %}
+{% block style %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+{% endblock style %}
+{% block content %}
+<h1>Stock In Payments</h1><hr>
+<table id="table_id" class="display">
+    <thead>
+        <tr>
+            <th>Is Balanced</th>
+            <th>Date</th>
+            <th>Transaction Id</th>
+            <th>Transaction</th>
+            <th>Item</th>
+            <th>Amount (Rs.)</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for payment in payments %}
+        <tr>
+            <td>{% if payment.transaction.balanced %}<span class='badge badge-success'>{% else %}<span class='badge badge-danger'>{% endif %}{{payment.transaction.balanced}}</span></td>
+            <td>{{payment.date}}</td>
+            <td>{{payment.transaction.id}}</td>
+            <td>{{payment.transaction}}</td>
+            <td>{{payment.transaction.item}}</td>
+            <td>Rs. {{payment.amount}}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% include "partial/pagination.html" %}
+{% endblock content %}
+{% block javascript %}
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+<script>
+$(document).ready( function () {
+    $('#table_id').DataTable({
+        "paging": false
+    });
+} );
+</script>
+{% endblock javascript %}

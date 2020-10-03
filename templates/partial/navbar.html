@@ -30,10 +30,11 @@
           Payment
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="{% url 'inventory:dr-payment-create' %}">Add Payment</a>
-          {% comment %} <a class="dropdown-item" href="{% url 'inventory:credit-transactions' %}">Stock Out Transactions</a> {% endcomment %}
+          <a class="dropdown-item" href="{% url 'inventory:dr-payment-create' %}">Add Stock In Payment</a>
+          <a class="dropdown-item" href="{% url 'inventory:cr-payment-create' %}">Add Stock Out Payment</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
+          <a class="dropdown-item" href="{% url 'inventory:dr-payments' %}">Stock In Payments</a>
+          <a class="dropdown-item" href="{% url 'inventory:cr-payments' %}">Stock Out Payments</a>
         </div>
       </li>
       {% comment %} <li class="nav-item">

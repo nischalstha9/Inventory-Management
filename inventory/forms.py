@@ -54,4 +54,7 @@ class DebitPaymentForm(forms.Form):
     transaction = forms.ModelChoiceField(queryset = DebitTransaction.objects.unpaid())
     amount = forms.IntegerField(required=True)
     
+class CreditPaymentForm(forms.Form):
+    transaction = forms.ModelChoiceField(queryset = CreditTransaction.objects.unpaid())
+    amount = forms.IntegerField(required=True)
     

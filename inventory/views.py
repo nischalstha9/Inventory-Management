@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views.generic import CreateView, ListView, UpdateView
-from .forms import ItemCreationForm, DebitTransactionForm, CreditTransactionForm, DebitPaymentForm
+from .forms import ItemCreationForm, DebitTransactionForm, CreditTransactionForm, DebitPaymentForm, CreditPaymentForm
 from .models import Item, DebitTransaction, Category, CreditTransaction, Payment
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.urls import reverse
@@ -146,10 +146,50 @@ def DebitTransactionPaymentCreateView(request):
         amt = int(request.POST.get('amount'))
         trans = DebitTransaction.objects.get(id=trans)
         trans.paid = trans.paid + amt
+        if amt > trans.remaining_payment:
+            messages.warning(request, "Paid Amount Cannot Be Greater than Payable Amount")
+            return render(request, "inventory/add_stock.html", context)
         trans.save()
         Payment.objects.create(transaction = trans, amount = amt)
         # return reverse("inventory:debit-transactions")
     return render(request, "inventory/add_stock.html", context)
+
+def CreditTransactionPaymentCreateView(request):
+    form = CreditPaymentForm
+    context = {}
+    context['form'] = form
+    context['header'] = "Add Payment for Stock Out"
+    if request.method=="POST":
+        trans = request.POST.get('transaction')
+        amt = int(request.POST.get('amount'))
+        trans = CreditTransaction.objects.get(id=trans)
+        trans.paid = trans.paid + amt
+        if amt > trans.remaining_payment:
+            messages.warning(request, "Paid Amount Cannot Be Greater than Payable Amount")
+            return render(request, "inventory/add_stock.html", context)
+        trans.save()
+        Payment.objects.create(transaction = trans, amount = amt)
+        # return reverse("inventory:debit-transactions")
+    return render(request, "inventory/add_stock.html", context)
+
+class DebitPaymentListView(ListView):
+    model = Payment
+    context_object_name = 'payments'
+    template_name = "inventory/dr-payments.html"
+    paginate_by=50
+    def get_queryset(self):
+        qs = super().get_queryset().filter(transaction___type="STOCK IN")
+        return qs
+
+class CreditPaymentListView(ListView):
+    model = Payment
+    context_object_name = 'payments'
+    template_name = "inventory/dr-payments.html"
+    paginate_by=50
+    def get_queryset(self):
+        qs = super().get_queryset().filter(transaction___type="STOCK OUT")
+        return qs
+    
 
 
 

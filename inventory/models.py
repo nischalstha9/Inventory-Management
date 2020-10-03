@@ -114,6 +114,8 @@ class DebitTransaction(Transaction):
 
 
 class CreditTransactionManager(models.Manager):
+    def unpaid(self):
+        return self.get_queryset().filter(balanced=False)
     def get_queryset(self, *args, **kwargs):
         return super().get_queryset(*args, **kwargs).filter(_type=Transaction.Types.STOCK_OUT)
 
