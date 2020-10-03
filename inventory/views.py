@@ -11,7 +11,7 @@ def allowed_users(allowed_types=[]):
     def decorator(view_func):
         def wrapper_func(request, *args, **kwargs):
             if request.user.is_authenticated:
-                if request.user._type in allowed_types[0]:
+                if request.user._type in allowed_types:
                     return view_func(request, *args, **kwargs)
             else:
                 return redirect('/')
@@ -67,6 +67,9 @@ def add_to_inventory(request):
         cp = int(request.POST.get('cost'))
         sp = int(request.POST.get('selling_price'))
         qty = int(request.POST.get('quantity'))
+        if qty <= 0:
+            messages.warning(request, 'Quantity must be greater than 0.')
+            return render(request, "inventory/small-form.html", context)            
         paid = int(request.POST.get('paid'))
         item = Item.objects.get(id=item)
         item.cost_price = cp
@@ -99,10 +102,12 @@ class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListView
             qs = qs.filter(balanced=False)
         return qs    
 
-class DebitTransactionUpdateView(UpdateView):
+class DebitTransactionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = DebitTransaction
     fields = ['contact','remarks']
     template_name = "inventory/small-form.html"
+    def test_func(self):
+        return self.request.user._type == 'ADMIN'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -121,6 +126,9 @@ def sell_from_inventory(request):
         print(request.POST)
         item = request.POST.get('item')
         qty = int(request.POST.get('quantity'))
+        if qty <= 0:
+            messages.warning(request, 'Quantity must be greater than 0.')
+            return render(request, "inventory/small-form.html", context) 
         paid = int(request.POST.get('paid'))
         item = Item.objects.get(id=item)
         item.quantity = item.quantity-qty
@@ -150,10 +158,12 @@ class CreditTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListVie
             qs = qs.filter(balanced=False)
         return qs
 
-class CreditTransactionUpdateView(UpdateView):
+class CreditTransactionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = CreditTransaction
     fields = ['contact','remarks']
     template_name = "inventory/small-form.html"
+    def test_func(self):
+        return self.request.user._type == 'ADMIN'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -162,7 +172,8 @@ class CreditTransactionUpdateView(UpdateView):
     
     def get_success_url(self):
         return reverse('inventory:credit-transactions')
-    
+
+@allowed_users(allowed_types = ['ADMIN'])
 def DebitTransactionPaymentCreateView(request):
     form = DebitPaymentForm
     context = {}
@@ -181,6 +192,7 @@ def DebitTransactionPaymentCreateView(request):
         # return reverse("inventory:debit-transactions")
     return render(request, "inventory/small-form.html", context)
 
+@allowed_users(allowed_types = ['ADMIN'])
 def CreditTransactionPaymentCreateView(request):
     form = CreditPaymentForm
     context = {}

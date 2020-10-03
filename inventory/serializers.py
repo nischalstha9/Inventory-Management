@@ -16,7 +16,7 @@ class CategoryChartSerializer(ModelSerializer):
 class ItemQuantitySerializer(ModelSerializer):
     class Meta:
         model = Item
-        fields = ('name','quantity')
+        fields = ('name','quantity','selling_price','brand')
 
 from datetime import datetime
 from django.utils import timezone
@@ -36,9 +36,9 @@ class TransactionSerializer(ModelSerializer):
     def get_item(self, obj):
         return obj.item.name
     def get_date(self, obj):
+        return timezone.localtime(obj.date).strftime("%b. %d, %Y")
         # return obj.date.date()
         # return datetime.strptime(obj.date).date()
-        return timezone.localtime(obj.date).strftime("%b. %d, %Y")
     def get_transaction_id(self, obj):
         return obj.id
 

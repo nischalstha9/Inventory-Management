@@ -40,26 +40,25 @@
           <div class='container' id='page-top'>
           
             <div>
-            {% block header %}
-                <br>
-                <br>
-                <br>
-            {% endblock header %}
-            {% if messages %}
-              {% for message in messages %}
-                <div class='alert alert-{{ message.tags }}'>
-                  {{ message }} 
-                </div>
-              {% endfor %}
-            {% endif %}
+              {% block header %}
+                  <br>
+                  <br>
+                  <br>
+              {% endblock header %}
+              <span id='search-result'></span>
+              {% if messages %}
+                {% for message in messages %}
+                  <div class='alert alert-{{ message.tags }}'>
+                    {{ message }} 
+                  </div>
+                {% endfor %}
+              {% endif %}
             </div>
 
-            {% block content %}
-                                
+            {% block content %}  
             {% endblock content %}
             
           </div>
-        
 
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     
@@ -69,8 +68,50 @@
     {% comment %} <script src='{% static 'news/main.js' %}'></script> {% endcomment %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    
+    <script>
+      $(document).ready( function () {
+        $("#searchProductForm").keyup(function(e){
+          q = e.target.value
+          var url = `http://${window.location.host}/inventory/item-quantity/?search=${q}`
+          var td = ``
+          $.ajax({
+            url : url,
+            method : "GET",
+            data : {},
+            success: function(data){
+              $.each(data, function(e){
+              td += `
+                <tr>
+                  <td>${data[e].name}</td>
+                  <td>${data[e].quantity}</td>
+                  <td>Rs. ${data[e].selling_price}</td>
+                </tr>
+              `
+              })
+              var html = `
+                <table class="table jumbotron">
+                <thead>
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${td}
+                </tbody>
+              </table>
+              `
+            $("#search-result").html(html)
+            },
+            error: function(error){
+              console.log(error)
+            }
 
+          })
+        })
+      })
+    </script>
     <!-- Optional JavaScript -->
     {% block javascript %}
     {% endblock javascript %}
