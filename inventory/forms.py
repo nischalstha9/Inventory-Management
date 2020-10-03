@@ -2,13 +2,12 @@ from django.forms import ModelForm, Form
 from django import forms
 from .models import Item, Category, DebitTransaction, CreditTransaction, Payment, Transaction
 from django.core.exceptions import ValidationError
-from django.db.models import Q
 
 class ItemCreationForm(ModelForm):
     class Meta:
         model = Item
         fields = "__all__"
-        exclude = ("cost_price", "quantity")
+        exclude = ("cost_price", "quantity", 'selling_price')
 
     def clean_qty(self):
         qty = self.cleaned_data['quantity']

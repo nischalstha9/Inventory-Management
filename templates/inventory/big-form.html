@@ -9,12 +9,12 @@
 {% endblock style %}
 {% block content %}
 <div class="container form-a">
-    <h1>Create/Update Inventory Item</h1>
+    <h1>{{ header }}</h1>
     <hr>
     <form action="" method="post" enctype='multipart/form-data'>
         {{form|crispy}}
         {% csrf_token %}
-        <input type="submit" value="Create" class='btn btn-primary' name="" id="">
+        <input type="submit" value="Submit Form" class='btn btn-primary' name="" id="">
     </form>
 </div>
 {% endblock content %}

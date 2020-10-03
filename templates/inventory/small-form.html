@@ -2,12 +2,19 @@
 {% load crispy_forms_tags %}
 {% block content %}
 <h1>{{header}}</h1><hr>
-<span class='trans-info'></span>
-<form action="" method="post">
-    {% csrf_token %}
-    {{form|crispy}}
-    <input type="submit" name="" id="" class='btn btn-primary'>
-</form>
+<div class="row">
+    <div class="col-sm-12 col-md-8 col-lg-6">
+        <form action="" method="post">
+            {% csrf_token %}
+            {{form|crispy}}
+            <input type="submit" name="" id="" class='btn btn-primary' value="Submit Form">
+        </form><br>
+    </div>
+    <div class="col-sm-12 col-md-8 col-lg-6">
+        <span class='trans-info'></span>
+    </div>
+</div>
+
 {% endblock content %}
 {% block javascript %}
 <script>
@@ -21,7 +28,6 @@ $(function() {
             data:{},
             success: function(data){
                 var html = `
-                <div class="container col-lg-6">
                 <div class="card">
                     <div class="card-header">
                         Transaction ID: ${data.transaction_id} - ${data.item}
@@ -37,7 +43,6 @@ $(function() {
                         <h6 class="card-text"></h6>
                     </div>
                 </div>
-                </div>
                 `
                 $(".trans-info").html(html)
             },
@@ -48,7 +53,6 @@ $(function() {
     });
     $('#id_item').change(function(e){
         var item_id = e.target.value
-        console.log(item_id)
         var url = `http://${window.location.host}/inventory/item/${item_id}/`
         $.ajax({
             url: url,
@@ -56,7 +60,6 @@ $(function() {
             data:{},
             success: function(data){
                 var html = `
-                <div class="container col-lg-6">
                 <div class="card">
                     <div class="card-header">
                         Product Info: ${data.id} - ${data.name}
@@ -67,13 +70,14 @@ $(function() {
                         <h6 class="">Category: ${data.category}</h6>
                         <h6>Product Selling Price: Rs. ${data.selling_price}</h6>
                         <h6>Remaining Quantity: ${data.quantity}</h6>
-                        <h6 class="card-text"></h6>
                     </div>
-                </div>
                 </div>
                 `
                 $(".trans-info").html(html)
                 $("#id_cost").val(data.selling_price)
+            },
+            error: function(error){
+                console.log(error)
             }
         });
     });

@@ -45,9 +45,9 @@ class Item(models.Model):
     category = models.ForeignKey("inventory.Category", verbose_name=_("category"), on_delete=models.CASCADE, related_name='categories')
     description = models.TextField(_("Product Description"))
     image = models.ImageField(_("Product Image"), upload_to="item_images", height_field=None, width_field=None, max_length=None, null=True, blank=True)
-    cost_price = models.IntegerField(_("Latest Cost Price"), default=0)
+    cost_price = models.FloatField(_("Latest Cost Price"), default=0)
     quantity = models.IntegerField(_("Available Quantity"), default=0)
-    selling_price = models.IntegerField(_("Current Selling Price"), default=0)
+    selling_price = models.FloatField(_("Current Selling Price"), default=0)
     about_seller = models.TextField(_("About Seller"))
 
     def __str__(self):
@@ -70,8 +70,8 @@ class Transaction(models.Model):
     vendor_client = models.CharField(_("Vendor or Client"), max_length=240)
     item = models.ForeignKey("inventory.Item", verbose_name=_("Inventory Item"), on_delete=models.CASCADE)
     quantity = models.IntegerField(_("Quantity"), default=0)
-    cost = models.IntegerField(_("Cost Price Per Quantity Unit"), default=0)
-    paid = models.IntegerField(_("Paid Amount"), default = 0)
+    cost = models.FloatField(_("Cost Price Per Quantity Unit"), default=0)
+    paid = models.FloatField(_("Paid Amount"), default = 0)
     remarks = models.TextField(_("Remarks on Deal"), null=True, blank=True)
     date = models.DateTimeField(_("Date of Transaction"), auto_now_add=True)
     balanced = models.BooleanField(_("Balanced"), editable = False)
@@ -81,7 +81,7 @@ class Transaction(models.Model):
         super(Transaction, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f" {self.quantity} of {self.item} and paid {self.paid}"
+        return f" {self.quantity} of {self.item}"
 
 class DebitTransactionManager(models.Manager):
     def unpaid(self):
@@ -147,7 +147,7 @@ class CreditTransaction(Transaction):
 #add payment model too it will be awesome
 class Payment(models.Model):
     transaction = models.ForeignKey("inventory.Transaction", verbose_name=_("Payment For Transaction"), on_delete=models.CASCADE)
-    amount = models.IntegerField(_("Amount To add in Transaction"))
+    amount = models.FloatField(_("Amount To add in Transaction"))
     date = models.DateField(_("Date of Payment"), auto_now_add=True)
 
     def __str__(self):

@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import index, ItemCreationVIew, ItemListView, ItemUpdateVIew, add_to_inventory, DebitTransactionListView, DebitTransactionUpdateView, sell_from_inventory, CreditTransactionListView, CreditTransactionUpdateView, CreditTransactionPaymentCreateView, DebitTransactionPaymentCreateView, DebitPaymentListView, CreditPaymentListView
+from .views import index, ItemCreationVIew, ItemListView, ItemUpdateVIew, add_to_inventory, DebitTransactionListView, DebitTransactionUpdateView, sell_from_inventory, CreditTransactionListView, CreditTransactionUpdateView, CreditTransactionPaymentCreateView, DebitTransactionPaymentCreateView, DebitPaymentListView, CreditPaymentListView, CategoryCreateView
 from .api_views import ItemQuantity, TransactionDetailAPIView, ItemDetailAPIView
 
 app_name = 'inventory'
@@ -8,7 +8,9 @@ urlpatterns = [
     path("item/<int:pk>/", ItemDetailAPIView.as_view(), name="item-detail-api"),
     path("transaction/<int:pk>/", TransactionDetailAPIView.as_view(), name="transaction-detail-api"),
     path("item-quantity/", ItemQuantity.as_view(), name="cat-cnt"), 
-    # path("unpaid-dr/", UnpaidDebitInfoListView.as_view(), name="unpaid_drs"), 
+    ############################################DIVIDER############################################
+
+    path("category/new/", CategoryCreateView.as_view() , name="new-category"),
 
     path("", ItemListView.as_view() , name="items-list"),
     path("new/", ItemCreationVIew.as_view(), name="new-item"),

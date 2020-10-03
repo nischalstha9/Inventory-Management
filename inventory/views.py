@@ -5,8 +5,8 @@ from .forms import ItemCreationForm, DebitTransactionForm, CreditTransactionForm
 from .models import Item, DebitTransaction, Category, CreditTransaction, Payment
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.urls import reverse
-from django.core.exceptions import ValidationError
 
+#custom decorator for filtering permission
 def allowed_users(allowed_types=[]):
     def decorator(view_func):
         def wrapper_func(request, *args, **kwargs):
@@ -22,9 +22,17 @@ def allowed_users(allowed_types=[]):
 def index(request):
     return render(request, "inventory/item_list.html")
 
+class CategoryCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = Category
+    fields = "__all__"
+    template_name = "inventory/big-form.html"
+    success_url = "/"
+    def test_func(self):
+        return self.request.user._type == 'ADMIN'
+
 class ItemCreationVIew(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = ItemCreationForm
-    template_name = 'inventory/item_creation.html'
+    template_name = 'inventory/big-form.html'
     success_url = "../"
 
     def test_func(self):
@@ -41,7 +49,7 @@ class ItemListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
 class ItemUpdateVIew(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     form_class = ItemCreationForm
-    template_name = 'inventory/item_creation.html'
+    template_name = 'inventory/big-form.html'
     success_url = "../../"
     queryset = Item.objects.all()
 
@@ -65,7 +73,7 @@ def add_to_inventory(request):
         item.quantity = item.quantity+qty
         if sp < cp:
             messages.warning(request, 'Selling Price cannot be less than Cost Price.')
-            return render(request, "inventory/add_stock.html", context)            
+            return render(request, "inventory/small-form.html", context)            
         else:
             item.selling_price = sp
         item.save()
@@ -73,7 +81,7 @@ def add_to_inventory(request):
         payment = Payment.objects.create(transaction = trans, amount=paid)
         payment.save()
         return redirect("inventory:items-list")
-    return render(request, "inventory/add_stock.html", context)
+    return render(request, "inventory/small-form.html", context)
 
 class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = DebitTransaction
@@ -94,7 +102,7 @@ class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListView
 class DebitTransactionUpdateView(UpdateView):
     model = DebitTransaction
     fields = ['remarks']
-    template_name = "inventory/add_stock.html"
+    template_name = "inventory/small-form.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -118,13 +126,13 @@ def sell_from_inventory(request):
         item.quantity = item.quantity-qty
         if item.quantity < 0:
             messages.warning(request, "Not Enough Stock To Sell")
-            return render(request, "inventory/add_stock.html", context)
+            return render(request, "inventory/small-form.html", context)
         item.save()
         form.instance._type = 'STOCK OUT'
         trans = form.save()
         Payment.objects.create(transaction = trans, amount = paid)
         return redirect("inventory:items-list")
-    return render(request, "inventory/add_stock.html", context)
+    return render(request, "inventory/small-form.html", context)
 
 class CreditTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = CreditTransaction
@@ -145,7 +153,7 @@ class CreditTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListVie
 class CreditTransactionUpdateView(UpdateView):
     model = CreditTransaction
     fields = ['remarks']
-    template_name = "inventory/add_stock.html"
+    template_name = "inventory/small-form.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -159,7 +167,7 @@ def DebitTransactionPaymentCreateView(request):
     form = DebitPaymentForm
     context = {}
     context['form'] = form
-    context['header'] = "Add Payment for Stock In"
+    context['header'] = "Add Payment for Stock In (Bought Stocks)"
     if request.method=="POST":
         trans = request.POST.get('transaction')
         amt = int(request.POST.get('amount'))
@@ -167,17 +175,17 @@ def DebitTransactionPaymentCreateView(request):
         trans.paid = trans.paid + amt
         if amt > trans.remaining_payment:
             messages.warning(request, "Paid Amount Cannot Be Greater than Payable Amount")
-            return render(request, "inventory/add_stock.html", context)
+            return render(request, "inventory/small-form.html", context)
         trans.save()
         Payment.objects.create(transaction = trans, amount = amt)
         # return reverse("inventory:debit-transactions")
-    return render(request, "inventory/add_stock.html", context)
+    return render(request, "inventory/small-form.html", context)
 
 def CreditTransactionPaymentCreateView(request):
     form = CreditPaymentForm
     context = {}
     context['form'] = form
-    context['header'] = "Add Payment for Stock Out"
+    context['header'] = "Add Payment for Stock Out (Sold Stocks)"
     if request.method=="POST":
         trans = request.POST.get('transaction')
         amt = int(request.POST.get('amount'))
@@ -185,11 +193,11 @@ def CreditTransactionPaymentCreateView(request):
         trans.paid = trans.paid + amt
         if amt > trans.remaining_payment:
             messages.warning(request, "Paid Amount Cannot Be Greater than Payable Amount")
-            return render(request, "inventory/add_stock.html", context)
+            return render(request, "inventory/small-form.html", context)
         trans.save()
         Payment.objects.create(transaction = trans, amount = amt)
         # return reverse("inventory:debit-transactions")
-    return render(request, "inventory/add_stock.html", context)
+    return render(request, "inventory/small-form.html", context)
 
 class DebitPaymentListView(ListView):
     model = Payment
