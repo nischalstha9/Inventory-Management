@@ -2,12 +2,17 @@ from django.forms import ModelForm, Form
 from django import forms
 from .models import Item, Category, DebitTransaction, CreditTransaction, Payment, Transaction
 from django.core.exceptions import ValidationError
+from django_summernote.widgets import SummernoteWidget
 
 class ItemCreationForm(ModelForm):
     class Meta:
         model = Item
         fields = "__all__"
         exclude = ("cost_price", "quantity", 'selling_price')
+        widgets = {
+            'description': SummernoteWidget(),
+            'about_seller': SummernoteWidget(),
+        }
 
     def clean_qty(self):
         qty = self.cleaned_data['quantity']
@@ -34,6 +39,9 @@ class DebitTransactionForm(ModelForm):
         labels = {
             'vendor_client':'Vendor'
         }
+        widgets = {
+            'remarks': SummernoteWidget(),
+        }
 
 class CreditTransactionForm(ModelForm): 
     class Meta:
@@ -43,6 +51,9 @@ class CreditTransactionForm(ModelForm):
         labels = {
             'vendor_client':'Client',
             'cost':'Price Per Quantity Unit'
+        }
+        widgets = {
+            'remarks': SummernoteWidget(),
         }
     def __init__(self, *args, **kwargs):
         super(CreditTransactionForm, self).__init__(*args, **kwargs)

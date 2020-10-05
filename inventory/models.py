@@ -100,6 +100,10 @@ class Transaction(models.Model):
     @property
     def unpaid(self):
         return self.remaining_payment > 0
+    
+    def get_absolute_url(self):
+        return reverse("inventory:quick-payment", kwargs={"pk": self.pk})
+    
 
 class DebitTransactionManager(models.Manager):
     def unpaid(self):

@@ -10,12 +10,8 @@
 <hr>
 <form action="" method="get">
     <div class="col-md-4">
-      <label for="inputState"><h5>State:</h5></label>
-      <select id="inputState" class="form-control" name='state'>
-        <option selected>All</option>
-        <option value='balanced'>Balanced</option>
-        <option value='unbalanced'>Unpaid</option>
-      </select>
+      <label for="inputState"><h5>Balanced:</h5></label>
+      {{filter.form.balanced}}
     <input type="submit" class='my-2 btn btn-dark' value='Apply Filter'>
     </div>
 </form>
@@ -24,7 +20,7 @@
     <thead>
         <tr>
             <th>Date</th>
-            <th>Transaction ID</th>
+            <th>Vendor</th>
             <th>Item</th>
             <th>Quantity</th>
             <th>Cost Price Per Unit</th>
@@ -34,10 +30,10 @@
         </tr>
     </thead>
     <tbody>
-    {% for transaction in transactions %}
+    {% for transaction in filter.qs %}
         <tr>
             <td>{{transaction.date|date}}</td>
-            <td>{{transaction.id}}</td>
+            <td>{{transaction.vendor_client}}</td>
             <td><a href="{% url 'inventory:dr-transaction-update' transaction.id%}">{{transaction.item}}</a></td>
             <td>{{transaction.quantity}}</td>
             <td>Rs. {{transaction.cost}}</td>

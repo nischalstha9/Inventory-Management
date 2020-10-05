@@ -12,11 +12,11 @@ function handleResponse(data){
             <tr>
                 <td>${dr[e].date}</td>
                 <td>${dr[e].vendor_client}</td>
-                <td><a href="#">${dr[e].item}</a></td>
+                <td>${dr[e].item}</td>
                 <td>${dr[e].quantity}</td>
                 <td>Rs. ${dr[e].payable}</td>
                 <td>Rs. ${dr[e].paid}</td>
-                <td><span class="badge badge-warning">Rs. ${ dr[e].remaining_payment }</span></td>
+                <td><a href="http://127.0.0.1:8000/inventory/transactions/${dr[e].id}/quickpay/"><span class="badge badge-warning">Pay Rs. ${ dr[e].remaining_payment }</span></a></td>
             </tr>
             `
         dr_table_data += dr_data
@@ -35,7 +35,7 @@ function handleResponse(data){
                 <td>${cr[e].quantity}</td>
                 <td>Rs. ${cr[e].payable}</td>
                 <td>Rs. ${cr[e].paid}</td>
-                <td><span class="badge badge-danger">Rs. ${ cr[e].remaining_payment }</span></td>
+                <td><a href="http://127.0.0.1:8000/inventory/transactions/${dr[e].id}/quickpay/"><span class="badge badge-danger">Pay Rs. ${ cr[e].remaining_payment }</span></a></td>
             </tr>
             `
         cr_table_data += cr_data

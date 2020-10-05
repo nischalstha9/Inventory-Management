@@ -24,6 +24,7 @@ urlpatterns = [
 
     path("transactions/credit/", CreditTransactionListView.as_view(), name="credit-transactions"),
     path("transactions/cr/<int:pk>/update/", CreditTransactionUpdateView.as_view(), name="cr-transaction-update"),
+    
     path("transactions/<int:pk>/quickpay/", QuickPaymentCreateView.as_view(), name="quick-payment"),
 
     path("payment/dr/new/", DebitTransactionPaymentCreateView, name="dr-payment-create"),

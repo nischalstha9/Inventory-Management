@@ -5,6 +5,8 @@ from .forms import ItemCreationForm, DebitTransactionForm, CreditTransactionForm
 from .models import Item, DebitTransaction, Category, CreditTransaction, Payment, Transaction
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.urls import reverse
+from django_filters.views import FilterView
+from .filters import DebitTransactionFilter
 
 #custom decorator for filtering permission
 def allowed_users(allowed_types=[]):
@@ -99,21 +101,21 @@ def add_to_inventory(request):
         return redirect("inventory:items-list")
     return render(request, "inventory/small-form.html", context)
 
-class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
     model = DebitTransaction
     template_name = "inventory/dr_transactions.html"
     context_object_name = 'transactions'
     paginate_by=50
     def test_func(self):
         return self.request.user._type == 'ADMIN'
-    def get_queryset(self):
-        qs = super().get_queryset()
-        sts = self.request.GET.get('state')
-        if sts=='balanced':
-            qs = qs.filter(balanced=True)
-        elif sts=='unbalanced':
-            qs = qs.filter(balanced=False)
-        return qs
+    # def get_queryset(self):
+    #     qs = super().get_queryset()
+    #     sts = self.request.GET.get('state')
+    #     if sts=='balanced':
+    #         qs = qs.filter(balanced=True)
+    #     elif sts=='unbalanced':
+    #         qs = qs.filter(balanced=False)
+    #     return qs
 
 class DebitTransactionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = DebitTransaction
@@ -275,20 +277,17 @@ class QuickPaymentCreateView(CreateView):
         context["object"] = Trans
         return context
     def form_valid(self, form, *args, **kwargs):
-        transaction = get_object_or_404(Transaction, id = self.kwargs.get('pk'))
+        t_id =  self.kwargs.get('pk') #transaction id
+        transaction = get_object_or_404(Transaction, id = t_id)
         form.instance.transaction = transaction
-        amt = int(form.data['amount'])
-        transaction.paid += amt
-        transaction.save()
+        amt = float(form.data['amount'])
+        if transaction.remaining_payment >= amt:
+            transaction.paid += amt
+            transaction.save()
+        else:
+            messages.warning(self.request, "Payment cant be more than Remaining Amount.")
+            return reverse("inventory:quick-payment", kwargs={'pk':t_id})
         form.save()
-        return reverse('inventory:debit-transactions')
+        return redirect(reverse('inventory:debit-transactions'))
     def get_success_url(self):
-        return reverse('inventory:debit-transactions')
-    
-
-    
-
-
-
-
-    
+        return redirect(reverse('inventory:debit-transactions'))

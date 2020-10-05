@@ -37,11 +37,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Types(models.TextChoices):
         #TYPE_SNTX = TYPE_VALUE, TYPE_NAME
         ADMIN = "ADMIN", "Admin"
-        STUDENT = "STUDENT", "Student"
-        TEACHER = "TEACHER", "Teacher"
-        PARENT = "PARENT","Parent"
+        STAFF = "STAFF", "Staff"
+        # TEACHER = "TEACHER", "Teacher"
+        # PARENT = "PARENT","Parent"
 
-    base_type = Types.STUDENT
+    base_type = Types.STAFF
 
     _type = models.CharField(
         _("Type"), max_length=50, choices=Types.choices, default=base_type

@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     #3rd Party
     'crispy_forms',
+    'django_filters',
+    'django_summernote',
     
 ]
 
@@ -75,6 +77,18 @@ TEMPLATES = [
         },
     },
 ]
+#for clickjack
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+#for summer note
+SUMMERNOTE_THEME = 'lite'
+SUMMERNOTE_CONFIG = {
+    'iframe': False,
+    'summernote': {
+        'width': '100%',
+        'height': '480',
+    },
+    
+}
 
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
