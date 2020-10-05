@@ -17,6 +17,7 @@
             <th>Cost Price (Rs.)</th>
             <th>Selling Price (Rs.)</th>
             <th>Remaining Quantity</th>
+            <th>Action</th>
         </tr>
     </thead>    
     <tbody>
@@ -35,6 +36,7 @@
             <td>{{item.cost_price}}</td>
             <td>{{item.selling_price}}</td>
             <td>{{item.quantity}}</td>
+            <td>edit</td>
         </tr>
     {% endfor %}
     </tbody>
@@ -42,8 +44,8 @@
 {% include "partial/pagination.html" %}
 
 <!-- Modal -->
-  <div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
+  <div class="modal fade bd-example-modal-lg" id="myModal" role="dialog">
+    <div class="modal-dialog modal-lg">
     
       <!-- Modal content-->
       <div class="modal-content">
@@ -77,6 +79,89 @@ $(document).ready( function () {
             method : "GET",
             data:{},
             success: function(data){
+                var dr = data.unpaid_dr_trans
+                var cr = data.unpaid_cr_trans
+                var dr_table_data = ''
+                var cr_table_data = ''
+                if (dr.length >0){
+                    var dr_head = '<h4>Stock In Unpaid Transactions</h4>'
+                    $.each(dr, function(e){
+                        var dr_data = 
+                        `
+                        <tr>
+                            <td>${dr[e].date}</td>
+                            <td>${dr[e].vendor_client}</td>
+                            <td><a href="#">${dr[e].item}</a></td>
+                            <td>${dr[e].quantity}</td>
+                            <td>Rs. ${dr[e].payable}</td>
+                            <td>Rs. ${dr[e].paid}</td>
+                            <td><span class="badge badge-warning">Rs. ${ dr[e].remaining_payment }</span></td>
+                        </tr>
+                        `
+                    dr_table_data += dr_data
+                    })
+                }
+                if (cr.length >0){
+                    var cr_head = '<h4>Stock Out Unpaid Transactions</h4>'
+                    $.each(cr, function(e){
+                        var cr_data = 
+                        `
+                        <tr>
+                            <td>${cr[e].date}</td>
+                            
+                            <td>${cr[e].vendor_client}</td>
+                            <td><a href="#">${cr[e].item}</a></td>
+                            <td>${cr[e].quantity}</td>
+                            <td>Rs. ${cr[e].payable}</td>
+                            <td>Rs. ${cr[e].paid}</td>
+                            <td><span class="badge badge-danger">Rs. ${ cr[e].remaining_payment }</span></td>
+                        </tr>
+                        `
+                    cr_table_data += cr_data
+                    })
+                }
+                var table = 
+                `
+                ${dr_head}
+                <table id="transactions" class="table table-warning table-sm">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Transaction ID</th>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Total Payable</th>
+                            <th>Paid Amount</th>
+                            <th>Remaining</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${dr_table_data}
+                    </tbody>
+                </table>
+                `
+                if(cr_head){
+                    table += 
+                    `
+                    ${cr_head}
+                    <table id="transactions" class="table table-danger table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Transaction ID</th>
+                                <th>Item</th>
+                                <th>Quantity</th>
+                                <th>Total Payable</th>
+                                <th>Paid Amount</th>
+                                <th>Remaining</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${cr_table_data}
+                        </tbody>
+                    </table>
+                    `
+                }
                 var html = `
                     <div class="card">
                         <div class="card-header">
@@ -90,6 +175,7 @@ $(document).ready( function () {
                             <h6>Product Selling Price: <span class='text-secondary'>Rs. ${data.selling_price}</span></h6>
                             <h6>Remaining Quantity: <span class='text-secondary'>${data.quantity}</span></h6>
                         </div>
+                    ${table}
                     </div>
                 `
                 $("#content-main").html(html)

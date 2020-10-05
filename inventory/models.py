@@ -79,6 +79,9 @@ class Transaction(models.Model):
     mobile_num_regex = RegexValidator(regex="^[0-9]{10,15}$", message="Entered mobile number isn't in a right format!")
     contact  = models.CharField(validators=[mobile_num_regex], max_length=13)
 
+    class Meta:
+        ordering = ['-date']
+
     def save(self, *args, **kwargs): 
         self.balanced = self.cost*self.quantity == self.paid
         super(Transaction, self).save(*args, **kwargs)

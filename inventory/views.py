@@ -100,7 +100,7 @@ class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListView
             qs = qs.filter(balanced=True)
         elif sts=='unbalanced':
             qs = qs.filter(balanced=False)
-        return qs    
+        return qs
 
 class DebitTransactionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = DebitTransaction
@@ -218,6 +218,11 @@ class DebitPaymentListView(ListView):
     paginate_by=50
     queryset = Payment.objects.all()
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["header"] = 'Stock In Payments'
+        return context
+
     def get_queryset(self):
         qs = super().get_queryset().filter(transaction___type="STOCK IN")
         sts = self.request.GET.get('state')
@@ -232,6 +237,10 @@ class CreditPaymentListView(ListView):
     context_object_name = 'payments'
     template_name = "inventory/dr-payments.html"
     paginate_by=50
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["header"] = 'Stock Out Payments'
+        return context
     
     def get_queryset(self):
         qs = super().get_queryset().filter(transaction___type="STOCK OUT")

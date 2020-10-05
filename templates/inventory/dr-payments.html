@@ -3,7 +3,7 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
 {% endblock style %}
 {% block content %}
-<h1>Stock In Payments</h1><hr>
+<h1>{{header}}</h1><hr>
 <form action="" method="get">
     <div class="col-md-4">
       <label for="inputState"><h5>State:</h5></label>
@@ -19,23 +19,19 @@
 <table id="table_id" class="display">
     <thead>
         <tr>
-            <th>Is Balanced</th>
             <th>Date</th>
             <th>Transaction Id</th>
             <th>Transaction</th>
-            <th>Item</th>
-            <th>Amount (Rs.)</th>
+            <th>Paid Amount (Rs.)</th>
             <th>Remaining Payment</th>
         </tr>
     </thead>
     <tbody>
     {% for payment in payments %}
         <tr>
-            <td>{% if payment.transaction.balanced %}<span class='badge badge-success'>{% else %}<span class='badge badge-danger'>{% endif %}{{payment.transaction.balanced}}</span></td>
             <td>{{payment.date}}</td>
             <td>{{payment.transaction.id}}</td>
-            <td><a href="{% url 'inventory:dr-transaction-update' payment.transaction.id%}">{{payment.transaction}}</a></td>
-            <td><a href="#" value="{{payment.transaction.item.id}}" id='item_name' class='item_name'>{{payment.transaction.item}}</a></td>
+            <td><a href="{% url 'inventory:dr-transaction-update' payment.transaction.id%}">{{payment.transaction}}</a>{% if payment.transaction.balanced %}<span class='ml-2 badge badge-success'>{% else %}<span class='ml-2 badge badge-danger'>{% endif %}{{payment.transaction.balanced}}</span></td>
             <td>Rs. {{payment.amount}}</td>
             <td>Rs. {{payment.transaction.remaining_payment}}</td>
         </tr>
