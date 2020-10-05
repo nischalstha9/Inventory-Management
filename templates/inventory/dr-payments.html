@@ -23,7 +23,7 @@
             <th>Transaction Id</th>
             <th>Transaction</th>
             <th>Paid Amount (Rs.)</th>
-            <th>Remaining Payment</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
@@ -33,7 +33,13 @@
             <td>{{payment.transaction.id}}</td>
             <td><a href="{% url 'inventory:dr-transaction-update' payment.transaction.id%}">{{payment.transaction}}</a>{% if payment.transaction.balanced %}<span class='ml-2 badge badge-success'>{% else %}<span class='ml-2 badge badge-danger'>{% endif %}{{payment.transaction.balanced}}</span></td>
             <td>Rs. {{payment.amount}}</td>
-            <td>Rs. {{payment.transaction.remaining_payment}}</td>
+            <td>
+                {% if payment.transaction.balanced %}
+                    -
+                {% else %}
+                    <a href="{% url 'inventory:quick-payment' payment.transaction.id%}" class="btn btn-warning btn-small">Add Payment</a>
+                {% endif %}
+            </td>
         </tr>
     {% endfor %}
     </tbody>
@@ -65,7 +71,8 @@
 $(document).ready( function () {
     //for jquery table filter
     $('#table_id').DataTable({
-        "paging": false
+        "paging": false,
+        'order':[]
     });
 
     //for product detail

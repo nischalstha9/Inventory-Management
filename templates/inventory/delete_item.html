@@ -1,0 +1,30 @@
+{% extends 'partial/base.html' %}
+{% block content %}
+<h1>Delete {{ object }} ?</h1><hr>
+<div class="row">
+    <div class="col-sm-12 col-md-8 col-lg-6">
+        <form action="" method="post">
+            {% csrf_token %}
+            <small>All the contents related to object including all Stock In transactiona and Stock Out Transaction along with Payment information will be deleted.</small><br>
+            <input type="submit" name="" id="" class='btn btn-danger' value="Delete">
+        </form><br>
+    </div>
+    <div class="col-sm-12 col-md-8 col-lg-6">
+        {% comment %} Dont get Confused by searching for object context its automatic by django no context data required {% endcomment %}
+        {% if object %}
+            <div class="card">
+                <div class="card-header">
+                    Item ID: {{object.id}} - {{object}}
+                </div>
+                <div class="card-body">
+                    <h6>Item Name: <span class='text-secondary'>{{object}}<span></h6>
+                    <h6>Category: <span class='text-secondary'>{{object.category}}<span></h6>
+                    <h6>Quantity: <span class='badge badge-success'>{{object.quantity}} Units</span></h6>
+                    <h6 class="card-text"></h6>
+                </div>
+            </div>
+        {% endif %}
+        <span class='trans-info'></span>
+    </div>
+</div>
+{% endblock content %}

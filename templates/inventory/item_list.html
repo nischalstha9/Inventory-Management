@@ -1,4 +1,5 @@
 {% extends 'partial/base.html' %}
+{% load static %}
 {% block style %}
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
 {% endblock style %}
@@ -36,7 +37,9 @@
             <td>{{item.cost_price}}</td>
             <td>{{item.selling_price}}</td>
             <td>{{item.quantity}}</td>
-            <td>edit</td>
+            <td><a class='btn btn-outline-warning btn-sm' href="{% url 'inventory:item-update' item.id%}">edit</a>
+            {% comment %} <a class='btn btn-outline-warning btn-sm' href="{% url 'inventory:item-delete' item.id%}">delete</a> {% endcomment %}
+            </td>
         </tr>
     {% endfor %}
     </tbody>
@@ -64,127 +67,17 @@
 {% endblock content %}
 {% block javascript %}
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+<script src="{% static 'custom_js/get_item_info_trans.js' %}"></script>
 <script>
 $(document).ready( function () {
     $('#table_id').DataTable({
-        "paging": false
+        "paging": false,
+        'order':[]
     });
 
     $(".item_name").click(function(e){
-        e.preventDefault();
-        var item_id = e.target.attributes.value.value
-        var url = `http://${window.location.host}/inventory/item/${item_id}/`
-        $.ajax({
-            url: url,
-            method : "GET",
-            data:{},
-            success: function(data){
-                var dr = data.unpaid_dr_trans
-                var cr = data.unpaid_cr_trans
-                var dr_table_data = ''
-                var cr_table_data = ''
-                if (dr.length >0){
-                    var dr_head = '<h4>Stock In Unpaid Transactions</h4>'
-                    $.each(dr, function(e){
-                        var dr_data = 
-                        `
-                        <tr>
-                            <td>${dr[e].date}</td>
-                            <td>${dr[e].vendor_client}</td>
-                            <td><a href="#">${dr[e].item}</a></td>
-                            <td>${dr[e].quantity}</td>
-                            <td>Rs. ${dr[e].payable}</td>
-                            <td>Rs. ${dr[e].paid}</td>
-                            <td><span class="badge badge-warning">Rs. ${ dr[e].remaining_payment }</span></td>
-                        </tr>
-                        `
-                    dr_table_data += dr_data
-                    })
-                }
-                if (cr.length >0){
-                    var cr_head = '<h4>Stock Out Unpaid Transactions</h4>'
-                    $.each(cr, function(e){
-                        var cr_data = 
-                        `
-                        <tr>
-                            <td>${cr[e].date}</td>
-                            
-                            <td>${cr[e].vendor_client}</td>
-                            <td><a href="#">${cr[e].item}</a></td>
-                            <td>${cr[e].quantity}</td>
-                            <td>Rs. ${cr[e].payable}</td>
-                            <td>Rs. ${cr[e].paid}</td>
-                            <td><span class="badge badge-danger">Rs. ${ cr[e].remaining_payment }</span></td>
-                        </tr>
-                        `
-                    cr_table_data += cr_data
-                    })
-                }
-                var table = 
-                `
-                ${dr_head}
-                <table id="transactions" class="table table-warning table-sm">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Transaction ID</th>
-                            <th>Item</th>
-                            <th>Quantity</th>
-                            <th>Total Payable</th>
-                            <th>Paid Amount</th>
-                            <th>Remaining</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${dr_table_data}
-                    </tbody>
-                </table>
-                `
-                if(cr_head){
-                    table += 
-                    `
-                    ${cr_head}
-                    <table id="transactions" class="table table-danger table-sm">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Transaction ID</th>
-                                <th>Item</th>
-                                <th>Quantity</th>
-                                <th>Total Payable</th>
-                                <th>Paid Amount</th>
-                                <th>Remaining</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${cr_table_data}
-                        </tbody>
-                    </table>
-                    `
-                }
-                var html = `
-                    <div class="card">
-                        <div class="card-header">
-                            Product Info: ${data.id} - ${data.name}
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title">Product Name: <span class='text-secondary'>${data.name}</span></h5><hr>
-                            <h6 class="">Brand: <span class='text-secondary'>${data.brand}</span></h6>
-                            <h6 class="">Category: <span class='text-secondary'>${data.category}</span></h6>
-                            <h6>Cost Price: <span class='text-secondary'>Rs. ${data.cost_price}</span></h6>
-                            <h6>Product Selling Price: <span class='text-secondary'>Rs. ${data.selling_price}</span></h6>
-                            <h6>Remaining Quantity: <span class='text-secondary'>${data.quantity}</span></h6>
-                        </div>
-                    ${table}
-                    </div>
-                `
-                $("#content-main").html(html)
-                $("#myModal").modal();
-            },
-            error: function(error){
-                console.log(error)
-            }
-        });
+        id = e.target.attributes.value.value
+        get_item_info_trans(e, id)
     });
   });
 </script>

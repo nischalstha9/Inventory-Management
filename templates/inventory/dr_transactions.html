@@ -30,6 +30,7 @@
             <th>Cost Price Per Unit</th>
             <th>Total Payable</th>
             <th>Paid Amount</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
@@ -51,6 +52,13 @@
                     <span class="badge badge-success">Balanced</span>
                 {% endif %}
             </td>
+            <td>
+                {% if transaction.balanced %}
+                -
+                {% else %}
+                <a href="{% url 'inventory:quick-payment' transaction.id%}" class="btn btn-warning btn-small">Add Payment</a>
+                {% endif %}
+            </td>
         </tr>
     {% endfor %}
     </tbody>
@@ -62,7 +70,8 @@
 <script>
 $(document).ready( function () {
     $('#table_id').DataTable({
-        "paging": false
+        "paging": false,
+        'order':[]
     });
 } );
 </script>

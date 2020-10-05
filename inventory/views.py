@@ -1,8 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, ListView, UpdateView, DeleteView
 from .forms import ItemCreationForm, DebitTransactionForm, CreditTransactionForm, DebitPaymentForm, CreditPaymentForm
-from .models import Item, DebitTransaction, Category, CreditTransaction, Payment
+from .models import Item, DebitTransaction, Category, CreditTransaction, Payment, Transaction
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.urls import reverse
 
@@ -55,6 +55,19 @@ class ItemUpdateVIew(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         return self.request.user._type == 'ADMIN'
+
+class ItemDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Item
+    template_name = "inventory/delete_item.html"
+    def get_success_url(self):
+        return reverse('inventory:items-list')
+    def test_func(self):
+        return self.request.user._type == 'ADMIN'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+    
+
 
 @allowed_users(allowed_types = ['ADMIN'])
 def add_to_inventory(request):
@@ -175,7 +188,7 @@ class CreditTransactionUpdateView(LoginRequiredMixin, UserPassesTestMixin, Updat
 
 @allowed_users(allowed_types = ['ADMIN'])
 def DebitTransactionPaymentCreateView(request):
-    form = DebitPaymentForm
+    form = DebitPaymentForm()
     context = {}
     context['form'] = form
     context['header'] = "Add Payment for Stock In (Bought Stocks)"
@@ -185,7 +198,7 @@ def DebitTransactionPaymentCreateView(request):
         trans = DebitTransaction.objects.get(id=trans)
         trans.paid = trans.paid + amt
         if amt > trans.remaining_payment:
-            messages.warning(request, "Paid Amount Cannot Be Greater than Payable Amount")
+            messages.warning(request, "Paid Amount Cannot Be Greater than Remaining Payment")
             return render(request, "inventory/small-form.html", context)
         trans.save()
         Payment.objects.create(transaction = trans, amount = amt)
@@ -204,7 +217,7 @@ def CreditTransactionPaymentCreateView(request):
         trans = CreditTransaction.objects.get(id=trans)
         trans.paid = trans.paid + amt
         if amt > trans.remaining_payment:
-            messages.warning(request, "Paid Amount Cannot Be Greater than Payable Amount")
+            messages.warning(request, "Paid Amount Cannot Be Greater than Remaining Payment")
             return render(request, "inventory/small-form.html", context)
         trans.save()
         Payment.objects.create(transaction = trans, amount = amt)
@@ -249,7 +262,30 @@ class CreditPaymentListView(ListView):
             qs = qs.filter(transaction__balanced=True)
         elif sts=='unbalanced':
             qs = qs.filter(transaction__balanced=False)
-        return qs
+        return qs.order_by('-date')
+
+class QuickPaymentCreateView(CreateView):
+    model = Payment
+    fields = ['amount']
+    template_name = "inventory/small-form.html"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj_id = self.kwargs.get('pk')
+        Trans = get_object_or_404(Transaction, id = obj_id)
+        context["object"] = Trans
+        return context
+    def form_valid(self, form, *args, **kwargs):
+        transaction = get_object_or_404(Transaction, id = self.kwargs.get('pk'))
+        form.instance.transaction = transaction
+        amt = int(form.data['amount'])
+        transaction.paid += amt
+        transaction.save()
+        form.save()
+        return reverse('inventory:debit-transactions')
+    def get_success_url(self):
+        return reverse('inventory:debit-transactions')
+    
+
     
 
 
