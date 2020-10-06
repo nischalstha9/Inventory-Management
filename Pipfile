@@ -26,6 +26,7 @@ Pillow = "==7.1.2"
 djangorestframework = "*"
 django-filter = "*"
 django-summernote = "*"
+django-admin-rangefilter = "*"
 
 [requires]
 python_version = "3.8"

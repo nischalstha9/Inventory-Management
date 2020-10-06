@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer, Serializer, SerializerMethodField
+from rest_framework.serializers import ModelSerializer, Serializer, SerializerMethodField, HyperlinkedIdentityField
 from rest_framework import serializers
 from .models import Category, Item, Payment, DebitTransaction, Transaction, CreditTransaction
 from django.db.models import Count
@@ -26,14 +26,16 @@ class TransactionSerializer(ModelSerializer):
     item = SerializerMethodField()
     date = SerializerMethodField()
     transaction_id = SerializerMethodField()
+    pay_url = HyperlinkedIdentityField(view_name='inventory:quick-payment')
+    update_url = HyperlinkedIdentityField(view_name='inventory:transaction-update')
     class Meta:
         #add some absolute urls for awesome jquery infos
         model = Transaction
-        fields = ['id', 'vendor_client', 'date', 'transaction_id', 'item', 'vendor_client', '_type', 'quantity', 'paid', 'payable', 'remaining_payment']
+        fields = ['id', 'vendor_client', 'date', 'transaction_id', 'item','_type', 'quantity', 'paid', 'payable', 'remaining_payment', 'pay_url', 'balanced', 'cost', 'update_url', 'is_debit']
     def get_payable(self, obj):
         return obj.quantity * obj.cost
     def get_remaining_payment(self, obj):
-        return obj.paid - self.get_payable(obj)
+        return self.get_payable(obj) - obj.paid
     def get_item(self, obj):
         return obj.item.name
     def get_date(self, obj):

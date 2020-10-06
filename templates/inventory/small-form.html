@@ -16,7 +16,7 @@
         {% if object %}
             <div class="card">
                 <div class="card-header">
-                    Transaction ID: {{object.transaction_id}} - {{object.item}}
+                    Transaction ID: {{object.transaction_id}} - {{object.item}} - {% if object.is_debit %}Stock Bought {% else %} Stock Sold {% endif %}
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">Payment For Item: {{object.item}}</h5><hr>
@@ -32,7 +32,7 @@
                 </div>
             </div>
         {% endif %}
-        <span class='trans-info'><h4>Select Object From Dropdown to view info.</h4></span>
+        <span class='trans-info'><h4>{% if not object %}Select Object From Dropdown to view info.{% endif %}</h4></span>
     </div>
 </div>
 

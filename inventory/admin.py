@@ -2,6 +2,8 @@ from django.contrib import admin
 from .models import Item, Category, Transaction, DebitTransaction, CreditTransaction, Payment
 from django.utils.translation import ugettext_lazy as _
 from django_summernote.admin import SummernoteModelAdmin
+from rangefilter.filter import DateRangeFilter, DateTimeRangeFilter
+
 
 # Text to put at the end of each page's <title>.
 admin.site.site_title = _('IMS')
@@ -28,10 +30,10 @@ admin.site.register(Item, ItemAdmin)
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
     search_fields = ['item','vendor_client']
-    list_display = ('vendor_client', 'item', 'quantity', 'contact', '_type', 'remaining_payment', 'balanced')
+    list_display = ('vendor_client', 'date', 'item', 'quantity', 'contact', '_type', 'remaining_payment', 'balanced')
     list_editable = ['contact']
-    list_filter = ('_type', 'item','vendor_client', 'balanced')
-    # readonly_fields = ('item','quantity','_type','remaining_payment','cost', 'paid')
+    list_filter = (('date', DateRangeFilter),'_type', 'item','vendor_client', 'balanced')
+    readonly_fields = ('item','quantity','_type','remaining_payment','cost', 'paid')
 
 @admin.register(DebitTransaction)
 class DebitTransactionAdmin(TransactionAdmin):

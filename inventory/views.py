@@ -7,6 +7,9 @@ from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.urls import reverse
 from django_filters.views import FilterView
 from .filters import DebitTransactionFilter
+from datetime import datetime
+from django.utils.timezone import make_aware
+from django_summernote.widgets import SummernoteWidget
 
 #custom decorator for filtering permission
 def allowed_users(allowed_types=[]):
@@ -101,26 +104,33 @@ def add_to_inventory(request):
         return redirect("inventory:items-list")
     return render(request, "inventory/small-form.html", context)
 
-class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
-    model = DebitTransaction
-    template_name = "inventory/dr_transactions.html"
-    context_object_name = 'transactions'
-    paginate_by=50
-    def test_func(self):
-        return self.request.user._type == 'ADMIN'
-    # def get_queryset(self):
-    #     qs = super().get_queryset()
-    #     sts = self.request.GET.get('state')
-    #     if sts=='balanced':
-    #         qs = qs.filter(balanced=True)
-    #     elif sts=='unbalanced':
-    #         qs = qs.filter(balanced=False)
-    #     return qs
+def DebitTransactionListView(request):
+    return render(request, 'inventory/transactions.html')
 
-class DebitTransactionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = DebitTransaction
+# class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+#     model = DebitTransaction
+#     template_name = "inventory/dr_transactions.html"
+#     context_object_name = 'transactions'
+#     paginate_by=50
+#     def test_func(self):
+#         return self.request.user._type == 'ADMIN'
+#     def get_queryset(self):
+#         qs = super().get_queryset()
+#         print(qs.first().date)
+#         date = self.request.GET.get('date')#for custom date filter django_filter didnt work for sum reason
+#         if date:
+#             date_dt = make_aware(datetime.strptime(date, '%m/%d/%Y'))#convert sting date to datetime #makeaware is making aware about timezone
+#             qs = qs.filter(date__lte=date_dt)#filtering
+#         return qs.order_by('-id')
+
+class TransactionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Transaction
     fields = ['contact','remarks']
     template_name = "inventory/small-form.html"
+    def get_form(self, form_class=None):
+        form = super(TransactionUpdateView, self).get_form(form_class)
+        form.fields['remarks'].widget = SummernoteWidget()
+        return form
     def test_func(self):
         return self.request.user._type == 'ADMIN'
 
@@ -177,6 +187,10 @@ class CreditTransactionUpdateView(LoginRequiredMixin, UserPassesTestMixin, Updat
     model = CreditTransaction
     fields = ['contact','remarks']
     template_name = "inventory/small-form.html"
+    def get_form(self, form_class=None):
+        form = super(CreditTransactionUpdateView, self).get_form(form_class)
+        form.fields['remarks'].widget = SummernoteWidget()
+        return form
     def test_func(self):
         return self.request.user._type == 'ADMIN'
 
@@ -245,7 +259,7 @@ class DebitPaymentListView(ListView):
             qs = qs.filter(transaction__balanced=True)
         elif sts=='unbalanced':
             qs = qs.filter(transaction__balanced=False)
-        return qs
+        return qs.order_by('-id')
 
 class CreditPaymentListView(ListView):
     model = Payment
@@ -264,7 +278,7 @@ class CreditPaymentListView(ListView):
             qs = qs.filter(transaction__balanced=True)
         elif sts=='unbalanced':
             qs = qs.filter(transaction__balanced=False)
-        return qs.order_by('-date')
+        return qs.order_by('-id')
 
 class QuickPaymentCreateView(CreateView):
     model = Payment
@@ -285,8 +299,8 @@ class QuickPaymentCreateView(CreateView):
             transaction.paid += amt
             transaction.save()
         else:
-            messages.warning(self.request, "Payment cant be more than Remaining Amount.")
-            return reverse("inventory:quick-payment", kwargs={'pk':t_id})
+            messages.warning(self.request, "Payment amount cant be more than Remaining amount.")
+            return redirect(reverse("inventory:quick-payment", kwargs={'pk':t_id}))
         form.save()
         return redirect(reverse('inventory:debit-transactions'))
     def get_success_url(self):

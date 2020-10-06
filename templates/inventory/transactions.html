@@ -1,4 +1,5 @@
 {% extends 'partial/base.html' %}
+{% load static %}
 {% block style %}
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -7,23 +8,44 @@
 <a href="{% url 'inventory:add-stock' %}" class="mx-2 btn btn-success" style="float:right;">Add Stock</a>
 <a href="{% url 'inventory:sell-stock' %}" class="mx-2 btn btn-outline-success" style="float:right;">Sell Stock</a>
 <a href="{% url 'inventory:credit-transactions' %}" class="mx-2 btn btn-outline-success" style="float:right;">View Sold Transaction</a>
-<h1>Stock In Transactions</h1>
+<h1>All Transactions</h1>
 <hr>
 <form action="" method="get">
-    <div class="col-md-4">
+    <div class="form-row">
+    <div class="form-group col-md-3">
+      <label for="inputState"><h6>Type:</h6></label>
+      <select class="custom-select" id='Transasction_Filter'>
+        <option value="">All Transactions</option>
+        <option value="STOCK+IN">Debit Transactions</option>
+        <option value="STOCK+OUT">Credit Transactions</option>
+      </select>
+    </div>
+
+    <div class="form-group col-md-3">
       <label for="inputState"><h6>Balanced:</h6></label>
-      {{filter.form.balanced}}<br>
-      <label for="inputState"><h6>Date:</h6></label>
-      {{filter.form.date}}<br>
-    <input type="submit" class='my-2 btn btn-sm btn-dark' value='Apply Filter'>
+      <select class="custom-select" id='Balance_Filter'>
+        <option value="">All</option>
+        <option value="true">Balanced Transactions</option>
+        <option value="false">Unpaid Transactions</option>
+      </select>
+    </div>
+
+    <div class="form-group col-md-3">
+    <label for="inputState"><h6>Start Date:</h6></label>
+      <input type="date" autocomplete="false" class='form-control' id='sdate-filter'>
+    </div>
+    
+    <div class="form-group col-md-3">
+    <label for="inputState"><h6>End Date:</h6></label>
+      <input type="date" autocomplete="false" class='form-control' id='edate-filter'>
     </div>
 </form>
 <hr>
-<table id="table_id" class="display">
+<table id="table_id" class="table display">
     <thead>
         <tr>
             <th>Date</th>
-            <th>Vendor</th>
+            <th>Vendor/Client</th>
             <th>Item</th>
             <th>Quantity</th>
             <th>Cost Price Per Unit</th>
@@ -33,33 +55,6 @@
         </tr>
     </thead>
     <tbody>
-    {% for transaction in filter.qs %}
-        <tr>
-            <td>{{transaction.date|date}}</td>
-            <td>{{transaction.vendor_client}}</td>
-            <td><a href="{% url 'inventory:dr-transaction-update' transaction.id%}">{{transaction.item}}</a></td>
-            <td>{{transaction.quantity}}</td>
-            <td>Rs. {{transaction.cost}}</td>
-            <td>Rs. {{transaction.total_payable}}</td>
-            <td>
-                Rs. {{transaction.paid}}
-                {% if transaction.remaining_payment > 0 %}
-                    <span class="badge badge-warning">Rs. {{ transaction.remaining_payment }} Remaining</span>
-                {% elif transaction.remaining_payment < 0 %}
-                    <span class="badge badge-danger">Rs. {{ transaction.remaining_payment }} Overpaid</span>
-                {% else %}
-                    <span class="badge badge-success">Balanced</span>
-                {% endif %}
-            </td>
-            <td>
-                {% if transaction.balanced %}
-                -
-                {% else %}
-                <a href="{% url 'inventory:quick-payment' transaction.id%}" class="btn btn-warning btn-small">Add Payment</a>
-                {% endif %}
-            </td>
-        </tr>
-    {% endfor %}
     </tbody>
 </table>
 {% include "partial/pagination.html" %}
@@ -67,6 +62,7 @@
 {% block javascript %}
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="{% static 'custom_js/transaction_list.js' %}"></script>
 <script>
 $(document).ready( function () {
     $('#table_id').DataTable({

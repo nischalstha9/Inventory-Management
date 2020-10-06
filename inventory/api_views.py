@@ -2,8 +2,10 @@ from .models import Item, Category, Transaction
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from .serializers import CategoryChartSerializer, ItemQuantitySerializer, TransactionSerializer, ItemDetailSerializer
 from rest_framework import permissions
-from rest_framework import filters
+from rest_framework.filters import SearchFilter
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
+
+from django_filters import rest_framework as filters
 
 class IsStaff(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -23,7 +25,7 @@ class StandardResultsSetPagination(PageNumberPagination):
 class ItemQuantity(ListAPIView):
     queryset = Item.objects.all()
     serializer_class = ItemQuantitySerializer
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [SearchFilter]
     search_fields = ['name','category__name','brand']
     # pagination_class = StandardResultsSetPagination
 
@@ -36,4 +38,15 @@ class ItemDetailAPIView(RetrieveAPIView):
     serializer_class = ItemDetailSerializer
     queryset = Item.objects.all()
     permission_classes = [IsStaff]
-    
+
+class TransactionListAPIView(ListAPIView):
+    serializer_class = TransactionSerializer
+    queryset = Transaction.objects.all()
+    permission_classes = [IsStaff]
+    filter_backends = (filters.DjangoFilterBackend, SearchFilter)
+    filterset_fields = ()
+    search_fields = ['vendor_client', 'item__name',]
+    pagination_class = StandardResultsSetPagination
+    filterset_fields = {
+    'date':['gte', 'lte', 'date__range'],'balanced':['exact'], '_type':['exact']
+    }

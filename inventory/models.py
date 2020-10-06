@@ -90,6 +90,10 @@ class Transaction(models.Model):
         return f" {self.quantity} of {self.item}"
 
     @property
+    def is_debit(self):
+        return self._type == 'STOCK IN'
+
+    @property
     def total_payable(self):
         return self.cost*self.quantity
 
@@ -145,7 +149,7 @@ class CreditTransaction(Transaction):
 #add payment model too it will be awesome
 class Payment(models.Model):
     transaction = models.ForeignKey("inventory.Transaction", verbose_name=_("Payment For Transaction"), on_delete=models.CASCADE)
-    amount = models.FloatField(_("Amount To add in Transaction"))
+    amount = models.FloatField(_("Amount to add in Transaction"))
     date = models.DateField(_("Date of Payment"), auto_now_add=True)
 
     class Meta:
