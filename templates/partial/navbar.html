@@ -25,6 +25,8 @@
           Transactions
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="{% url 'inventory:transactions-list' %}">All Transactions</a>
+          <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="{% url 'inventory:debit-transactions' %}">Stock In Transactions</a>
           <a class="dropdown-item" href="{% url 'inventory:credit-transactions' %}">Stock Out Transactions</a>
           <div class="dropdown-divider"></div>

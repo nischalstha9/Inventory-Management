@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import index, ItemCreationVIew, ItemListView, ItemUpdateVIew, add_to_inventory, DebitTransactionListView, TransactionUpdateView, sell_from_inventory, CreditTransactionListView, CreditTransactionUpdateView, CreditTransactionPaymentCreateView, DebitTransactionPaymentCreateView, DebitPaymentListView, CreditPaymentListView, CategoryCreateView, ItemDeleteView, QuickPaymentCreateView
+from .views import index, ItemCreationVIew, ItemListView, ItemUpdateVIew, add_to_inventory, DebitTransactionListView, TransactionUpdateView, sell_from_inventory, CreditTransactionListView, CreditTransactionUpdateView, CreditTransactionPaymentCreateView, DebitTransactionPaymentCreateView, DebitPaymentListView, CreditPaymentListView, CategoryCreateView, ItemDeleteView, QuickPaymentCreateView, TransactionListView
 from .api_views import ItemQuantity, TransactionDetailAPIView, ItemDetailAPIView,TransactionListAPIView
 
 app_name = 'inventory'
@@ -20,11 +20,12 @@ urlpatterns = [
 
     path("add-stock/", add_to_inventory, name="add-stock"),
     path("sell-stock/", sell_from_inventory, name="sell-stock"),
-    path("transactions/debit/", DebitTransactionListView, name="debit-transactions"),
+    path("transactions/all/", TransactionListView, name="transactions-list"),
+    path("transactions/debit/", DebitTransactionListView.as_view(), name="debit-transactions"),
     path("transactions/<int:pk>/update/", TransactionUpdateView.as_view(), name="transaction-update"),
 
     path("transactions/credit/", CreditTransactionListView.as_view(), name="credit-transactions"),
-    path("transactions/cr/<int:pk>/update/", CreditTransactionUpdateView.as_view(), name="cr-transaction-update"),
+    # path("transactions/cr/<int:pk>/update/", CreditTransactionUpdateView.as_view(), name="cr-transaction-update"),
     
     path("transactions/<int:pk>/quickpay/", QuickPaymentCreateView.as_view(), name="quick-payment"),
 

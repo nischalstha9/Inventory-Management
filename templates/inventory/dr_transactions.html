@@ -37,7 +37,7 @@
         <tr>
             <td>{{transaction.date|date}}</td>
             <td>{{transaction.vendor_client}}</td>
-            <td><a href="{% url 'inventory:dr-transaction-update' transaction.id%}">{{transaction.item}}</a></td>
+            <td><a href="{% url 'inventory:transaction-update' transaction.id%}">{{transaction.item}}</a></td>
             <td>{{transaction.quantity}}</td>
             <td>Rs. {{transaction.cost}}</td>
             <td>Rs. {{transaction.total_payable}}</td>

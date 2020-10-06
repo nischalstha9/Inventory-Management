@@ -104,24 +104,24 @@ def add_to_inventory(request):
         return redirect("inventory:items-list")
     return render(request, "inventory/small-form.html", context)
 
-def DebitTransactionListView(request):
+def TransactionListView(request):
     return render(request, 'inventory/transactions.html')
 
-# class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
-#     model = DebitTransaction
-#     template_name = "inventory/dr_transactions.html"
-#     context_object_name = 'transactions'
-#     paginate_by=50
-#     def test_func(self):
-#         return self.request.user._type == 'ADMIN'
-#     def get_queryset(self):
-#         qs = super().get_queryset()
-#         print(qs.first().date)
-#         date = self.request.GET.get('date')#for custom date filter django_filter didnt work for sum reason
-#         if date:
-#             date_dt = make_aware(datetime.strptime(date, '%m/%d/%Y'))#convert sting date to datetime #makeaware is making aware about timezone
-#             qs = qs.filter(date__lte=date_dt)#filtering
-#         return qs.order_by('-id')
+class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
+    model = DebitTransaction
+    template_name = "inventory/dr_transactions.html"
+    context_object_name = 'transactions'
+    paginate_by=50
+    def test_func(self):
+        return self.request.user._type == 'ADMIN'
+    def get_queryset(self):
+        qs = super().get_queryset()
+        print(qs.first().date)
+        date = self.request.GET.get('date')#for custom date filter django_filter didnt work for sum reason
+        if date:
+            date_dt = make_aware(datetime.strptime(date, '%m/%d/%Y'))#convert sting date to datetime #makeaware is making aware about timezone
+            qs = qs.filter(date__lte=date_dt)#filtering
+        return qs.order_by('-id')
 
 class TransactionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Transaction
