@@ -21,15 +21,14 @@ class ItemQuantitySerializer(ModelSerializer):
 from datetime import datetime
 from django.utils import timezone
 class TransactionSerializer(ModelSerializer):
+    pay_url = HyperlinkedIdentityField(view_name='inventory:quick-payment')
+    update_url = HyperlinkedIdentityField(view_name='inventory:transaction-update')
     payable = SerializerMethodField()
     remaining_payment = SerializerMethodField()
     item = SerializerMethodField()
     date = SerializerMethodField()
     transaction_id = SerializerMethodField()
-    pay_url = HyperlinkedIdentityField(view_name='inventory:quick-payment')
-    update_url = HyperlinkedIdentityField(view_name='inventory:transaction-update')
     class Meta:
-        #add some absolute urls for awesome jquery infos
         model = Transaction
         fields = ['id', 'vendor_client', 'date', 'transaction_id', 'item','_type', 'quantity', 'paid', 'payable', 'remaining_payment', 'pay_url', 'balanced', 'cost', 'update_url', 'is_debit']
     def get_payable(self, obj):
@@ -57,9 +56,10 @@ class ItemDetailSerializer(ModelSerializer):
         return obj.category.name
     def get_unpaid_dr_trans(self, obj):
          dr_trans_qs = DebitTransaction.objects.unpaid().filter(item = obj)
-         dr_trans = TransactionSerializer(dr_trans_qs, many=True).data
+         dr_trans = TransactionSerializer(dr_trans_qs, many=True, context=self.context).data
          return dr_trans
     def get_unpaid_cr_trans(self, obj):
          cr_trans_qs = CreditTransaction.objects.unpaid().filter(item = obj)
-         cr_trans = TransactionSerializer(cr_trans_qs, many=True).data
+         cr_trans = TransactionSerializer(cr_trans_qs, many=True, context=self.context).data
          return cr_trans
+    

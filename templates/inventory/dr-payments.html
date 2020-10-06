@@ -21,6 +21,7 @@
         <tr>
             <th>Date</th>
             <th>Transaction Id</th>
+            <th>Vendor/ Client</th>
             <th>Transaction</th>
             <th>Paid Amount (Rs.)</th>
             <th>Action</th>
@@ -31,13 +32,14 @@
         <tr>
             <td>{{payment.date}}</td>
             <td>{{payment.transaction.id}}</td>
-            <td><a href="{% url 'inventory:dr-transaction-update' payment.transaction.id%}">{{payment.transaction}}</a>{% if payment.transaction.balanced %}<span class='ml-2 badge badge-success'>{% else %}<span class='ml-2 badge badge-danger'>{% endif %}{{payment.transaction.balanced}}</span></td>
+            <td>{{payment.transaction.vendor_client}}</td>
+            <td><a href="{% url 'inventory:transaction-update' payment.transaction.id%}">{{payment.transaction}}</a>{% if payment.transaction.balanced %}<span class='ml-2 badge badge-success'>{% else %}<span class='ml-2 badge badge-danger'>{% endif %}{{payment.transaction.balanced}}</span></td>
             <td>Rs. {{payment.amount}}</td>
             <td>
                 {% if payment.transaction.balanced %}
                     -
                 {% else %}
-                    <a href="{% url 'inventory:quick-payment' payment.transaction.id%}" class="btn btn-warning btn-small">Add Payment</a>
+                    <a href="{% url 'inventory:quick-payment' payment.transaction.id%}" class="btn btn-small btn-warning">Add Payment</a>
                 {% endif %}
             </td>
         </tr>

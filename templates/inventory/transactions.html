@@ -8,7 +8,7 @@
 <a href="{% url 'inventory:add-stock' %}" class="mx-2 btn btn-success" style="float:right;">Add Stock</a>
 <a href="{% url 'inventory:sell-stock' %}" class="mx-2 btn btn-outline-success" style="float:right;">Sell Stock</a>
 <a href="{% url 'inventory:credit-transactions' %}" class="mx-2 btn btn-outline-success" style="float:right;">View Sold Transaction</a>
-<h1>All Transactions</h1>
+<h1>All Transactions <span class='transactionCount'></span></h1>
 <hr>
 <form action="" method="get">
     <div class="form-row">
@@ -16,8 +16,8 @@
       <label for="inputState"><h6>Type:</h6></label>
       <select class="custom-select" id='Transasction_Filter'>
         <option value="">All Transactions</option>
-        <option value="STOCK+IN">Debit Transactions</option>
-        <option value="STOCK+OUT">Credit Transactions</option>
+        <option value="STOCK+IN">Bought Transactions</option>
+        <option value="STOCK+OUT">Sold Transactions</option>
       </select>
     </div>
 
@@ -47,6 +47,7 @@
             <th>Date</th>
             <th>Vendor/Client</th>
             <th>Item</th>
+            <th>Type</th>
             <th>Quantity</th>
             <th>Cost Price Per Unit</th>
             <th>Total Payable</th>

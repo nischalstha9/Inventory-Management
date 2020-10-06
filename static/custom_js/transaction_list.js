@@ -13,8 +13,9 @@ $(document).ready( function () {
             method:"GET",
             data:{},
             success:function(data){
+                $(".transactionCount").html(`(${data.count})`)
                 var trans = data.results
-                pages = Math.ceil(data.count/1)
+                pages = Math.ceil(data.count/5)
                 if (pages>1){
                     paginationHtml(pages)
                 }
@@ -29,8 +30,9 @@ $(document).ready( function () {
                         tr = `
                         <tr>
                             <td>${trans[e].date}</td>
-                            <td>${trans[e].vendor_client}</td>
-                            <td><a href="${trans[e].update_url}">${trans[e].item}</a></td>
+                            <td><a href="${trans[e].update_url}">${trans[e].vendor_client}</a></td>
+                            <td>${trans[e].item}</td>
+                            <td>${trans[e]._type}</td>
                             <td>${trans[e].quantity}</td>
                             <td>Rs. ${trans[e].cost}</td>
                             <td>Rs. ${trans[e].payable}</td>
@@ -85,7 +87,6 @@ $(document).ready( function () {
         date = sdate + ', ' +edate
         tableData(page, trans_type, balanced, date);
     })
-
 
     function paginationHtml(pages){
         var next = (page==pages)?"<li class='page-item disabled'><a class='page-link' href='# id='nextBtn'>Next</a></li>":"<li class='page-item'><a class='page-link' href='#' id='nextBtn'>Next</a></li>"
