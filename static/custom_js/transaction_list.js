@@ -14,12 +14,18 @@ $(document).ready( function () {
             data:{},
             success:function(data){
                 var trans = data.results
-                pages = data.count%5+1
+                pages = Math.ceil(data.count/1)
                 if (pages>1){
                     paginationHtml(pages)
                 }
                 if (trans.length >0){
                     $.each(trans, function(e){
+                        bal_or_rem = `<span class="badge badge-danger">Rs. ${ trans[e].remaining_payment } remaining</span>`
+                        pay = `<a href="${trans[e].pay_url}" class="btn btn-sm btn-warning btn-small">Add Payment</a>`
+                        if(trans[e].balanced){
+                            bal_or_rem = `<span class="badge badge-success">BALANCED</span>`
+                            pay = `<a href="#" class="btn btn-sm btn-success btn-success">BALANCED</a>`
+                        }                        
                         tr = `
                         <tr>
                             <td>${trans[e].date}</td>
@@ -29,10 +35,10 @@ $(document).ready( function () {
                             <td>Rs. ${trans[e].cost}</td>
                             <td>Rs. ${trans[e].payable}</td>
                             <td>
-                                Rs. ${trans[e].paid}<span class="badge badge-danger">Rs. ${ trans[e].remaining_payment } remaining</span>
+                                Rs. ${trans[e].paid}${bal_or_rem}
                             </td>
                             <td>
-                                <a href="${trans[e].pay_url}" class="btn btn-warning btn-small">Add Payment</a>
+                                ${pay}
                             </td>
                         </tr>
                         `
@@ -84,12 +90,11 @@ $(document).ready( function () {
     function paginationHtml(pages){
         var next = (page==pages)?"<li class='page-item disabled'><a class='page-link' href='# id='nextBtn'>Next</a></li>":"<li class='page-item'><a class='page-link' href='#' id='nextBtn'>Next</a></li>"
         var prev = (page==1)?"<li class='page-item disabled'><a class='page-link' href='#' id='previousBtn' tabindex='-1'>Previous</a></li>":"<li class='page-item'><a class='page-link' href='#' id='previousBtn' tabindex='-1'>Previous</a></li>"
-        console.log(prev, page, pages)
         var temp = `
         <nav aria-label="...">
         <ul class="pagination">
-            s${prev}
-            s${next}
+            ${prev}
+            ${next}
         </ul>
         </nav>
         `
