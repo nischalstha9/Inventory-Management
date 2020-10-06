@@ -27,10 +27,10 @@ class TransactionSerializer(ModelSerializer):
     remaining_payment = SerializerMethodField()
     item = SerializerMethodField()
     date = SerializerMethodField()
-    transaction_id = SerializerMethodField()
+    item_id = SerializerMethodField()
     class Meta:
         model = Transaction
-        fields = ['id', 'vendor_client', 'date', 'transaction_id', 'item','_type', 'quantity', 'paid', 'payable', 'remaining_payment', 'pay_url', 'balanced', 'cost', 'update_url', 'is_debit']
+        fields = ['id', 'vendor_client', 'date', 'item_id', 'item','_type', 'quantity', 'paid', 'payable', 'remaining_payment', 'pay_url', 'balanced', 'cost', 'update_url', 'is_debit']
     def get_payable(self, obj):
         return obj.quantity * obj.cost
     def get_remaining_payment(self, obj):
@@ -41,8 +41,8 @@ class TransactionSerializer(ModelSerializer):
         return timezone.localtime(obj.date).strftime("%b. %d, %Y")
         # return obj.date.date()
         # return datetime.strptime(obj.date).date()
-    def get_transaction_id(self, obj):
-        return obj.id
+    def get_item_id(self, obj):
+        return obj.item.id
 
 
 class ItemDetailSerializer(ModelSerializer):

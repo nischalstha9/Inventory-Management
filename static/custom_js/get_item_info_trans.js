@@ -31,7 +31,7 @@ function handleResponse(data){
                 <td>${cr[e].date}</td>
                 
                 <td>${cr[e].vendor_client}</td>
-                <td><a href="#">${cr[e].item}</a></td>
+                <td>${cr[e].item_id}</td>
                 <td>${cr[e].quantity}</td>
                 <td>Rs. ${cr[e].payable}</td>
                 <td>Rs. ${cr[e].paid}</td>

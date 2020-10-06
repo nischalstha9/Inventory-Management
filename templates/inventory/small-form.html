@@ -38,7 +38,6 @@
 
 {% endblock content %}
 {% block javascript %}
-<script src="{% static 'custom_js/get_item_info_trans.js' %}"></script>
 <script>
 $(function() {
     $('#id_transaction').change(function(e){
@@ -75,7 +74,7 @@ $(function() {
     });
     $('#id_item').change(function(e){
         var item_id = e.target.value
-        get_item_info_trans(e, item_id)
+        get_item_info_trans(item_id)
     });
 
 });

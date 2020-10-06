@@ -31,7 +31,7 @@ $(document).ready( function () {
                         <tr>
                             <td>${trans[e].date}</td>
                             <td><a href="${trans[e].update_url}">${trans[e].vendor_client}</a></td>
-                            <td>${trans[e].item}</td>
+                            <td><a id='modal-item' href='#' value='${trans[e].item_id}'>${trans[e].item}</a></td>
                             <td>${trans[e]._type}</td>
                             <td>${trans[e].quantity}</td>
                             <td>Rs. ${trans[e].cost}</td>
@@ -110,4 +110,10 @@ $(document).ready( function () {
         page = page!=pages?page+1:page
         tableData(page, trans_type, balanced, date);
     });    
+    
+    $('#table_id').on('click', '#modal-item', function (e){
+        e.preventDefault();
+        var item_id = e.target.attributes.value.value
+        get_item_info_trans(item_id)
+    });
 });

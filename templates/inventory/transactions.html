@@ -64,16 +64,10 @@
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="{% static 'custom_js/transaction_list.js' %}"></script>
-{% comment %} <script>
+<script src="{% static 'custom_js/get_item_info_trans.js' %}"></script>
+<script>
 $(document).ready( function () {
-    $('#table_id').DataTable({
-        "paging": false,
-        'order':[]
-    });
-    $("#id_date").datepicker({
-      changeMonth: true,
-      changeYear: true
-    });
+    
 } );
-</script> {% endcomment %}
+</script>
 {% endblock javascript %}
