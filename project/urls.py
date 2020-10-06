@@ -24,7 +24,7 @@ handler404 = 'main.views.view_404'
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
     #3rd
     path('summernote/', include('django_summernote.urls')),
     path('api-auth/', include('rest_framework.urls')),

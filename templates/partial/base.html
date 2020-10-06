@@ -60,6 +60,25 @@
             
           </div>
 
+          
+          <!-- Modal -->
+            <div class="modal fade bd-example-modal-lg" id="myModal" role="dialog">
+              <div class="modal-dialog modal-lg">
+              
+                <!-- Modal content-->
+                <div class="modal-content">
+                  <div id="content-main">
+                      
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+          <!--Modal end-->
+
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     
     {% comment %} <script src='{% static 'news/jquery.min.js' %}'></script> {% endcomment %}
@@ -82,7 +101,7 @@
               $.each(data, function(e){
               td += `
                 <tr>
-                  <td>${data[e].name}</td>
+                  <td><a href='#' class='s-item-name' value = '${data[e].id}'>${data[e].name}</a></td>
                   <td>${data[e].quantity}</td>
                   <td>Rs. ${data[e].selling_price}</td>
                 </tr>
@@ -110,6 +129,16 @@
 
           })
         })
+      })
+    </script>
+    <script src="{% static 'custom_js/get_item_info_trans.js' %}"></script>
+    <script>
+      $(document).ready( function () {
+        $('#search-result').on('click', '.s-item-name', function (e){
+          e.preventDefault();
+          id = e.target.attributes.value.value
+          get_item_info_trans(id)
+        });
       })
     </script>
     <!-- Optional JavaScript -->

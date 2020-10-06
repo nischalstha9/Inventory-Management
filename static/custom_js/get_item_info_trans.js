@@ -107,8 +107,7 @@ function handleResponse(data){
     $("#myModal").modal();
 };
 
-function get_item_info_trans(e, id){
-    e.preventDefault();
+function get_item_info_trans(id){
     var item_id = id
     var url = `http://${window.location.host}/inventory/item/${item_id}/`
     $.ajax({

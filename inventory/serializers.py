@@ -16,7 +16,7 @@ class CategoryChartSerializer(ModelSerializer):
 class ItemQuantitySerializer(ModelSerializer):
     class Meta:
         model = Item
-        fields = ('name','quantity','selling_price','brand')
+        fields = ('name','quantity','selling_price','brand', 'id')
 
 from datetime import datetime
 from django.utils import timezone

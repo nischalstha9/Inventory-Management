@@ -36,8 +36,8 @@
     {% for transaction in filter.qs %}
         <tr>
             <td>{{transaction.date|date}}</td>
-            <td>{{transaction.vendor_client}}</td>
-            <td><a href="{% url 'inventory:transaction-update' transaction.id%}">{{transaction.item}}</a></td>
+            <td><a href="{% url 'inventory:transaction-update' transaction.id%}">{{transaction.vendor_client}}</a></td>
+            <td>{{transaction.item}}</td>
             <td>{{transaction.quantity}}</td>
             <td>Rs. {{transaction.cost}}</td>
             <td>Rs. {{transaction.total_payable}}</td>
