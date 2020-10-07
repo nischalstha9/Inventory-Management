@@ -90,44 +90,51 @@
     <script>
       $(document).ready( function () {
         $("#searchProductForm").keyup(function(e){
-          q = e.target.value
-          var url = `http://${window.location.host}/inventory/item-quantity/?search=${q}`
-          var td = ``
-          $.ajax({
-            url : url,
-            method : "GET",
-            data : {},
-            success: function(data){
-              $.each(data, function(e){
-              td += `
-                <tr>
-                  <td><a href='#' class='s-item-name' value = '${data[e].id}'>${data[e].name}</a></td>
-                  <td>${data[e].quantity}</td>
-                  <td>Rs. ${data[e].selling_price}</td>
-                </tr>
-              `
+          //if(e.which == 13) {
+            e.preventDefault();
+            q = e.target.value
+            if (q != ''){
+              var url = `http://${window.location.host}/inventory/item-quantity/?search=${q}`
+              var td = ``
+              $.ajax({
+                url : url,
+                method : "GET",
+                data : {},
+                success: function(data){
+                  $.each(data, function(e){
+                  td += `
+                    <tr>
+                      <td><a href='#' class='s-item-name' value = '${data[e].id}'>${data[e].name}</a></td>
+                      <td>${data[e].quantity}</td>
+                      <td>Rs. ${data[e].selling_price}</td>
+                    </tr>
+                  `
+                  })
+                  var html = `
+                    <table class="table jumbotron">
+                    <thead>
+                      <tr><h4>Search Results For "${q}"</h4></tr>
+                      <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Price</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${td}
+                    </tbody>
+                  </table>
+                  `
+                $("#search-result").html(html)
+                },
+                error: function(error){
+                  console.log(error)
+                }
               })
-              var html = `
-                <table class="table jumbotron">
-                <thead>
-                  <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Quantity</th>
-                    <th scope="col">Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${td}
-                </tbody>
-              </table>
-              `
-            $("#search-result").html(html)
-            },
-            error: function(error){
-              console.log(error)
+            }else{
+              $("#search-result").html('')
             }
-
-          })
+          //}
         })
       })
     </script>

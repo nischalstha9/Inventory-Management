@@ -290,6 +290,8 @@ class QuickPaymentCreateView(CreateView):
         obj_id = self.kwargs.get('pk')
         Trans = get_object_or_404(Transaction, id = obj_id)
         context["object"] = Trans
+        context["payments"] = Payment.objects.filter(transaction = Trans)
+        context["header"] = f"Add Payment for {Trans}"
         return context
     def form_valid(self, form, *args, **kwargs):
         t_id =  self.kwargs.get('pk') #transaction id

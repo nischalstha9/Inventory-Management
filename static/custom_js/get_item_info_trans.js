@@ -5,8 +5,10 @@ function handleResponse(data){
     var cr = data.unpaid_cr_trans
     var dr_table_data = ''
     var cr_table_data = ''
+    var dr_head = ''
+    var cr_head = ''
     if (dr.length >0){
-        var dr_head = '<h4>Stock In Unpaid Transactions</h4>'
+        dr_head = '<h4>Stock Bought Unpaid Transactions</h4>'
         $.each(dr, function(e){
             var dr_data = 
             `
@@ -24,7 +26,7 @@ function handleResponse(data){
         })
     }
     if (cr.length >0){
-        var cr_head = '<h4>Stock Out Unpaid Transactions</h4>'
+        cr_head = '<h4>Stock Sold Unpaid Transactions</h4>'
         $.each(cr, function(e){
             var cr_data = 
             `
@@ -42,28 +44,31 @@ function handleResponse(data){
         cr_table_data += cr_data
         })
     }
-    var table = 
-    `
-    <hr>
-    ${dr_head}
-    <table id="transactions" class="table table-warning table-sm">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Bought From</th>
-                <th>Item</th>
-                <th>Quantity</th>
-                <th>Total Payable</th>
-                <th>Paid Amount</th>
-                <th>Remaining</th>
-            </tr>
-        </thead>
-        <tbody>
-            ${dr_table_data}
-        </tbody>
-    </table>
-    `
-    if(cr_head){
+    var table = ''
+    if (dr_head!=''){
+        table+=
+            `
+            <hr>
+            ${dr_head}
+            <table id="transactions" class="table table-warning table-sm">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Bought From</th>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Total Payable</th>
+                        <th>Paid Amount</th>
+                        <th>Remaining</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${dr_table_data}
+                </tbody>
+            </table>
+            `
+    }
+    if(cr_head!=''){
         table += 
         `
         <hr>

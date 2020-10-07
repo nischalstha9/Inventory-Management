@@ -87,7 +87,7 @@ class Transaction(models.Model):
         super(Transaction, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f" {self.quantity} of {self.item}"
+        return f" {self.quantity} units of {self.item}"
 
     @property
     def is_debit(self):

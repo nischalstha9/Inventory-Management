@@ -58,6 +58,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <a href="{% url 'inventory:quick-payment' object.id%}" class="btn btn-outline-success">Add Payment</a>
                 </div>
             </div>
         {% else %}
@@ -81,7 +82,7 @@ $(function() {
                 var html = `
                 <div class="card">
                     <div class="card-header">
-                        Transaction ID: ${data.transaction_id} - ${data.item}
+                        Transaction ID: ${trans_id} - ${data.item}
                     </div>
                     <div class="card-body">
                         <h5 class="card-title">Payment For Item: ${data.item}</h5><hr>
@@ -106,6 +107,7 @@ $(function() {
         var item_id = e.target.value
         get_item_info_trans(item_id)
     });
+    
 
 });
 </script>

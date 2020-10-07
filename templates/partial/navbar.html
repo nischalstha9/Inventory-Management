@@ -64,8 +64,8 @@
         <a class="nav-link disabled" href="#">Disabled</a>
       </li> {% endcomment %}
     </ul>
-    <form class="form-inline my-2 my-lg-0" method='GET' action='/search'>
-      <input class="form-control my-1 mr-sm-2" required='required' type="search" placeholder="Search Products" id='searchProductForm' name='q' data-toggle="popover" data-placement="bottom" data-content="Press enter to search" value="{{ query }}" style="" data-original-title="" title="">
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control my-1 mr-sm-2" autocomplete='off' type='text' required='required' placeholder="Search Products" id='searchProductForm' name='q' data-toggle="popover" data-placement="bottom" value="{{ query }}" style="" data-original-title="" title="">
     </form>
       {% if user.is_authenticated %}
         <a class="text-white mr-2" href="{% url 'profile' %}" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
