@@ -76,7 +76,7 @@ class Transaction(models.Model):
     remarks = models.TextField(_("Remarks on Deal"), null=True, blank=True)
     date = models.DateTimeField(_("Date of Transaction"), auto_now_add=True)
     balanced = models.BooleanField(_("Balanced"), editable = False)
-    mobile_num_regex = RegexValidator(regex="^[0-9]{10,15}$", message="Entered mobile number isn't in a right format!")
+    mobile_num_regex = RegexValidator(regex="^[0-9]{9,15}$", message="Entered mobile number isn't in a right format!")
     contact  = models.CharField(validators=[mobile_num_regex], max_length=13)
 
     class Meta:

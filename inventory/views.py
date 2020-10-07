@@ -137,6 +137,7 @@ class TransactionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["header"] = 'Update Transaction Info'
+        context['payments'] = Payment.objects.filter(transaction = self.object.pk)
         return context
     
     def get_success_url(self):

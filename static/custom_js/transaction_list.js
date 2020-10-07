@@ -1,7 +1,15 @@
+//jquery for loading all transaction list
 $(document).ready( function () {
     var pages = 1
-    function tableData(page=1, trans_type='', balanced='', date=''){
+    function tableData(page=1, trans_type='', balanced='', date=', '){
         var header = "All Transactions"
+        if(trans_type=='STOCK+IN'){
+            header = 'Stock Bought Transactions'
+        }else if(trans_type=='STOCK+OUT'){
+            header = 'Stock Sold Transactions'
+        }else{
+            header = header
+        }
         if (date != ', ') {
             var url = `http://${window.location.host}/inventory/api/transactions/?page=${page}&_type=${trans_type}&balanced=${balanced}&date__date__range=${date}`
         }else{
@@ -13,7 +21,7 @@ $(document).ready( function () {
             method:"GET",
             data:{},
             success:function(data){
-                $(".transactionCount").html(`(${data.count})`)
+                $("#header").html(`${header} (${data.count})`)//update count on header
                 var trans = data.results
                 pages = Math.ceil(data.count/5)
                 if (pages>1){
@@ -88,6 +96,7 @@ $(document).ready( function () {
         tableData(page, trans_type, balanced, date);
     })
 
+    //build pagination
     function paginationHtml(pages){
         var next = (page==pages)?"<li class='page-item disabled'><a class='page-link' href='# id='nextBtn'>Next</a></li>":"<li class='page-item'><a class='page-link' href='#' id='nextBtn'>Next</a></li>"
         var prev = (page==1)?"<li class='page-item disabled'><a class='page-link' href='#' id='previousBtn' tabindex='-1'>Previous</a></li>":"<li class='page-item'><a class='page-link' href='#' id='previousBtn' tabindex='-1'>Previous</a></li>"

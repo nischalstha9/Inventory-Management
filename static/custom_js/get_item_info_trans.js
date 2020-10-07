@@ -1,3 +1,4 @@
+//jquery for loading transaction and item info on selection of item
 function handleResponse(data){
     var html = ''
     var dr = data.unpaid_dr_trans
@@ -101,10 +102,14 @@ function handleResponse(data){
         ${table}
         </div>
     `
-    $("#content-main").html(html)
-    $(".trans-info").html(html);
-    $("#id_cost").val(data.selling_price);
-    $("#myModal").modal();
+    const transInfo = $(".trans-info")
+    if (transInfo.length>0){
+        transInfo.html(html);
+        $("#id_cost").val(data.selling_price);
+    }else{
+        $("#content-main").html(html)
+        $("#myModal").modal();
+    }
 };
 
 function get_item_info_trans(id){
