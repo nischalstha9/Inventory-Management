@@ -34,12 +34,20 @@ class CategoryCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     success_url = "/"
     def test_func(self):
         return self.request.user._type == 'ADMIN'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Create New Category"
+        return context
+    
 
 class ItemCreationVIew(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = ItemCreationForm
     template_name = 'inventory/big-form.html'
     success_url = "../"
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Create New Inventor Item"
+        return context
     def test_func(self):
         return self.request.user._type == 'ADMIN'
 
@@ -48,7 +56,11 @@ class ItemListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     template_name = "inventory/item_list.html"
     context_object_name = 'items'
     paginate_by = 50
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Inventory Items List"
+        return context
+    
     def test_func(self):
         return self.request.user._type == 'ADMIN'
 
@@ -57,7 +69,10 @@ class ItemUpdateVIew(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     template_name = 'inventory/big-form.html'
     success_url = "../../"
     queryset = Item.objects.all()
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = f"Update Item - {self.object}"
+        return context
     def test_func(self):
         return self.request.user._type == 'ADMIN'
 
@@ -70,6 +85,7 @@ class ItemDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return self.request.user._type == 'ADMIN'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["title"] = f"Delete Item - {self.object}"
         return context
     
 
@@ -79,6 +95,7 @@ def add_to_inventory(request):
     context = {'header' : 'Add Stock'}
     form = DebitTransactionForm(request.POST or None)
     context['form']= form
+    context['title']= "Add Stock"
     if request.method == 'POST':
         print(request.POST)
         item = request.POST.get('item')
@@ -105,7 +122,8 @@ def add_to_inventory(request):
     return render(request, "inventory/small-form.html", context)
 
 def TransactionListView(request):
-    return render(request, 'inventory/transactions.html')
+    context = {'title':'Transactions List'}
+    return render(request, 'inventory/transactions.html', context)
 
 class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
     model = DebitTransaction
@@ -122,6 +140,11 @@ class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, FilterVi
             date_dt = make_aware(datetime.strptime(date, '%m/%d/%Y'))#convert sting date to datetime #makeaware is making aware about timezone
             qs = qs.filter(date__lte=date_dt)#filtering
         return qs.order_by('-id')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Debit Transactions"
+        return context
+    
 
 class TransactionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Transaction
@@ -133,9 +156,9 @@ class TransactionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
         return form
     def test_func(self):
         return self.request.user._type == 'ADMIN'
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["title"] = "Debit Transactions"
         context["header"] = 'Update Transaction Info'
         context['payments'] = Payment.objects.filter(transaction = self.object.pk)
         return context
@@ -147,6 +170,7 @@ class TransactionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
 def sell_from_inventory(request):
     context = {'header' : 'Sell Stock'}
     form = CreditTransactionForm(request.POST or None)
+    context['title']= "Sell Stock"
     context['form']= form
     if request.method == 'POST':
         print(request.POST)
@@ -183,31 +207,17 @@ class CreditTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListVie
         elif sts=='unbalanced':
             qs = qs.filter(balanced=False)
         return qs
-
-class CreditTransactionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = CreditTransaction
-    fields = ['contact','remarks']
-    template_name = "inventory/small-form.html"
-    def get_form(self, form_class=None):
-        form = super(CreditTransactionUpdateView, self).get_form(form_class)
-        form.fields['remarks'].widget = SummernoteWidget()
-        return form
-    def test_func(self):
-        return self.request.user._type == 'ADMIN'
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["header"] = 'Update Transaction Info'
+        context["title"] = "Credit Transactions"
         return context
-    
-    def get_success_url(self):
-        return reverse('inventory:credit-transactions')
 
 @allowed_users(allowed_types = ['ADMIN'])
 def DebitTransactionPaymentCreateView(request):
     form = DebitPaymentForm()
     context = {}
     context['form'] = form
+    context['title'] = "Create Payment"
     context['header'] = "Add Payment for Stock In (Bought Stocks)"
     if request.method=="POST":
         trans = request.POST.get('transaction')
@@ -227,6 +237,7 @@ def CreditTransactionPaymentCreateView(request):
     form = CreditPaymentForm
     context = {}
     context['form'] = form
+    context['title'] = "Create Payment"
     context['header'] = "Add Payment for Stock Out (Sold Stocks)"
     if request.method=="POST":
         trans = request.POST.get('transaction')
@@ -241,18 +252,19 @@ def CreditTransactionPaymentCreateView(request):
         # return reverse("inventory:debit-transactions")
     return render(request, "inventory/small-form.html", context)
 
-class DebitPaymentListView(ListView):
+class DebitPaymentListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Payment
     context_object_name = 'payments'
     template_name = "inventory/dr-payments.html"
     paginate_by=50
     queryset = Payment.objects.all()
-
+    def test_func(self):
+        return self.request.user._type == 'ADMIN'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["header"] = 'Stock In Payments'
+        context['title'] = "Payments Created for Stock Bought"
         return context
-
     def get_queryset(self):
         qs = super().get_queryset().filter(transaction___type="STOCK IN")
         sts = self.request.GET.get('state')
@@ -262,16 +274,18 @@ class DebitPaymentListView(ListView):
             qs = qs.filter(transaction__balanced=False)
         return qs.order_by('-id')
 
-class CreditPaymentListView(ListView):
+class CreditPaymentListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Payment
     context_object_name = 'payments'
     template_name = "inventory/dr-payments.html"
     paginate_by=50
+    def test_func(self):
+        return self.request.user._type == 'ADMIN'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["header"] = 'Stock Out Payments'
-        return context
-    
+        context['title'] = "Payments Created for Stock Sold"
+        return context    
     def get_queryset(self):
         qs = super().get_queryset().filter(transaction___type="STOCK OUT")
         sts = self.request.GET.get('state')
@@ -281,10 +295,12 @@ class CreditPaymentListView(ListView):
             qs = qs.filter(transaction__balanced=False)
         return qs.order_by('-id')
 
-class QuickPaymentCreateView(CreateView):
+class QuickPaymentCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Payment
     fields = ['amount']
     template_name = "inventory/small-form.html"
+    def test_func(self):
+        return self.request.user._type == 'ADMIN'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         obj_id = self.kwargs.get('pk')
@@ -292,6 +308,7 @@ class QuickPaymentCreateView(CreateView):
         context["object"] = Trans
         context["payments"] = Payment.objects.filter(transaction = Trans)
         context["header"] = f"Add Payment for {Trans}"
+        context["title"] = f"Create Payment for {Trans}"
         return context
     def form_valid(self, form, *args, **kwargs):
         t_id =  self.kwargs.get('pk') #transaction id

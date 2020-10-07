@@ -30,15 +30,15 @@ $(document).ready( function () {
                 if (trans.length >0){
                     $.each(trans, function(e){
                         bal_or_rem = `<span class="badge badge-danger">Rs. ${ trans[e].remaining_payment } remaining</span>`
-                        pay = `<a href="${trans[e].pay_url}" class="btn btn-sm btn-warning btn-small">Add Payment</a>`
+                        pay = `<a href="${trans[e].pay_url}" class="btn btn-sm btn-warning btn-small">Add Payment</a><a class='btn mt-1 btn-sm btn-info' href="${trans[e].update_url}">View/Edit</a>`
                         if(trans[e].balanced){
                             bal_or_rem = `<span class="badge badge-success">BALANCED</span>`
-                            pay = `<a href="#" class="btn btn-sm btn-success btn-success">BALANCED</a>`
+                            pay = `<a href="#" class="btn btn-sm btn-dark disabled">BALANCED</a><a class='btn mt-1 btn-sm btn-info' href="${trans[e].update_url}">View/Edit</a>`
                         }                        
                         tr = `
                         <tr>
                             <td>${trans[e].date}</td>
-                            <td><a href="${trans[e].update_url}">${trans[e].vendor_client}</a></td>
+                            <td>${trans[e].vendor_client}</td>
                             <td><a id='modal-item' href='#' value='${trans[e].item_id}'>${trans[e].item}</a></td>
                             <td>${trans[e]._type}</td>
                             <td>${trans[e].quantity}</td>

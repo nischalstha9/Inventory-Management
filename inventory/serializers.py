@@ -3,6 +3,12 @@ from rest_framework import serializers
 from .models import Category, Item, Payment, DebitTransaction, Transaction, CreditTransaction
 from django.db.models import Count
 
+class PaymentSerializer(ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = ('transaction','amount','date')
+
+
 class CategoryChartSerializer(ModelSerializer):
     items_count = serializers.SerializerMethodField(read_only=True)
 
@@ -28,6 +34,7 @@ class TransactionSerializer(ModelSerializer):
     item = SerializerMethodField()
     date = SerializerMethodField()
     item_id = SerializerMethodField()
+    # payments = SerializerMethodField()
     class Meta:
         model = Transaction
         fields = ['id', 'vendor_client', 'date', 'item_id', 'item','_type', 'quantity', 'paid', 'payable', 'remaining_payment', 'pay_url', 'balanced', 'cost', 'update_url', 'is_debit']
@@ -43,6 +50,10 @@ class TransactionSerializer(ModelSerializer):
         # return datetime.strptime(obj.date).date()
     def get_item_id(self, obj):
         return obj.item.id
+    # def get_payments(self, obj):
+    #     payment_qs = Payment.objects.filter(transaction=obj)
+    #     payments = PaymentSerializer(payment_qs, many=True, context=self.context).data
+    #     return payments
 
 
 class ItemDetailSerializer(ModelSerializer):
