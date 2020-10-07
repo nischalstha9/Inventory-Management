@@ -26,7 +26,7 @@
         <tr>
             <td>{{item.id}}</td>
             <td>
-                <a href="#" value="{{item.id}}" id='item_name' class='item_name'>{{item.name}}</a>
+                {{item.name}}
                 {% if item.quantity <= 0 %}
                     <span class="badge badge-danger">Out of Stock</span>
                 {% elif item.quantity < 10 %}
@@ -38,6 +38,7 @@
             <td>Rs. {{item.selling_price}}</td>
             <td>{{item.quantity}} units</td>
             <td><a class='btn btn-outline-warning btn-sm' href="{% url 'inventory:item-update' item.id%}">edit</a>
+            <a class='btn btn-info btn-sm view_item_btn' value="{{item.id}}" href="#">view</a>
             {% comment %} <a class='btn btn-outline-warning btn-sm' href="{% url 'inventory:item-delete' item.id%}">delete</a> {% endcomment %}
             </td>
         </tr>
@@ -56,7 +57,8 @@ $(document).ready( function () {
         'order':[]
     });
 
-    $(".item_name").click(function(e){
+    $(".view_item_btn").click(function(e){
+        e.preventDefault()
         id = e.target.attributes.value.value
         get_item_info_trans(id)
     });

@@ -158,7 +158,7 @@ class TransactionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
         return self.request.user._type == 'ADMIN'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Debit Transactions"
+        context["title"] = "Update Transaction Info"
         context["header"] = 'Update Transaction Info'
         context['payments'] = Payment.objects.filter(transaction = self.object.pk)
         return context

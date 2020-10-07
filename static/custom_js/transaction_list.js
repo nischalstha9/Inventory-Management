@@ -24,16 +24,16 @@ $(document).ready( function () {
                 $("#header").html(`${header} (${data.count})`)//update count on header
                 var trans = data.results
                 pages = Math.ceil(data.count/5)
-                if (pages>1){
+                if (pages>=1){
                     paginationHtml(pages)
                 }
                 if (trans.length >0){
                     $.each(trans, function(e){
                         bal_or_rem = `<span class="badge badge-danger">Rs. ${ trans[e].remaining_payment } remaining</span>`
-                        pay = `<a href="${trans[e].pay_url}" class="btn btn-sm btn-warning btn-small">Add Payment</a><a class='btn mt-1 btn-sm btn-info' href="${trans[e].update_url}">View/Edit</a>`
+                        pay = `<a href="${trans[e].pay_url}" class="btn btn-sm btn-warning btn-small btn-block">Add Payment</a><a class='btn mt-1 btn-sm btn-info btn-block' href="${trans[e].update_url}">View/Edit</a>`
                         if(trans[e].balanced){
                             bal_or_rem = `<span class="badge badge-success">BALANCED</span>`
-                            pay = `<a href="#" class="btn btn-sm btn-dark disabled">BALANCED</a><a class='btn mt-1 btn-sm btn-info' href="${trans[e].update_url}">View/Edit</a>`
+                            pay = `<a href="#" class="btn btn-sm btn-dark disabled btn-block">BALANCED</a><a class='btn mt-1 btn-sm btn-info btn-block' href="${trans[e].update_url}">View/Edit</a>`
                         }                        
                         tr = `
                         <tr>
@@ -72,14 +72,17 @@ $(document).ready( function () {
     var edate = ''
     var date = sdate + ', ' +edate
     $("#Transasction_Filter").change(function(e){
+        page = 1
         trans_type = e.target.value
         tableData(page, trans_type, balanced, date);
     })
     $("#Balance_Filter").change(function(e){
+        page = 1
         balanced = e.target.value
         tableData(page, trans_type, balanced, date);
     })
     $("#sdate-filter").change(function(e){
+        page = 1
         sdate = e.target.value
         if (edate == '') {
             edate = sdate
@@ -88,6 +91,7 @@ $(document).ready( function () {
         tableData(page, trans_type, balanced, date);
     })
     $("#edate-filter").change(function(e){
+        page = 1
         edate = e.target.value
         if (sdate == '') {
             sdate = edate
