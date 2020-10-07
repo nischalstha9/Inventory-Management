@@ -10,11 +10,11 @@
                 <img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="{{ user.profile.dp.url }}">
             </a>
             <div class="media-body">
-                <h2 class="account-heading">@{{ user.first_name }} {{ user.last_name }}</h2><hr>
+                <h2 class="account-heading">{{ user.first_name }} {{ user.last_name }}</h2><hr>
                 <a href="{% url 'account_email' %}" >{{ user.email }}</a><br>
                 <a href="{% url 'account_change_password' %}" >Change Password?</a><br>
                 {% if user.is_staff %}
-                    <a href="{% url 'admin:index' %}" >Visit office</a>
+                    {% comment %} <a href="{% url 'admin:index' %}" >Visit office</a> {% endcomment %}
                 {% endif %}
             </div>
         </div>

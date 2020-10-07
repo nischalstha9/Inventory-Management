@@ -1,7 +1,7 @@
 //jquery for loading all transaction list
 $(document).ready( function () {
     var pages = 1
-    function tableData(page=1, trans_type='', balanced='', date=', '){
+    function tableData(page=1, trans_type='', balanced='', date=', ', search = ''){
         var header = "All Transactions"
         if(trans_type=='STOCK+IN'){
             header = 'Stock Bought Transactions'
@@ -11,9 +11,9 @@ $(document).ready( function () {
             header = header
         }
         if (date != ', ') {
-            var url = `http://${window.location.host}/inventory/api/transactions/?page=${page}&_type=${trans_type}&balanced=${balanced}&date__date__range=${date}`
+            var url = `http://${window.location.host}/inventory/api/transactions/?page=${page}&_type=${trans_type}&balanced=${balanced}&date__date__range=${date}&search=${search}`
         }else{
-            var url = `http://${window.location.host}/inventory/api/transactions/?page=${page}&_type=${trans_type}&balanced=${balanced}`
+            var url = `http://${window.location.host}/inventory/api/transactions/?page=${page}&_type=${trans_type}&balanced=${balanced}&search=${search}`
         }
         var td = ''
         $.ajax({
@@ -65,6 +65,7 @@ $(document).ready( function () {
         })
     }
     tableData()
+    var search = ''
     var page = 1
     var trans_type = ''
     var balanced = ''
@@ -74,12 +75,12 @@ $(document).ready( function () {
     $("#Transasction_Filter").change(function(e){
         page = 1
         trans_type = e.target.value
-        tableData(page, trans_type, balanced, date);
+        tableData(page, trans_type, balanced, date, search);
     })
     $("#Balance_Filter").change(function(e){
         page = 1
         balanced = e.target.value
-        tableData(page, trans_type, balanced, date);
+        tableData(page, trans_type, balanced, date, search);
     })
     $("#sdate-filter").change(function(e){
         page = 1
@@ -88,7 +89,7 @@ $(document).ready( function () {
             edate = sdate
         }
         date = sdate + ', ' +edate
-        tableData(page, trans_type, balanced, date);
+        tableData(page, trans_type, balanced, date, search);
     })
     $("#edate-filter").change(function(e){
         page = 1
@@ -97,12 +98,19 @@ $(document).ready( function () {
             sdate = edate
         }
         date = sdate + ', ' +edate
-        tableData(page, trans_type, balanced, date);
+        tableData(page, trans_type, balanced, date, search);
+    })
+    $("#search-filter").keyup(function(e){
+        e.preventDefault();
+        page = 1
+        search = e.target.value
+        tableData(page, trans_type, balanced, date, search);
     })
 
     //build pagination
     function paginationHtml(pages){
         var next = (page==pages)?"<li class='page-item disabled'><a class='page-link' href='# id='nextBtn'>Next</a></li>":"<li class='page-item'><a class='page-link' href='#' id='nextBtn'>Next</a></li>"
+        
         var prev = (page==1)?"<li class='page-item disabled'><a class='page-link' href='#' id='previousBtn' tabindex='-1'>Previous</a></li>":"<li class='page-item'><a class='page-link' href='#' id='previousBtn' tabindex='-1'>Previous</a></li>"
         var temp = `
         <nav aria-label="...">

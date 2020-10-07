@@ -49,16 +49,18 @@
                             </tr>
                     {% endfor %}
                             <tr class=''>
-                                <td><strong>Total</strong></td>
+                                <td><strong>Total paid</strong></td>
                                 <td><strong>Rs. {{object.paid}}</strong></td>
                             </tr>
                             <tr class=''>
-                                <td><strong>Remaining</strong></td>
+                                <td><strong>Remaining payment</strong></td>
                                 <td><strong class='text-danger'>Rs. {{object.remaining_payment}}</strong></td>
                             </tr>
                         </tbody>
                     </table>
+                    {% if not object.balanced and form.fields|length > 1%}
                     <a href="{% url 'inventory:quick-payment' object.id%}" class="btn btn-outline-success">Add Payment</a>
+                    {% endif %}
                 </div>
             </div>
         {% else %}

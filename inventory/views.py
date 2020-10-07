@@ -19,7 +19,7 @@ def allowed_users(allowed_types=[]):
                 if request.user._type in allowed_types:
                     return view_func(request, *args, **kwargs)
             else:
-                return redirect('/')
+                return redirect(reverse('account_login'))
         return wrapper_func
     return decorator
 
@@ -121,6 +121,7 @@ def add_to_inventory(request):
         return redirect("inventory:items-list")
     return render(request, "inventory/small-form.html", context)
 
+@allowed_users(allowed_types = ['ADMIN'])
 def TransactionListView(request):
     context = {'title':'Transactions List'}
     return render(request, 'inventory/transactions.html', context)

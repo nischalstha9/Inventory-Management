@@ -33,13 +33,14 @@
             <td>{{payment.date}}</td>
             <td>{{payment.transaction.id}}</td>
             <td>{{payment.transaction.vendor_client}}</td>
-            <td><a href="{% url 'inventory:transaction-update' payment.transaction.id%}">{{payment.transaction}}</a>{% if payment.transaction.balanced %}<span class='ml-2 badge badge-success'>{% else %}<span class='ml-2 badge badge-danger'>{% endif %}{{payment.transaction.balanced}}</span></td>
+            <td>{{payment.transaction}}{% if payment.transaction.balanced %}<span class='ml-2 badge badge-success'>{% else %}<span class='ml-2 badge badge-danger'>{% endif %}{{payment.transaction.balanced}}</span></td>
             <td>Rs. {{payment.amount}}</td>
             <td>
                 {% if payment.transaction.balanced %}
-                    -
+                    <a href="{% url 'inventory:transaction-update' payment.transaction.id%}" class="btn mt-1 btn-small btn-info">View/Edit Transaction</a>
                 {% else %}
                     <a href="{% url 'inventory:quick-payment' payment.transaction.id%}" class="btn btn-small btn-warning">Add Payment</a>
+                    <a href="{% url 'inventory:transaction-update' payment.transaction.id%}" class="btn mt-1 btn-small btn-info">View/Edit Transaction</a>
                 {% endif %}
             </td>
         </tr>
