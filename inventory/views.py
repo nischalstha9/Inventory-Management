@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView
-from .forms import ItemCreationForm, DebitTransactionForm, CreditTransactionForm, DebitPaymentForm, CreditPaymentForm
+from .forms import ItemCreationForm, DebitTransactionForm, CreditTransactionForm, DebitPaymentForm, CreditPaymentForm,PaymentForm
 from .models import Item, DebitTransaction, Category, CreditTransaction, Payment, Transaction
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.urls import reverse
@@ -228,14 +228,14 @@ def DebitTransactionPaymentCreateView(request):
     if request.method=="POST":
         trans = request.POST.get('transaction')
         amt = int(request.POST.get('amount'))
+        amt2 = int(request.POST.get('amount_2'))
         trans = DebitTransaction.objects.get(id=trans)
         trans.paid = trans.paid + amt
-        if amt > trans.remaining_payment:
-            messages.warning(request, "Paid Amount Cannot Be Greater than Remaining Payment")
+        if amt > trans.remaining_payment and amt!=amt2:
+            messages.warning(request, "Both Payment amount should match and cannot be more than Remaining amount.")
             return render(request, "inventory/small-form.html", context)
         trans.save()
         Payment.objects.create(transaction = trans, amount = amt)
-        # return reverse("inventory:debit-transactions")
     return render(request, "inventory/small-form.html", context)
 
 @allowed_users(allowed_types = ['ADMIN'])
@@ -248,14 +248,14 @@ def CreditTransactionPaymentCreateView(request):
     if request.method=="POST":
         trans = request.POST.get('transaction')
         amt = int(request.POST.get('amount'))
+        amt2 = int(request.POST.get('amount_2'))
         trans = CreditTransaction.objects.get(id=trans)
         trans.paid = trans.paid + amt
-        if amt > trans.remaining_payment:
-            messages.warning(request, "Paid Amount Cannot Be Greater than Remaining Payment")
+        if amt > trans.remaining_payment and amt != amt2:
+            messages.warning(request, "Both Payment amount should match and cannot be more than Remaining amount.")
             return render(request, "inventory/small-form.html", context)
         trans.save()
         Payment.objects.create(transaction = trans, amount = amt)
-        # return reverse("inventory:debit-transactions")
     return render(request, "inventory/small-form.html", context)
 
 class DebitPaymentListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -302,8 +302,7 @@ class CreditPaymentListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return qs.order_by('-id')
 
 class QuickPaymentCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
-    model = Payment
-    fields = ['amount']
+    form_class = PaymentForm
     template_name = "inventory/small-form.html"
     def test_func(self):
         return self.request.user._type == 'ADMIN'
@@ -321,13 +320,14 @@ class QuickPaymentCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView
         transaction = get_object_or_404(Transaction, id = t_id)
         form.instance.transaction = transaction
         amt = float(form.data['amount'])
-        if transaction.remaining_payment >= amt:
+        amt2 = float(form.data['amount_2'])
+        if transaction.remaining_payment >= amt and amt == amt2:
             transaction.paid += amt
             transaction.save()
         else:
-            messages.warning(self.request, "Payment amount cant be more than Remaining amount.")
+            messages.warning(self.request, "Both Payment amount should match and cannot be more than Remaining amount.")
             return redirect(reverse("inventory:quick-payment", kwargs={'pk':t_id}))
         form.save()
-        return redirect(reverse('inventory:debit-transactions'))
+        return redirect(reverse('inventory:payments-list'))
     def get_success_url(self):
-        return redirect(reverse('inventory:debit-transactions'))
+        return redirect(reverse('inventory:payments-list'))

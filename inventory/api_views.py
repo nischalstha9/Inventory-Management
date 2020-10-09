@@ -34,6 +34,11 @@ class TransactionDetailAPIView(RetrieveAPIView):
     queryset = Transaction.objects.all()
     permission_classes = [IsStaff]
 
+class PaymentDetailAPIView(RetrieveAPIView):
+    serializer_class = PaymentSerializer
+    queryset = Payment.objects.all()
+    permission_classes = [IsStaff]
+
 class ItemDetailAPIView(RetrieveAPIView):
     serializer_class = ItemDetailSerializer
     queryset = Item.objects.all()
@@ -48,15 +53,13 @@ class TransactionListAPIView(ListAPIView):
     search_fields = ['vendor_client', 'item__name',]
     pagination_class = StandardResultsSetPagination
     filterset_fields = {
-    'date':['gte', 'lte', 'date__range'],'balanced':['exact'], '_type':['exact']
-    }
+    'date':['gte', 'lte', 'date__range'],'balanced':['exact'], '_type':['exact'], 'id':['exact']}
 
 class PaymentListAPIView(ListAPIView):
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
     permission_classes = [IsStaff]
     filter_backends = (filters.DjangoFilterBackend, SearchFilter)
-    filterset_fields = ()
     search_fields = ['transaction__vendor_client', 'transaction__item__name',]
     pagination_class = StandardResultsSetPagination
     filterset_fields = {

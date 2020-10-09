@@ -1,19 +1,19 @@
 //jquery for loading all paymetns list
 $(document).ready( function () {
     var pages = 1
-    function tableData(page=1, trans_type='', balanced='', date=', ', search = ''){
-        var header = "All Transactions"
+    function tableData(page=1, trans_type='', balanced='', date=', ', search = '', trans_id=''){
+        var header = "Payment for All Transactions"
         if(trans_type=='STOCK+IN'){
-            header = 'Stock Bought Transactions'
+            header = 'Payment for Stock Bought Transactions'
         }else if(trans_type=='STOCK+OUT'){
-            header = 'Stock Sold Transactions'
+            header = 'Payment for Stock Sold Transactions'
         }else{
             header = header
         }
         if (date != ', ') {
-            var url = `${window.location.protocol}//${window.location.host}/inventory/api/payments/?page=${page}&transaction___type=${trans_type}&transaction__balanced=${balanced}&date__date__range=${date}&search=${search}`
+            var url = `${window.location.protocol}//${window.location.host}/inventory/api/payments/?page=${page}&transaction___type=${trans_type}&transaction__balanced=${balanced}&date__date__range=${date}&search=${search}&transaction__id=${trans_id}`
         }else{
-            var url = `${window.location.protocol}//${window.location.host}/inventory/api/payments/?page=${page}&transaction___type=${trans_type}&transaction__balanced=${balanced}&search=${search}`
+            var url = `${window.location.protocol}//${window.location.host}/inventory/api/payments/?page=${page}&transaction___type=${trans_type}&transaction__balanced=${balanced}&search=${search}&transaction__id=${trans_id}`
         }
         var td = ''
         $.ajax({
@@ -37,7 +37,7 @@ $(document).ready( function () {
                         tr = `
                         <tr>
                             <td>${paymt[e].date}</td>
-                            <td>${paymt[e].id}</td>
+                            <td>${paymt[e].trans_id}</td>
                             <td>${paymt[e].vendor_client}</td>
                             <td>${paymt[e].transaction}</td>
                             <td>Rs. ${paymt[e].amount}</td>
@@ -67,15 +67,24 @@ $(document).ready( function () {
     var sdate = ''
     var edate = ''
     var date = sdate + ', ' +edate
+    var trans_id = ''
+    $("#id-search-filter").keypress(function(e){
+        if(e.which == 13) {
+            e.preventDefault();
+            page = 1
+            trans_id = e.target.value
+            tableData(page, trans_type, balanced, date, search, trans_id);
+        }
+    })
     $("#Transasction_Filter").change(function(e){
         page = 1
         trans_type = e.target.value
-        tableData(page, trans_type, balanced, date, search);
+        tableData(page, trans_type, balanced, date, search, trans_id);
     })
     $("#Balance_Filter").change(function(e){
         page = 1
         balanced = e.target.value
-        tableData(page, trans_type, balanced, date, search);
+        tableData(page, trans_type, balanced, date, search, trans_id);
     })
     $("#sdate-filter").change(function(e){
         page = 1
@@ -84,7 +93,7 @@ $(document).ready( function () {
             edate = sdate
         }
         date = sdate + ', ' +edate
-        tableData(page, trans_type, balanced, date, search);
+        tableData(page, trans_type, balanced, date, search, trans_id);
     })
     $("#edate-filter").change(function(e){
         page = 1
@@ -93,13 +102,20 @@ $(document).ready( function () {
             sdate = edate
         }
         date = sdate + ', ' +edate
-        tableData(page, trans_type, balanced, date, search);
+        tableData(page, trans_type, balanced, date, search, trans_id);
     })
-    $("#search-filter").keyup(function(e){
-        e.preventDefault();
+    $("#search-filter").keypress(function(e){
+        if(e.which == 13) {
+            e.preventDefault();
+            page = 1
+            search = e.target.value
+            tableData(page, trans_type, balanced, date, search, trans_id);
+        }
+    })
+    $("#clear-filter").click(function(){
         page = 1
-        search = e.target.value
-        tableData(page, trans_type, balanced, date, search);
+        tableData(page = 1);
+        $("#filter-form")[0].reset()
     })
 
     //build pagination

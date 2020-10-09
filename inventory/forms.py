@@ -63,8 +63,16 @@ class CreditTransactionForm(ModelForm):
 class DebitPaymentForm(forms.Form):
     transaction = forms.ModelChoiceField(queryset = DebitTransaction.objects.unpaid())
     amount = forms.IntegerField(required=True)
+    amount_2 = forms.IntegerField(required=True, label='Confirm Amount')
     
 class CreditPaymentForm(forms.Form):
     transaction = forms.ModelChoiceField(queryset = CreditTransaction.objects.unpaid())
     amount = forms.IntegerField(required=True)
+    amount_2 = forms.IntegerField(required=True, label='Confirm Amount')
+
+class PaymentForm(forms.ModelForm):
+    amount_2 = forms.IntegerField(required=True, label='Confirm Amount')
+    class Meta:
+        model = Payment
+        fields = ['amount', 'amount_2']
     

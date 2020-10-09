@@ -1,7 +1,7 @@
 //jquery for loading all transaction list
 $(document).ready( function () {
     var pages = 1
-    function tableData(page=1, trans_type='', balanced='', date=', ', search = ''){
+    function tableData(page=1, trans_type='', balanced='', date=', ', search = '', trans_id=''){
         var header = "All Transactions"
         if(trans_type=='STOCK+IN'){
             header = 'Stock Bought Transactions'
@@ -11,9 +11,9 @@ $(document).ready( function () {
             header = header
         }
         if (date != ', ') {
-            var url = `${window.location.protocol}//${window.location.host}/inventory/api/transactions/?page=${page}&_type=${trans_type}&balanced=${balanced}&date__date__range=${date}&search=${search}`
+            var url = `${window.location.protocol}//${window.location.host}/inventory/api/transactions/?page=${page}&_type=${trans_type}&balanced=${balanced}&date__date__range=${date}&search=${search}&id=${trans_id}`
         }else{
-            var url = `${window.location.protocol}//${window.location.host}/inventory/api/transactions/?page=${page}&_type=${trans_type}&balanced=${balanced}&search=${search}`
+            var url = `${window.location.protocol}//${window.location.host}/inventory/api/transactions/?page=${page}&_type=${trans_type}&balanced=${balanced}&search=${search}&id=${trans_id}`
         }
         var td = ''
         $.ajax({
@@ -38,6 +38,7 @@ $(document).ready( function () {
                         tr = `
                         <tr>
                             <td>${trans[e].date}</td>
+                            <td>${trans[e].id}</td>
                             <td>${trans[e].vendor_client}</td>
                             <td><a id='modal-item' href='#' value='${trans[e].item_id}'>${trans[e].item}</a></td>
                             <td>${trans[e]._type}</td>
@@ -71,46 +72,61 @@ $(document).ready( function () {
     var balanced = ''
     var sdate = ''
     var edate = ''
+    var trans_id = ''
     var date = sdate + ', ' +edate
     $("#Transasction_Filter").change(function(e){
         page = 1
         trans_type = e.target.value
-        tableData(page, trans_type, balanced, date, search);
+        tableData(page, trans_type, balanced, date, search, trans_id);
     })
     $("#Balance_Filter").change(function(e){
         page = 1
         balanced = e.target.value
-        tableData(page, trans_type, balanced, date, search);
+        tableData(page, trans_type, balanced, date, search, trans_id);
     })
     $("#sdate-filter").change(function(e){
         page = 1
         sdate = e.target.value
-        if (edate == '') {
+        if (edate == '' || edate<sdate) {
             edate = sdate
         }
         date = sdate + ', ' +edate
-        tableData(page, trans_type, balanced, date, search);
+        tableData(page, trans_type, balanced, date, search, trans_id);
     })
     $("#edate-filter").change(function(e){
         page = 1
         edate = e.target.value
-        if (sdate == '') {
+        if (sdate == '' || sdate>edate) {
             sdate = edate
         }
         date = sdate + ', ' +edate
-        tableData(page, trans_type, balanced, date, search);
+        tableData(page, trans_type, balanced, date, search, trans_id);
     })
-    $("#search-filter").keyup(function(e){
-        e.preventDefault();
+    $("#search-filter").keypress(function(e){
+        if(e.which == 13){
+            e.preventDefault();
+            page = 1
+            search = e.target.value
+            tableData(page, trans_type, balanced, date, search, trans_id);
+        }
+    })
+    $("#id-search-filter").keypress(function(e){
+        if(e.which == 13) {
+            e.preventDefault();
+            page = 1
+            trans_id = e.target.value
+            tableData(page, trans_type, balanced, date, search, trans_id);
+        }
+    })
+    $("#clear-filter").click(function(){
         page = 1
-        search = e.target.value
-        tableData(page, trans_type, balanced, date, search);
+        tableData(page = 1);
+        $("#filter-form")[0].reset()
     })
 
     //build pagination
     function paginationHtml(pages){
         var next = (page==pages)?"<li class='page-item disabled'><a class='page-link' href='# id='nextBtn'>Next</a></li>":"<li class='page-item'><a class='page-link' href='#' id='nextBtn'>Next</a></li>"
-        
         var prev = (page==1)?"<li class='page-item disabled'><a class='page-link' href='#' id='previousBtn' tabindex='-1'>Previous</a></li>":"<li class='page-item'><a class='page-link' href='#' id='previousBtn' tabindex='-1'>Previous</a></li>"
         var temp = `
         <nav aria-label="...">
@@ -122,7 +138,6 @@ $(document).ready( function () {
         `
         $(".pagination-span").html(temp);
     }
-
     $('.pagination-span').on('click', '#previousBtn', function (){
         page = page>1?page-1:page
         tableData(page, trans_type, balanced, date);
@@ -130,8 +145,7 @@ $(document).ready( function () {
     $('.pagination-span').on('click', '#nextBtn', function (){
         page = page!=pages?page+1:page
         tableData(page, trans_type, balanced, date);
-    });    
-    
+    });
     $('#table_id').on('click', '#modal-item', function (e){
         e.preventDefault();
         var item_id = e.target.attributes.value.value

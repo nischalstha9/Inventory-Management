@@ -9,11 +9,12 @@ class PaymentSerializer(ModelSerializer):
     transaction = SerializerMethodField()
     date = SerializerMethodField()
     balanced = SerializerMethodField()
+    trans_id = SerializerMethodField()
     add_pay_url = SerializerMethodField() #i was lazy so i didnt made custom hyperlink serializers
     view_update_trans_url = SerializerMethodField()
     class Meta:
         model = Payment
-        fields = ('transaction','amount','date', 'id', 'vendor_client', 'add_pay_url', 'view_update_trans_url', 'balanced')
+        fields = ('transaction','amount','date', 'id', 'vendor_client', 'add_pay_url', 'view_update_trans_url', 'balanced', 'trans_id')
     def get_vendor_client(self, obj):
         return obj.transaction.vendor_client
     def get_transaction(self, obj):
@@ -26,6 +27,8 @@ class PaymentSerializer(ModelSerializer):
         return timezone.localtime(obj.date).strftime("%b. %d, %Y")
     def get_balanced(self, obj):
         return obj.transaction.balanced
+    def get_trans_id(self, obj):
+        return obj.transaction.id
 
 class CategoryChartSerializer(ModelSerializer):
     items_count = serializers.SerializerMethodField(read_only=True)
@@ -52,7 +55,6 @@ class TransactionSerializer(ModelSerializer):
     item = SerializerMethodField()
     date = SerializerMethodField()
     item_id = SerializerMethodField()
-    # payments = SerializerMethodField()
     class Meta:
         model = Transaction
         fields = ['id', 'vendor_client', 'date', 'item_id', 'item','_type', 'quantity', 'paid', 'payable', 'remaining_payment', 'pay_url', 'balanced', 'cost', 'update_url', 'is_debit']
@@ -68,11 +70,6 @@ class TransactionSerializer(ModelSerializer):
         # return datetime.strptime(obj.date).date()
     def get_item_id(self, obj):
         return obj.item.id
-    # def get_payments(self, obj):
-    #     payment_qs = Payment.objects.filter(transaction=obj)
-    #     payments = PaymentSerializer(payment_qs, many=True, context=self.context).data
-    #     return payments
-
 
 class ItemDetailSerializer(ModelSerializer):
     category = SerializerMethodField()

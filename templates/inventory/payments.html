@@ -1,11 +1,11 @@
 {% extends 'partial/base.html' %}
 {% load static %}
 {% block content %}
-<a href="{% url 'inventory:sell-stock' %}" class="mx-2 btn btn-success" style="float:right;">Sell Stock</a>
-<a href="{% url 'inventory:add-stock' %}" class="mx-2 btn btn-outline-dark" style="float:right;">Add Stock</a>
+<a href="{% url 'inventory:dr-payment-create' %}" class="mx-2 btn btn-outline-dark" style="float:right;">Add Stock Bought Payment</a>
+<a href="{% url 'inventory:cr-payment-create' %}" class="mx-2 btn btn-outline-dark" style="float:right;">Add Stock Sold Payment</a>
 <h1 id='header'></h1>
 <hr>
-<form action="" method="get">
+<form action="" method="get" id='filter-form'>
     <div class="form-row">
     <div class="form-group col-md-3">
       <label for="inputState"><h6>Type:</h6></label>
@@ -36,8 +36,16 @@
     </div>
 
     <div class="form-group col-md-4">
-    <label for="inputState"><h6>Search</h6></label>
       <input type="text" autocomplete="false" class='form-control' id='search-filter' placeholder='Search By Product or Vendor/Client'>
+    </div>
+
+    <div class="form-group col-md-4">
+      <input type="text" autocomplete="false" class='form-control' id='id-search-filter' placeholder='Search By Transaction ID'>
+    </div>
+
+    <div class="form-group col-md-4">
+    <label for="inputState"><h6></h6></label>
+      <input type="button" autocomplete="false" class='btn btn-secondary' id='clear-filter' value='Clear Filters'>
     </div>
 </form>
 <hr>
@@ -58,10 +66,5 @@
 <span class="pagination-span"></span>
 {% endblock content %}
 {% block javascript %}
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="{% static 'custom_js/payments_list.js' %}"></script>
-{% comment %}
-<script src="{% static 'custom_js/transaction_list.js' %}"></script>
-<script src="{% static 'custom_js/get_item_info_trans.js' %}"></script>
-{% endcomment %}
 {% endblock javascript %}

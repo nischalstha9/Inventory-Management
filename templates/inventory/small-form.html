@@ -1,5 +1,6 @@
 {% extends 'partial/base.html' %}
 {% load static %}
+{% load class_name %}
 {% load crispy_forms_tags %}
 {% block content %}
 <h1>{{header}}</h1><hr>
@@ -30,7 +31,7 @@
                     {% if object.balanced %} <span class="badge badge-success">BALANCED</span> {% endif %}
                     <h6 class="card-text"></h6>
                 </div>
-            </div>
+            </div><br>
             <div class="card">
                 <div class="card-body">
                     <h4>Payments for Transaction</h4><hr>
@@ -58,8 +59,8 @@
                             </tr>
                         </tbody>
                     </table>
-                    {% if not object.balanced and form.fields|length > 1%}
-                    <a href="{% url 'inventory:quick-payment' object.id%}" class="btn btn-outline-success">Add Payment</a>
+                    {% if not object.balanced and object|class_name == 'Transaction'%}
+                        <a href="{% url 'inventory:quick-payment' object.id%}" class="btn btn-outline-success">Add Payment</a>
                     {% endif %}
                 </div>
             </div>
@@ -71,39 +72,12 @@
 
 {% endblock content %}
 {% block javascript %}
+<script src="{% static 'custom_js/get_transaction_payments.js' %}"></script>
 <script>
 $(function() {
     $('#id_transaction').change(function(e){
         var trans_id = e.target.value
-        var url = `${window.location.protocol}//${window.location.host}/inventory/transaction/${trans_id}`
-        $.ajax({
-            url: url,
-            method : "GET",
-            data:{},
-            success: function(data){
-                var html = `
-                <div class="card">
-                    <div class="card-header">
-                        Transaction ID: ${trans_id} - ${data.item}
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Payment For Item: ${data.item}</h5><hr>
-                        <h6>Date of Transaction: <span class='text-secondary'>${data.date}<span></h6>
-                        <h6>Vendor/ Client Name: <span class='text-secondary'>${data.vendor_client}<span></h6>
-                        <h6>Quantity: <span class='badge badge-success'>${data.quantity} Units</span></h6>
-                        <h6>Total Payable: <span class='text-warning'>Rs. ${data.payable}</span></h6>
-                        <h6>Total Paid: <span class='text-success'>Rs. ${data.paid}</span></h6>
-                        <h6>Payment Remaining: <span class='text-danger'>Rs. ${data.remaining_payment}</span></h6>
-                        <h6 class="card-text"></h6>
-                    </div>
-                </div>
-                `
-                $(".trans-info").html(html)
-            },
-            error: function(error){
-                console.log(error)
-            }
-        });
+        get_trans_payments(e, trans_id);
     });
     $('#id_item').change(function(e){
         var item_id = e.target.value
