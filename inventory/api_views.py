@@ -1,6 +1,6 @@
-from .models import Item, Category, Transaction
+from .models import Item, Category, Transaction, Payment
 from rest_framework.generics import ListAPIView, RetrieveAPIView
-from .serializers import CategoryChartSerializer, ItemQuantitySerializer, TransactionSerializer, ItemDetailSerializer
+from .serializers import CategoryChartSerializer, ItemQuantitySerializer, TransactionSerializer, ItemDetailSerializer, PaymentSerializer
 from rest_framework import permissions
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
@@ -50,3 +50,14 @@ class TransactionListAPIView(ListAPIView):
     filterset_fields = {
     'date':['gte', 'lte', 'date__range'],'balanced':['exact'], '_type':['exact']
     }
+
+class PaymentListAPIView(ListAPIView):
+    serializer_class = PaymentSerializer
+    queryset = Payment.objects.all()
+    permission_classes = [IsStaff]
+    filter_backends = (filters.DjangoFilterBackend, SearchFilter)
+    filterset_fields = ()
+    search_fields = ['transaction__vendor_client', 'transaction__item__name',]
+    pagination_class = StandardResultsSetPagination
+    filterset_fields = {
+    'date':['date__range'],'transaction__balanced':['exact'], 'transaction___type':['exact'], 'transaction__id':['exact']}

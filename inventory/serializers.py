@@ -2,12 +2,30 @@ from rest_framework.serializers import ModelSerializer, Serializer, SerializerMe
 from rest_framework import serializers
 from .models import Category, Item, Payment, DebitTransaction, Transaction, CreditTransaction
 from django.db.models import Count
+from django.urls import reverse
 
 class PaymentSerializer(ModelSerializer):
+    vendor_client = SerializerMethodField()
+    transaction = SerializerMethodField()
+    date = SerializerMethodField()
+    balanced = SerializerMethodField()
+    add_pay_url = SerializerMethodField() #i was lazy so i didnt made custom hyperlink serializers
+    view_update_trans_url = SerializerMethodField()
     class Meta:
         model = Payment
-        fields = ('transaction','amount','date')
-
+        fields = ('transaction','amount','date', 'id', 'vendor_client', 'add_pay_url', 'view_update_trans_url', 'balanced')
+    def get_vendor_client(self, obj):
+        return obj.transaction.vendor_client
+    def get_transaction(self, obj):
+        return str(obj.transaction)
+    def get_add_pay_url(self, obj):
+        return obj.transaction.get_absolute_url()
+    def get_view_update_trans_url(self, obj):
+        return str(reverse('inventory:transaction-update', kwargs={'pk':obj.transaction.id}))
+    def get_date(self, obj):
+        return timezone.localtime(obj.date).strftime("%b. %d, %Y")
+    def get_balanced(self, obj):
+        return obj.transaction.balanced
 
 class CategoryChartSerializer(ModelSerializer):
     items_count = serializers.SerializerMethodField(read_only=True)

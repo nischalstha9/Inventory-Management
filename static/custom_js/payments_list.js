@@ -1,4 +1,4 @@
-//jquery for loading all transaction list
+//jquery for loading all paymetns list
 $(document).ready( function () {
     var pages = 1
     function tableData(page=1, trans_type='', balanced='', date=', ', search = ''){
@@ -11,9 +11,9 @@ $(document).ready( function () {
             header = header
         }
         if (date != ', ') {
-            var url = `${window.location.protocol}//${window.location.host}/inventory/api/transactions/?page=${page}&_type=${trans_type}&balanced=${balanced}&date__date__range=${date}&search=${search}`
+            var url = `${window.location.protocol}//${window.location.host}/inventory/api/payments/?page=${page}&transaction___type=${trans_type}&transaction__balanced=${balanced}&date__date__range=${date}&search=${search}`
         }else{
-            var url = `${window.location.protocol}//${window.location.host}/inventory/api/transactions/?page=${page}&_type=${trans_type}&balanced=${balanced}&search=${search}`
+            var url = `${window.location.protocol}//${window.location.host}/inventory/api/payments/?page=${page}&transaction___type=${trans_type}&transaction__balanced=${balanced}&search=${search}`
         }
         var td = ''
         $.ajax({
@@ -22,33 +22,28 @@ $(document).ready( function () {
             data:{},
             success:function(data){
                 $("#header").html(`${header} (${data.count})`)//update count on header
-                var trans = data.results
+                var paymt = data.results
                 pages = Math.ceil(data.count/5)
                 if (pages>=1){
                     paginationHtml(pages)
                 }
-                if (trans.length >0){
-                    $.each(trans, function(e){
-                        bal_or_rem = `<span class="badge badge-danger">Rs. ${ trans[e].remaining_payment } remaining</span>`
-                        pay = `<a href="${trans[e].pay_url}" class="btn btn-sm btn-warning btn-small btn-block">Add Payment</a><a class='btn mt-1 btn-sm btn-info btn-block' href="${trans[e].update_url}">View/Edit</a>`
-                        if(trans[e].balanced){
-                            bal_or_rem = `<span class="badge badge-success">BALANCED</span>`
-                            pay = `<a href="#" class="btn btn-sm btn-dark disabled btn-block">BALANCED</a><a class='btn mt-1 btn-sm btn-info btn-block' href="${trans[e].update_url}">View/Edit</a>`
+                if (paymt.length >0){
+                    $.each(paymt, function(e){
+                        add_pay_btn = `<a href='${paymt[e].add_pay_url}' class="btn btn-warning btn-sm btn-block">Add Payment</a>`
+                        view_edit_trans_btn = `<a href="${paymt[e].view_update_trans_url}" class="btn btn-sm btn-info btn-sm btn-block">View/ Edit</a>`
+                        if(paymt[e].balanced){
+                            add_pay_btn = `<a href='${paymt[e].add_pay_url}' class="btn btn-success btn-sm btn-block disabled">Balanced</a>`
                         }                        
                         tr = `
                         <tr>
-                            <td>${trans[e].date}</td>
-                            <td>${trans[e].vendor_client}</td>
-                            <td><a id='modal-item' href='#' value='${trans[e].item_id}'>${trans[e].item}</a></td>
-                            <td>${trans[e]._type}</td>
-                            <td>${trans[e].quantity}</td>
-                            <td>Rs. ${trans[e].cost}</td>
-                            <td>Rs. ${trans[e].payable}</td>
+                            <td>${paymt[e].date}</td>
+                            <td>${paymt[e].id}</td>
+                            <td>${paymt[e].vendor_client}</td>
+                            <td>${paymt[e].transaction}</td>
+                            <td>Rs. ${paymt[e].amount}</td>
                             <td>
-                                Rs. ${trans[e].paid}${bal_or_rem}
-                            </td>
-                            <td>
-                                ${pay}
+                                ${add_pay_btn}
+                                ${view_edit_trans_btn}
                             </td>
                         </tr>
                         `
@@ -85,7 +80,7 @@ $(document).ready( function () {
     $("#sdate-filter").change(function(e){
         page = 1
         sdate = e.target.value
-        if (edate == '') {
+        if (edate == '' || edate<sdate) {
             edate = sdate
         }
         date = sdate + ', ' +edate
@@ -94,7 +89,7 @@ $(document).ready( function () {
     $("#edate-filter").change(function(e){
         page = 1
         edate = e.target.value
-        if (sdate == '') {
+        if (sdate == '' || sdate>edate) {
             sdate = edate
         }
         date = sdate + ', ' +edate
@@ -110,7 +105,6 @@ $(document).ready( function () {
     //build pagination
     function paginationHtml(pages){
         var next = (page==pages)?"<li class='page-item disabled'><a class='page-link' href='# id='nextBtn'>Next</a></li>":"<li class='page-item'><a class='page-link' href='#' id='nextBtn'>Next</a></li>"
-        
         var prev = (page==1)?"<li class='page-item disabled'><a class='page-link' href='#' id='previousBtn' tabindex='-1'>Previous</a></li>":"<li class='page-item'><a class='page-link' href='#' id='previousBtn' tabindex='-1'>Previous</a></li>"
         var temp = `
         <nav aria-label="...">

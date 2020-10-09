@@ -15,7 +15,7 @@ SECRET_KEY = 'h&%6kc9vqk22)q+lqzq_14ebsp-d8cpmf3dk(swt_h&+w3_1w^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 1
 
-ALLOWED_HOSTS = ['127.0.0.1',]
+ALLOWED_HOSTS = ['127.0.0.1','surendra095.pythonanywhere.com']
 
 
 # Application definition
@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'django_filters',
     'django_summernote',
     'rangefilter',
-    
+    'corsheaders',
+
 ]
 
 AUTH_USER_MODEL = 'accounts.User'
@@ -52,11 +53,18 @@ AUTH_USER_MODEL = 'accounts.User'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://surendra095.pythonanywhere.com",
+    "https://surendra095.pythonanywhere.com",
+    "http://127.0.0.1"
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -88,7 +96,7 @@ SUMMERNOTE_CONFIG = {
         'width': '100%',
         'height': '480',
     },
-    
+
 }
 
 AUTHENTICATION_BACKENDS = [

@@ -94,7 +94,7 @@
             e.preventDefault();
             q = e.target.value
             if (q != ''){
-              var url = `http://${window.location.host}/inventory/item-quantity/?search=${q}`
+              var url = `${window.location.protocol}//${window.location.host}/inventory/item-quantity/?search=${q}`
               var td = ``
               $.ajax({
                 url : url,

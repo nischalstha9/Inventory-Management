@@ -26,14 +26,21 @@ class ItemAdmin(SummernoteModelAdmin):
 
 admin.site.register(Item, ItemAdmin)
 
+class PaymentInline(admin.TabularInline):
+    model = Payment
+    fields = ('date', 'amount')
+    readonly_fields = ['date']
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    search_fields = ['item','vendor_client']
+    search_fields = ['item__name','vendor_client']
     list_display = ('vendor_client', 'date', 'item', 'quantity', 'contact', '_type', 'remaining_payment', 'balanced')
     list_editable = ['contact']
     list_filter = (('date', DateRangeFilter),'_type', 'item','vendor_client', 'balanced')
     readonly_fields = ('item','quantity','_type','remaining_payment','cost', 'paid')
+    inlines = [
+        PaymentInline,
+    ]
 
 @admin.register(DebitTransaction)
 class DebitTransactionAdmin(TransactionAdmin):
@@ -49,5 +56,4 @@ class PaymentAdmin(admin.ModelAdmin):
     list_display = ('transaction', 'amount')
     readonly_fields = ('transaction', 'amount')
     list_filter = ('transaction__item', 'transaction__balanced')
-
-    
+  

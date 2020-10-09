@@ -126,6 +126,11 @@ def TransactionListView(request):
     context = {'title':'Transactions List'}
     return render(request, 'inventory/transactions.html', context)
 
+@allowed_users(allowed_types = ['ADMIN'])
+def PaymentListView(request):
+    context = {'title':'Payments List'}
+    return render(request, 'inventory/payments.html', context)
+
 class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, FilterView):
     model = DebitTransaction
     template_name = "inventory/dr_transactions.html"

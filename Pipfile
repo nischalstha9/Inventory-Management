@@ -27,6 +27,7 @@ djangorestframework = "*"
 django-filter = "*"
 django-summernote = "*"
 django-admin-rangefilter = "*"
+django-cors-headers = "*"
 
 [requires]
 python_version = "3.8"

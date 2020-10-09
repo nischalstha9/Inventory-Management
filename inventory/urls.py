@@ -1,6 +1,6 @@
 from django.urls import path, include
-from .views import index, ItemCreationVIew, ItemListView, ItemUpdateVIew, add_to_inventory, DebitTransactionListView, TransactionUpdateView, sell_from_inventory, CreditTransactionListView, CreditTransactionPaymentCreateView, DebitTransactionPaymentCreateView, DebitPaymentListView, CreditPaymentListView, CategoryCreateView, ItemDeleteView, QuickPaymentCreateView, TransactionListView
-from .api_views import ItemQuantity, TransactionDetailAPIView, ItemDetailAPIView,TransactionListAPIView
+from .views import index, ItemCreationVIew, ItemListView, ItemUpdateVIew, add_to_inventory, DebitTransactionListView, TransactionUpdateView, sell_from_inventory, CreditTransactionListView, CreditTransactionPaymentCreateView, DebitTransactionPaymentCreateView, DebitPaymentListView, CreditPaymentListView, CategoryCreateView, ItemDeleteView, QuickPaymentCreateView, TransactionListView,PaymentListView
+from .api_views import ItemQuantity, TransactionDetailAPIView, ItemDetailAPIView,TransactionListAPIView, PaymentListAPIView
 
 app_name = 'inventory'
 urlpatterns = [
@@ -9,6 +9,7 @@ urlpatterns = [
     path("transaction/<int:pk>/", TransactionDetailAPIView.as_view(), name="transaction-detail-api"),
     path("item-quantity/", ItemQuantity.as_view(), name="cat-cnt"), 
     path("api/transactions/", TransactionListAPIView.as_view(), name="transactions-api-list"), 
+    path("api/payments/", PaymentListAPIView.as_view(), name="payments-api-list"), 
     ############################################DIVIDER############################################
 
     path("category/new/", CategoryCreateView.as_view() , name="new-category"),
@@ -28,6 +29,8 @@ urlpatterns = [
     
     path("transactions/<int:pk>/quickpay/", QuickPaymentCreateView.as_view(), name="quick-payment"),
 
+
+    path("payment/all/", PaymentListView, name="payments-list"),
     path("payment/dr/new/", DebitTransactionPaymentCreateView, name="dr-payment-create"),
     path("payment/cr/new/", CreditTransactionPaymentCreateView, name="cr-payment-create"),
     path("payments/dr/", DebitPaymentListView.as_view(), name="dr-payments"),

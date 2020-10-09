@@ -70,10 +70,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     # def get_absolute_url(self):
     #     return "/users/%i/" % (self.pk)
 
-# class StudentManager(models.Manager):
-#     def get_queryset(self, *args, **kwargs):
-#         return super().get_queryset(*args, **kwargs).filter(_type=User.Types.STUDENT)
-
 # class StudentProfile(models.Model):
 #     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="StudentProfile")#related_name is used to call object
 #     roll = models.IntegerField()
@@ -85,13 +81,33 @@ class User(AbstractBaseUser, PermissionsMixin):
 #     def __str__(self):
 #         return f"{self.user.first_name}'s Profile"
 
-# class Student(User):
-#     base_type = User.Types.STUDENT
-#     objects = StudentManager()
+class StaffManager(models.Manager):
+    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).filter(_type=User.Types.STAFF)
 
-#     class Meta:
-#         proxy = True
+class Staff(User):
+    base_type = User.Types.STAFF
+    objects = StaffManager()
 
-#     @property
-#     def more(self):
-#         return self.StudentProfile
+    class Meta:
+        proxy = True
+
+    # @property
+    # def more(self):
+    #     return self.StudentProfile
+
+
+class AdminManager(models.Manager):
+    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).filter(_type=User.Types.ADMIN)
+
+class Admin(User):
+    base_type = User.Types.ADMIN
+    objects = AdminManager()
+
+    class Meta:
+        proxy = True
+
+    # @property
+    # def more(self):
+    #     return self.StudentProfile

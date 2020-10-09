@@ -1,5 +1,5 @@
 var host = window.location.host
-var url = `http://${host}/inventory/item-quantity/?format=json`
+var url = `${window.location.protocol}//${host}/inventory/item-quantity/?format=json`
 var Items = []
 var Item_count = []
 $.ajax({

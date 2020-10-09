@@ -19,7 +19,7 @@ function handleResponse(data){
                 <td>${dr[e].quantity}</td>
                 <td>Rs. ${dr[e].payable}</td>
                 <td>Rs. ${dr[e].paid}</td>
-                <td><a href="http://127.0.0.1:8000/inventory/transactions/${dr[e].id}/quickpay/"><span class="badge badge-warning">Pay Rs. ${ dr[e].remaining_payment }</span></a></td>
+                <td><a href="${dr[e].pay_url}"><span class="badge badge-success">Pay Rs. ${ dr[e].remaining_payment }</span></a></td>
             </tr>
             `
         dr_table_data += dr_data
@@ -38,7 +38,7 @@ function handleResponse(data){
                 <td>${cr[e].quantity}</td>
                 <td>Rs. ${cr[e].payable}</td>
                 <td>Rs. ${cr[e].paid}</td>
-                <td><a href="http://127.0.0.1:8000/inventory/transactions/${dr[e].id}/quickpay/"><span class="badge badge-danger">Pay Rs. ${ cr[e].remaining_payment }</span></a></td>
+                <td><a href="${dr[e].pay_url}"><span class="badge badge-success">Pay Rs. ${ cr[e].remaining_payment }</span></a></td>
             </tr>
             `
         cr_table_data += cr_data
@@ -119,7 +119,7 @@ function handleResponse(data){
 
 function get_item_info_trans(id){
     var item_id = id
-    var url = `http://${window.location.host}/inventory/item/${item_id}/`
+    var url = `${window.location.protocol}//${window.location.host}/inventory/item/${item_id}/`
     $.ajax({
         url: url,
         method : "GET",

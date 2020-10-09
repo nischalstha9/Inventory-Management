@@ -75,7 +75,7 @@
 $(function() {
     $('#id_transaction').change(function(e){
         var trans_id = e.target.value
-        var url = `http://${window.location.host}/inventory/transaction/${trans_id}`
+        var url = `${window.location.protocol}//${window.location.host}/inventory/transaction/${trans_id}`
         $.ajax({
             url: url,
             method : "GET",

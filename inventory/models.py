@@ -150,7 +150,7 @@ class CreditTransaction(Transaction):
 class Payment(models.Model):
     transaction = models.ForeignKey("inventory.Transaction", verbose_name=_("Payment For Transaction"), on_delete=models.CASCADE)
     amount = models.FloatField(_("Amount to add in Transaction"))
-    date = models.DateField(_("Date of Payment"), auto_now_add=True)
+    date = models.DateTimeField(_("Date of Payment"), auto_now_add=True)
 
     class Meta:
         ordering = ['-date']

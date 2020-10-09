@@ -39,6 +39,8 @@
           Payment
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <a class="dropdown-item" href="{% url 'inventory:payments-list' %}">All Payments</a>
+          <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="{% url 'inventory:dr-payments' %}">Stock In Payments</a>
           <a class="dropdown-item" href="{% url 'inventory:cr-payments' %}">Stock Out Payments</a>
           <div class="dropdown-divider"></div>
