@@ -114,7 +114,7 @@ $(document).ready( function () {
     })
     $("#clear-filter").click(function(){
         page = 1
-        tableData(page = 1);
+        tableData(page=1, trans_type='', balanced='', date=', ', search = '', trans_id='')
         $("#filter-form")[0].reset()
     })
 
