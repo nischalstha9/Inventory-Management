@@ -140,11 +140,11 @@ $(document).ready( function () {
     }
     $('.pagination-span').on('click', '#previousBtn', function (){
         page = page>1?page-1:page
-        tableData(page, trans_type, balanced, date);
+        tableData(page, trans_type, balanced, date, search, trans_id);
     });
     $('.pagination-span').on('click', '#nextBtn', function (){
         page = page!=pages?page+1:page
-        tableData(page, trans_type, balanced, date);
+        tableData(page, trans_type, balanced, date, search, trans_id);
     });
     $('#table_id').on('click', '#modal-item', function (e){
         e.preventDefault();
