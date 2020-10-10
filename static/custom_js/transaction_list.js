@@ -138,11 +138,13 @@ $(document).ready( function () {
         `
         $(".pagination-span").html(temp);
     }
-    $('.pagination-span').on('click', '#previousBtn', function (){
+    $('.pagination-span').on('click', '#previousBtn', function (e){
+        e.preventDefault()
         page = page>1?page-1:page
         tableData(page, trans_type, balanced, date, search, trans_id);
     });
-    $('.pagination-span').on('click', '#nextBtn', function (){
+    $('.pagination-span').on('click', '#nextBtn', function (e){
+        e.preventDefault()
         page = page!=pages?page+1:page
         tableData(page, trans_type, balanced, date, search, trans_id);
     });
