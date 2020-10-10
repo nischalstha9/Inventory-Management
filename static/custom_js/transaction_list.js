@@ -120,8 +120,8 @@ $(document).ready( function () {
     })
     $("#clear-filter").click(function(){
         page = 1
-        tableData(page = 1);
         $("#filter-form")[0].reset()
+        tableData(page=1, trans_type='', balanced='', date=', ', search = '', trans_id='')
     })
 
     //build pagination

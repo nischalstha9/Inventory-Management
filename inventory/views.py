@@ -116,7 +116,7 @@ def add_to_inventory(request):
             item.selling_price = sp
         item.save()
         trans = form.save(request.POST)
-        payment = Payment.objects.create(transaction = trans, amount=paid)
+        payment = Payment.objects.create(transaction = trans, amount=paid, base_payment=True)
         payment.save()
         return redirect("inventory:items-list")
     return render(request, "inventory/small-form.html", context)
@@ -154,7 +154,7 @@ class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, FilterVi
 
 class TransactionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Transaction
-    fields = ['contact','remarks']
+    fields = ['quantity', 'contact', 'remarks']
     template_name = "inventory/small-form.html"
     def get_form(self, form_class=None):
         form = super(TransactionUpdateView, self).get_form(form_class)
@@ -168,9 +168,18 @@ class TransactionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
         context["header"] = 'Update Transaction Info'
         context['payments'] = Payment.objects.filter(transaction = self.object.pk)
         return context
-    
     def get_success_url(self):
         return reverse('inventory:debit-transactions')
+    def form_valid(self, form, *args, **kwargs):
+        """Here object refers to form so we were getting item qty of form making errors"""
+        obj_id = self.object.id
+        obj = Transaction.objects.get(id=obj_id)
+        item = obj.item
+        n_qty = int(self.request.POST.get('quantity')) #new quantity from POST
+        item.quantity = item.quantity - obj.quantity + n_qty
+        item.save()
+        form.save()
+        return redirect(reverse('inventory:transaction-update', kwargs = {'pk':obj_id}))
 
 @allowed_users(allowed_types = ['ADMIN'])
 def sell_from_inventory(request):
@@ -194,7 +203,7 @@ def sell_from_inventory(request):
         item.save()
         form.instance._type = 'STOCK OUT'
         trans = form.save()
-        Payment.objects.create(transaction = trans, amount = paid)
+        Payment.objects.create(transaction = trans, amount = paid, base_payment=True)
         return redirect("inventory:items-list")
     return render(request, "inventory/small-form.html", context)
 

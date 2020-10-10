@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import RegexValidator
+from django.shortcuts import get_object_or_404
 
 class CategoryManager(models.Manager):
     def parents(self):
@@ -107,6 +108,10 @@ class Transaction(models.Model):
     
     def get_absolute_url(self):
         return reverse("inventory:quick-payment", kwargs={"pk": self.pk})
+
+    @property
+    def base_payment(self):
+        return get_object_or_404(Payment, transaction=self, base_payment=True)
     
 
 class DebitTransactionManager(models.Manager):
@@ -151,6 +156,7 @@ class Payment(models.Model):
     transaction = models.ForeignKey("inventory.Transaction", verbose_name=_("Payment For Transaction"), on_delete=models.CASCADE)
     amount = models.FloatField(_("Amount to add in Transaction"))
     date = models.DateTimeField(_("Date of Payment"), auto_now_add=True)
+    base_payment = models.BooleanField(_("Is Base Payment"), default=False)
 
     class Meta:
         ordering = ['-date']
