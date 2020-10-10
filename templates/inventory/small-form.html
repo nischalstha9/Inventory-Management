@@ -6,13 +6,6 @@
 <h1>{{header}}</h1><hr>
 <div class="row">
     <div class="col-sm-12 col-md-8 col-lg-6">
-        <form action="" method="post">
-            {% csrf_token %}
-            {{form|crispy}}
-            <input type="submit" name="" id="" class='btn btn-primary' value="Submit Form">
-        </form><br>
-    </div>
-    <div class="col-sm-12 col-md-8 col-lg-6">
         {% comment %} Dont get Confused by searching for object context its automatic by django no context data required {% endcomment %}
         {% if object %}
             <div class="card">
@@ -20,7 +13,7 @@
                     Transaction ID: {{object.transaction_id}} - {{object.item}} - <strong>{% if object.is_debit %}Stock Bought {% else %} Stock Sold {% endif %}</strong>
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">Payment For Item: {{object.item}}</h5><hr>
+                    <h5 class="card-title">Payment For Item: {{object.item}}</h5><br><hr>
                     <h6>Date of Transaction: <span class='text-secondary'>{{object.date}}<span></h6>
                     <h6>Vendor/ Client Name: <span class='text-secondary'>{{object.vendor_client}}<span></h6>
                     <h6>Vendor/ Client Contact: <span class='text-secondary'>{{object.contact}}<span></h6>
@@ -67,6 +60,13 @@
         {% else %}
         <span class='trans-info'><h4>Select Object From Dropdown to view info.</h4></span>
         {% endif %}
+    </div>
+    <div class="col-sm-12 col-md-8 col-lg-6">
+        <form action="" method="post">
+            {% csrf_token %}
+            {{form|crispy}}
+            <input type="submit" name="" id="" class='btn btn-primary' value="Submit Form">
+        </form><br>
     </div>
 </div>
 

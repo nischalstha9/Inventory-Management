@@ -1,0 +1,156 @@
+{% extends 'base_2.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <link rel="icon" type="image/x-icon" href="{% static '../media/favicon.ico' %}">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Inventory Management System By Nischal Shrestha">
+    <meta name="author" content="Nischal Shrestha">
+    {% if title %}
+      <meta property="og:title" content="{{ title }} | Inventory Management">
+    {% else %}
+      <meta property="og:title" content="Inventory Management">
+    {% endif %}
+    <meta property="og:description" content="Inventory Management System By Nischal Shrestha">
+    <meta property="og:url" content="https://khulakhabar.herokuapp.com">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="http://khulakhabar.herokuapp.com/media/ogimage.png">
+    <meta property="og:image:secure_url" content="https://khulakhabar.herokuapp.com/media/ogimage.png">
+    <meta property="fb:app_id" content="2907846842661370">
+    <meta property="og:site_name" content="Inventory Management">
+
+    {% block style %}
+    {% endblock style %}
+
+    
+    <!-- Font Awesome Icons -->
+    {% comment %} <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" crossorigin="anonymous"></script> {% endcomment %}
+
+    <!-- Bootstrap CSS -->
+    {% comment %} <link rel="stylesheet" type="text/css" href="{% static 'news/main.css' %}"> {% endcomment %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
+    <title>{% if title %}{{ title }} | Inventory Management{% else %}Inventory Management{% endif %}</title>
+  </head>
+  <body>
+          {% include 'partial/navbar.html' %}
+          <div class='container' id='page-top'>
+          
+            <div>
+              {% block header %}
+                  <br>
+                  <br>
+                  <br>
+              {% endblock header %}
+              <span id='search-result'></span>
+              {% if messages %}
+                {% for message in messages %}
+                  <div class='alert alert-{{ message.tags }}'>
+                    {{ message }} 
+                  </div>
+                {% endfor %}
+              {% endif %}
+            </div>
+
+            {% block content %}  
+            {% endblock content %}
+            
+          </div>
+
+          
+          <!-- Modal -->
+            <div class="modal fade bd-example-modal-lg" id="myModal" role="dialog">
+              <div class="modal-dialog modal-lg">
+              
+                <!-- Modal content-->
+                <div class="modal-content">
+                  <div id="content-main">
+                      
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+          <!--Modal end-->
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    
+    {% comment %} <script src='{% static 'news/jquery.min.js' %}'></script> {% endcomment %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    {% comment %} <script src='{% static 'news/main.js' %}'></script> {% endcomment %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script>
+      $(document).ready( function () {
+        $("#searchProductForm").keypress(function(e){
+          if(e.which == 13) {
+            e.preventDefault();
+            q = e.target.value
+            if (q != ''){
+              var url = `${window.location.protocol}//${window.location.host}/inventory/item-quantity/?search=${q}`
+              var td = ``
+              $.ajax({
+                url : url,
+                method : "GET",
+                data : {},
+                success: function(data){
+                  $.each(data, function(e){
+                  td += `
+                    <tr>
+                      <td><a href='#' class='s-item-name' value = '${data[e].id}'>${data[e].name}</a></td>
+                      <td>${data[e].quantity} units</td>
+                      <td>Rs. ${data[e].selling_price}</td>
+                    </tr>
+                  `
+                  })
+                  var html = `
+                    <table class="table jumbotron">
+                    <thead>
+                      <tr><h4>Search Results For "${q}"</h4></tr>
+                      <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Quantity Remaining</th>
+                        <th scope="col">Selling Price</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${td}
+                    </tbody>
+                  </table>
+                  `
+                $("#search-result").html(html)
+                },
+                error: function(error){
+                  console.log(error)
+                }
+              })
+            }else{
+              $("#search-result").html('')
+            }
+          }
+        })
+      })
+    </script>
+    <script src="{% static 'custom_js/get_item_info_trans.js' %}"></script>
+    <script>
+      $(document).ready( function () {
+        $('#search-result').on('click', '.s-item-name', function (e){
+          e.preventDefault();
+          id = e.target.attributes.value.value
+          get_item_info_trans(id)
+        });
+      })
+    </script>
+    <!-- Optional JavaScript -->
+    {% block javascript %}
+    {% endblock javascript %}
+  </body>
+</html>

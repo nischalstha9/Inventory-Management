@@ -1,0 +1,159 @@
+{% load static %}
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="/" class="brand-link">
+      <img src="{% static 'dist/img/AdminLTELogo.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+           style="opacity: .8">
+      <span class="brand-text font-weight-light">IMS</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar user panel (optional) -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">  
+        {% if user.is_authenticated %}
+          <div class="image">
+            <img src="{{request.user.profile.dp.url}}" class="img-circle elevation-2" alt="User Image">
+          </div>
+          <div class="info">
+          <a class="text-white mr-2" href="{% url 'profile' %}" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            <p class="d-block">{{request.user.first_name}} {{request.user.last_name}}</p>
+          </a>
+          <a class="btn btn-sm btn-outline-danger" href="{% url 'account_logout' %}">Sign Out?</a>
+        {% else %}
+          <a class="btn mr-1 mb-1 btn-sm btn-outline-success" href="{% url 'account_login' %}">Sign In</a>
+          <a class="btn btn-sm mb-1 btn-warning" href="{% url 'account_signup' %}">Signup</a>
+        {% endif %}
+        </div>
+      </div>
+
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <!-- Add icons to the links using the .nav-icon class
+               with font-awesome or any other icon font library -->
+          <li class="nav-item has-treeview menu-open">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-warehouse"></i>
+              <p>
+                Inventory
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{% url 'inventory:items-list' %}" class="nav-link">
+                  <i class="fas fa-chevron-right"></i>
+                  <p>Inventory List</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'inventory:new-category' %}" class="nav-link">
+                  <i class="fas fa-chevron-right"></i>
+                  <p>New Category</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'inventory:new-item' %}" class="nav-link">
+                  <i class="fas fa-chevron-right"></i>
+                  <p>New Item</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item has-treeview menu-open">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-history"></i>
+              <p>
+                Transactions
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{% url 'inventory:transactions-list' %}" class="nav-link">
+                  <i class="fas fa-chevron-right"></i>
+                  <p>All Transactions</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'inventory:debit-transactions' %}" class="nav-link">
+                  <i class="fas fa-chevron-right"></i>
+                  <p>Stock In Transactions</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'inventory:credit-transactions' %}" class="nav-link">
+                  <i class="fas fa-chevron-right"></i>
+                  <p>Stock Out Transactions</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'inventory:add-stock' %}" class="nav-link">
+                  <i class="fas fa-chevron-right"></i>
+                  <p>Add Stock</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'inventory:sell-stock' %}" class="nav-link">
+                  <i class="fas fa-chevron-right"></i>
+                  <p>Sell Stock</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item has-treeview menu-open">
+            <a href="#" class="nav-link">
+              <i class="fas fa-money-bill-wave-alt"></i>
+              <p>
+                Payment
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{% url 'inventory:payments-list' %}" class="nav-link">
+                  <i class="fas fa-chevron-right"></i>
+                  <p>All Payments</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'inventory:dr-payments' %}" class="nav-link">
+                  <i class="fas fa-chevron-right"></i>
+                  <p>Stock In Payments</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'inventory:cr-payments' %}" class="nav-link">
+                  <i class="fas fa-chevron-right"></i>
+                  <p>Stock Out Payments</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'inventory:dr-payment-create' %}" class="nav-link">
+                  <i class="fas fa-chevron-right"></i>
+                  <p>Add Stock In Payment</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'inventory:cr-payment-create' %}" class="nav-link">
+                  <i class="fas fa-chevron-right"></i>
+                  <p>Add Stock Out Payment</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                Simple Additional Link
+              </p>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
