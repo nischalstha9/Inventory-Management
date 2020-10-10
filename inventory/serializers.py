@@ -12,9 +12,10 @@ class PaymentSerializer(ModelSerializer):
     trans_id = SerializerMethodField()
     add_pay_url = SerializerMethodField() #i was lazy so i didnt made custom hyperlink serializers
     view_update_trans_url = SerializerMethodField()
+    trans_type = SerializerMethodField()
     class Meta:
         model = Payment
-        fields = ('transaction','amount','date', 'id', 'vendor_client', 'add_pay_url', 'view_update_trans_url', 'balanced', 'trans_id')
+        fields = ('transaction','amount','date', 'id', 'vendor_client', 'add_pay_url', 'view_update_trans_url', 'balanced', 'trans_id', 'trans_type')
     def get_vendor_client(self, obj):
         return obj.transaction.vendor_client
     def get_transaction(self, obj):
@@ -29,6 +30,8 @@ class PaymentSerializer(ModelSerializer):
         return obj.transaction.balanced
     def get_trans_id(self, obj):
         return obj.transaction.id
+    def get_trans_type(self, obj):
+        return obj.transaction._type
 
 class CategoryChartSerializer(ModelSerializer):
     items_count = serializers.SerializerMethodField(read_only=True)

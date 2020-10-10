@@ -38,6 +38,7 @@ $(document).ready( function () {
                         <tr>
                             <td>${paymt[e].date}</td>
                             <td>${paymt[e].trans_id}</td>
+                            <td>${paymt[e].trans_type}</td>
                             <td>${paymt[e].vendor_client}</td>
                             <td>${paymt[e].transaction}</td>
                             <td>Rs. ${paymt[e].amount}</td>
