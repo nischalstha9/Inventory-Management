@@ -50,18 +50,16 @@
     <!-- SEARCH FORM -->
     <form class="form-inline ml-3">
       <div class="input-group input-group-sm">
-        <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search" id='searchProductForm'>
-        <div class="input-group-append">
-          <button class="btn btn-navbar" type="submit">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
+        <input class="form-control form-control-navbar" type="search" placeholder="Search Products" aria-label="Search" id='searchProductForm'>
       </div>
     </form>
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
-      
+      <li><a href="{% url 'inventory:add-stock' %}" class="m-1">Add Stock</a></li>
+      <li><a href="{% url 'inventory:sell-stock' %}" class='m-1'>Sell Stock</a></li>
+      <li><a href="{% url 'inventory:transactions-list' %}" class='m-1'>Transactions</a></li>
+      <li><a href="{% url 'inventory:payments-list' %}" class='m-1'>Payments</a></li>
     </ul>
   </nav>
   <!-- /.navbar -->

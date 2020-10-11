@@ -11,7 +11,7 @@ function get_trans_payments(e, trans_id){
                     Transaction ID: ${trans_id} - ${data.item}
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">Payment For Item: ${data.item}</h5><hr>
+                    <h5 class="card-title">Payment For Item: ${data.item}</h5><br><hr>
                     <h6>Date of Transaction: <span class='text-secondary'>${data.date}<span></h6>
                     <h6>Vendor/ Client Name: <span class='text-secondary'>${data.vendor_client}<span></h6>
                     <h6>Quantity: <span class='badge badge-success'>${data.quantity} Units</span></h6>

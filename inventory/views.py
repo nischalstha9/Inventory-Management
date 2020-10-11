@@ -37,6 +37,7 @@ class CategoryCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Create New Category"
+        context["header"] = "Create New Category"
         return context
     
 
@@ -46,7 +47,8 @@ class ItemCreationVIew(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     success_url = "../"
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Create New Inventor Item"
+        context["title"] = "Create New Inventory Item"
+        context["header"] = "Create New Inventory Item"
         return context
     def test_func(self):
         return self.request.user._type == 'ADMIN'

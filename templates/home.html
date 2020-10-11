@@ -1,7 +1,20 @@
 {% extends 'partial/base.html' %}
 {% load static %}
 {% block content %}
-<canvas id="itemChart"></canvas>
+<div class="row">
+    <div class="col-sm-12 col-md-6 co-lg-6 card">
+        <canvas id="itemChart"></canvas>
+    </div>
+    <div class="col-sm-12 col-md-6 co-lg-6 card">
+        <canvas id="transactionChart"></canvas>
+    </div>
+    <div class="col-sm-12 col-md-6 co-lg-6 card">
+        <canvas id="paymentChart"></canvas>
+    </div>
+    <div class="col-sm-12 col-md-6 co-lg-6 card">
+        <canvas id="todayHighestChart"></canvas>
+    </div>
+</div>
 {% endblock content %}
 {% block javascript %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha512-s+xg36jbIujB2S2VKfpGmlC3T5V2TF3lY48DX7u2r9XzGzgPsa6wTpOQA7J9iffvdeBN0q9tKzRxVxw1JviZPg==" crossorigin="anonymous"></script>
