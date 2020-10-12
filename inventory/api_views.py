@@ -9,7 +9,13 @@ from rest_framework.decorators import api_view
 from django_filters import rest_framework as filters
 from django.utils import timezone
 
-class IsStaff(permissions.BasePermission):
+class IsStafforAdmin(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_authenticated:
+            return request.user._type in ['ADMIN', 'STAFF']
+        return False
+    
+class IsAdmin(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.user.is_authenticated:
             return request.user._type in ['ADMIN']
@@ -34,22 +40,22 @@ class ItemQuantity(ListAPIView):
 class TransactionDetailAPIView(RetrieveAPIView):
     serializer_class = TransactionSerializer
     queryset = Transaction.objects.all()
-    permission_classes = [IsStaff]
+    permission_class = [IsStafforAdmin]
 
 class PaymentDetailAPIView(RetrieveAPIView):
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
-    permission_classes = [IsStaff]
+    permission_class = [IsStafforAdmin]
 
 class ItemDetailAPIView(RetrieveAPIView):
     serializer_class = ItemDetailSerializer
     queryset = Item.objects.all()
-    permission_classes = [IsStaff]
+    permission_class = [IsStafforAdmin]
 
 class TransactionListAPIView(ListAPIView):
     serializer_class = TransactionSerializer
     queryset = Transaction.objects.all()
-    permission_classes = [IsStaff]
+    permission_class = [IsStafforAdmin]
     filter_backends = (filters.DjangoFilterBackend, SearchFilter)
     filterset_fields = ()
     search_fields = ['vendor_client', 'item__name',]
@@ -60,7 +66,7 @@ class TransactionListAPIView(ListAPIView):
 class PaymentListAPIView(ListAPIView):
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
-    permission_classes = [IsStaff]
+    permission_class = [IsStafforAdmin]
     filter_backends = (filters.DjangoFilterBackend, SearchFilter)
     search_fields = ['transaction__vendor_client', 'transaction__item__name',]
     pagination_class = StandardResultsSetPagination

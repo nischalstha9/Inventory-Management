@@ -2,9 +2,9 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="/" class="brand-link">
-      <img src="{% static 'dist/img/AdminLTELogo.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+      <img src="{% static '../media/favicon.png' %}" alt="IMS" class="brand-image img-circle elevation-3 ml-0"
            style="opacity: .8">
-      <span class="brand-text font-weight-light">IMS</span>
+      <span class="brand-text font-weight-light">Inventory Management</span>
     </a>
 
     <!-- Sidebar -->
@@ -21,8 +21,8 @@
           </a>
           <a class="btn btn-sm btn-outline-danger" href="{% url 'account_logout' %}">Sign Out?</a>
         {% else %}
-          <a class="btn mr-1 mb-1 btn-sm btn-outline-success" href="{% url 'account_login' %}">Sign In</a>
-          <a class="btn btn-sm mb-1 btn-warning" href="{% url 'account_signup' %}">Signup</a>
+          <a class="btn mr-1 mb-1 btn-sm btn-outline-success text-light" href="{% url 'account_login' %}">Sign In</a>
+          {% comment %} <a class="btn btn-sm mb-1 btn-warning text-dark" href="{% url 'account_signup' %}">Signup</a> {% endcomment %}
         {% endif %}
         </div>
       </div>
@@ -104,7 +104,7 @@
           </li>
           <li class="nav-item has-treeview menu-closed">
             <a href="#" class="nav-link">
-              <i class="fas fa-money-bill-wave-alt"></i>
+              <i class="nav-icon fas fa-money-bill-wave-alt"></i>
               <p>
                 Payments
                 <i class="right fas fa-angle-left"></i>
@@ -143,14 +143,32 @@
               </li>
             </ul>
           </li>
-          <li class="nav-item">
+          {% if user.is_staff %}
+          <hr>
+          <li class="nav-item has-treeview menu-closed">
             <a href="#" class="nav-link">
-              <i class="nav-icon fas fa-th"></i>
+              <i class="nav-icon fas fa-user"></i>
               <p>
-                Simple Additional Link
+                Accounts and Users
+                <i class="right fas fa-angle-left"></i>
               </p>
             </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{% url 'accounts:new-user' %}" class="nav-link">
+                  <i class="fas fa-chevron-right"></i>
+                  <p>Add New User</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'accounts:users-list' %}" class="nav-link">
+                  <i class="fas fa-chevron-right"></i>
+                  <p>Users List</p>
+                </a>
+              </li>
+            </ul>
           </li>
+          {% endif %}
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

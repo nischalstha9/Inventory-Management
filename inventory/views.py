@@ -33,7 +33,7 @@ class CategoryCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = "inventory/big-form.html"
     success_url = "/"
     def test_func(self):
-        return self.request.user._type == 'ADMIN'
+        return self.request.user._type in ['ADMIN', 'STAFF']
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Create New Category"
@@ -51,7 +51,7 @@ class ItemCreationVIew(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         context["header"] = "Create New Inventory Item"
         return context
     def test_func(self):
-        return self.request.user._type == 'ADMIN'
+        return self.request.user._type in ['ADMIN', 'STAFF']
 
 class ItemListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Item
@@ -64,7 +64,7 @@ class ItemListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return context
     
     def test_func(self):
-        return self.request.user._type == 'ADMIN'
+        return self.request.user._type in ['ADMIN', 'STAFF']
 
 class ItemUpdateVIew(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     form_class = ItemCreationForm
@@ -76,7 +76,7 @@ class ItemUpdateVIew(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         context["title"] = f"Update Item - {self.object}"
         return context
     def test_func(self):
-        return self.request.user._type == 'ADMIN'
+        return self.request.user._type in ['ADMIN', 'STAFF']
 
 class ItemDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Item
@@ -84,7 +84,7 @@ class ItemDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def get_success_url(self):
         return reverse('inventory:items-list')
     def test_func(self):
-        return self.request.user._type == 'ADMIN'
+        return self.request.user._type in ['ADMIN', 'STAFF']
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = f"Delete Item - {self.object}"
@@ -92,7 +92,7 @@ class ItemDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     
 
 
-@allowed_users(allowed_types = ['ADMIN'])
+@allowed_users(allowed_types = ['ADMIN', 'STAFF'])
 def add_to_inventory(request):
     context = {'header' : 'Add Stock'}
     form = DebitTransactionForm(request.POST or None)
@@ -123,12 +123,12 @@ def add_to_inventory(request):
         return redirect("inventory:items-list")
     return render(request, "inventory/small-form.html", context)
 
-@allowed_users(allowed_types = ['ADMIN'])
+@allowed_users(allowed_types = ['ADMIN', 'STAFF'])
 def TransactionListView(request):
     context = {'title':'Transactions List'}
     return render(request, 'inventory/transactions.html', context)
 
-@allowed_users(allowed_types = ['ADMIN'])
+@allowed_users(allowed_types = ['ADMIN', 'STAFF'])
 def PaymentListView(request):
     context = {'title':'Payments List'}
     return render(request, 'inventory/payments.html', context)
@@ -139,7 +139,7 @@ class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, FilterVi
     context_object_name = 'transactions'
     paginate_by=50
     def test_func(self):
-        return self.request.user._type == 'ADMIN'
+        return self.request.user._type in ['ADMIN', 'STAFF']
     def get_queryset(self):
         qs = super().get_queryset()
         print(qs.first().date)
@@ -163,7 +163,7 @@ class TransactionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
         form.fields['remarks'].widget = SummernoteWidget()
         return form
     def test_func(self):
-        return self.request.user._type == 'ADMIN'
+        return self.request.user._type in ['ADMIN', 'STAFF']
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Update Transaction Info"
@@ -183,7 +183,7 @@ class TransactionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
         form.save()
         return redirect(reverse('inventory:transaction-update', kwargs = {'pk':obj_id}))
 
-@allowed_users(allowed_types = ['ADMIN'])
+@allowed_users(allowed_types = ['ADMIN', 'STAFF'])
 def sell_from_inventory(request):
     context = {'header' : 'Sell Stock'}
     form = CreditTransactionForm(request.POST or None)
@@ -215,7 +215,7 @@ class CreditTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListVie
     context_object_name = 'transactions'
     paginate_by=50
     def test_func(self):
-        return self.request.user._type == 'ADMIN'
+        return self.request.user._type in ['ADMIN', 'STAFF']
     def get_queryset(self):
         qs = super().get_queryset()
         sts = self.request.GET.get('state')
@@ -229,7 +229,7 @@ class CreditTransactionListView(LoginRequiredMixin, UserPassesTestMixin, ListVie
         context["title"] = "Credit Transactions"
         return context
 
-@allowed_users(allowed_types = ['ADMIN'])
+@allowed_users(allowed_types = ['ADMIN', 'STAFF'])
 def DebitTransactionPaymentCreateView(request):
     form = DebitPaymentForm()
     context = {}
@@ -249,7 +249,7 @@ def DebitTransactionPaymentCreateView(request):
         Payment.objects.create(transaction = trans, amount = amt)
     return render(request, "inventory/small-form.html", context)
 
-@allowed_users(allowed_types = ['ADMIN'])
+@allowed_users(allowed_types = ['ADMIN', 'STAFF'])
 def CreditTransactionPaymentCreateView(request):
     form = CreditPaymentForm
     context = {}
@@ -276,7 +276,7 @@ class DebitPaymentListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     paginate_by=50
     queryset = Payment.objects.all()
     def test_func(self):
-        return self.request.user._type == 'ADMIN'
+        return self.request.user._type in ['ADMIN', 'STAFF']
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["header"] = 'Stock In Payments'
@@ -297,7 +297,7 @@ class CreditPaymentListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     template_name = "inventory/dr-payments.html"
     paginate_by=50
     def test_func(self):
-        return self.request.user._type == 'ADMIN'
+        return self.request.user._type in ['ADMIN', 'STAFF']
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["header"] = 'Stock Out Payments'
@@ -316,7 +316,7 @@ class QuickPaymentCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView
     form_class = PaymentForm
     template_name = "inventory/small-form.html"
     def test_func(self):
-        return self.request.user._type == 'ADMIN'
+        return self.request.user._type in ['ADMIN', 'STAFF']
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         obj_id = self.kwargs.get('pk')

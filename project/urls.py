@@ -29,6 +29,7 @@ urlpatterns = [
     path('summernote/', include('django_summernote.urls')),
     path('api-auth/', include('rest_framework.urls')),
     path('accounts/', include('allauth.urls')),
+    path('account/', include('accounts.urls')),
     #custom
     path('', include('main.urls')),
     path('invoice/', include('invoice.urls')),

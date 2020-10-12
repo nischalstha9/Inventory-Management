@@ -1,0 +1,145 @@
+{% extends 'partial/base.html' %}
+{% block content %}
+<h1 id='header'></h1>
+<hr>
+<form action="" method="get" id='filter-form'>
+    <div class="form-row">
+    <div class="form-group col-md-3">
+      <label for="inputState"><h6>Type:</h6></label>
+      <select class="custom-select" id='Type_Filter'>
+        <option value="">All</option>
+        <option value="ADMIN">Admin</option>
+        <option value="STAFF">Staff</option>
+        <option value="CUSTOMER">Customer</option>
+      </select>
+    </div>
+    <div class="form-group col-md-4">
+    <label for="inputState"><h6>Search By Name or Email:</h6></label><br>
+      <input type="text" autocomplete="false" class='form-control' id='search-filter' placeholder='Type and press enter'>
+    </div>
+    <div class="form-group col-md-4">
+    <label for="inputState"><h6>Clear:</h6></label><br>
+      <input type="button" autocomplete="false" class='btn btn-secondary' id='clear-filter' value='Clear Filters'>
+    </div>
+</form>
+<hr>
+<table id="table_id" class="table display jumbotron">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Type</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<span class="pagination-span"></span>
+
+{% endblock content %}
+{% block javascript %}
+<script>
+//jquery for loading all user list
+$(document).ready( function () {
+    var pages = 1
+    function tableData(page=1, user_type='', search = ''){
+        var header = "All Users"
+        if(user_type=='ADMIN'){
+            header = 'Admin Users'
+        }else if(user_type=='STAFF'){
+            header = 'Staff Users'
+        }else if(user_type=='CUSTOMER'){
+            header = 'Customer Users'
+        }else{
+            header = header
+        }
+        var url = `${window.location.protocol}//${window.location.host}/account/api/users/?page=${page}&_type=${user_type}&search=${search}`
+        var td = ''
+        $.ajax({
+            url:url,
+            method:"GET",
+            data:{},
+            success:function(data){
+                $("#header").html(`${header} (${data.count})`)//update count on header
+                var users = data.results
+                pages = Math.ceil(data.count/5)
+                if (pages>=1){
+                    paginationHtml(pages)
+                }
+                $.each(users, function(e){                      
+                    tr = `
+                    <tr>
+                        <td>${users[e].id}</td>
+                        <td>${users[e].first_name}</td>
+                        <td>${users[e].last_name}</td>
+                        <td>${users[e].email}</td>
+                        <td>${users[e]._type}</td>
+                        <td>
+                            <a href="${users[e].edit_url}" class='btn btn-sm btn-info'>Edit</a>
+                        </td>
+                    </tr>
+                    `
+                    td += tr
+                })
+                $("tbody").html(td)
+
+            },
+            error: function(error){
+                console.log(error);
+            }
+        })
+    }
+    var search = ''
+    var page = 1
+    var user_type = ''
+    tableData()
+    $("#Type_Filter").change(function(e){
+        page = 1
+        user_type = e.target.value
+        tableData(page, user_type, search);
+    })
+    $("#search-filter").keypress(function(e){
+        if(e.which == 13){
+            e.preventDefault();
+            page = 1
+            search = e.target.value
+            tableData(page, user_type, search);
+        }
+    })
+    $("#clear-filter").click(function(){
+        page = 1
+        $("#filter-form")[0].reset()
+        tableData(page=1, user_type='', search = '')
+    })
+
+    //build pagination
+    function paginationHtml(pages){
+        var next = (page==pages)?"<li class='page-item disabled'><a class='page-link' href='# id='nextBtn'>Next</a></li>":"<li class='page-item'><a class='page-link' href='#' id='nextBtn'>Next</a></li>"
+        var prev = (page==1)?"<li class='page-item disabled'><a class='page-link' href='#' id='previousBtn' tabindex='-1'>Previous</a></li>":"<li class='page-item'><a class='page-link' href='#' id='previousBtn' tabindex='-1'>Previous</a></li>"
+        var temp = `
+        <nav aria-label="...">
+        <ul class="pagination">
+            ${prev}
+            ${next}
+        </ul>
+        </nav>
+        `
+        $(".pagination-span").html(temp);
+    }
+    $('.pagination-span').on('click', '#previousBtn', function (e){
+        e.preventDefault()
+        page = page>1?page-1:page
+        tableData(page, user_type, search);
+    });
+    $('.pagination-span').on('click', '#nextBtn', function (e){
+        e.preventDefault()
+        page = page!=pages?page+1:page
+        tableData(page, user_type, search);
+    });
+});
+
+</script>
+{% endblock javascript %}

@@ -38,10 +38,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         #TYPE_SNTX = TYPE_VALUE, TYPE_NAME
         ADMIN = "ADMIN", "Admin"
         STAFF = "STAFF", "Staff"
-        # TEACHER = "TEACHER", "Teacher"
+        CUSTOMER = "CUSTOMER", "Customer"
         # PARENT = "PARENT","Parent"
 
-    base_type = Types.STAFF
+    base_type = Types.CUSTOMER
 
     _type = models.CharField(
         _("Type"), max_length=50, choices=Types.choices, default=base_type
@@ -62,10 +62,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
-    def save(self, *args, **kwargs):
-        if not self.id:
-            self._type = self.base_type
-        return super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if not self.id:
+    #         self._type = self.base_type
+    #     return super().save(*args, **kwargs)
 
     # def get_absolute_url(self):
     #     return "/users/%i/" % (self.pk)
@@ -104,6 +104,21 @@ class AdminManager(models.Manager):
 class Admin(User):
     base_type = User.Types.ADMIN
     objects = AdminManager()
+
+    class Meta:
+        proxy = True
+
+    # @property
+    # def more(self):
+    #     return self.StudentProfile
+
+class CustomerManager(models.Manager):
+    def get_queryset(self, *args, **kwargs):
+        return super().get_queryset(*args, **kwargs).filter(_type=User.Types.CUSTOMER)
+
+class Customer(User):
+    base_type = User.Types.CUSTOMER
+    objects = CustomerManager()
 
     class Meta:
         proxy = True
