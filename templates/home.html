@@ -1,18 +1,22 @@
 {% extends 'partial/base.html' %}
 {% load static %}
 {% block content %}
+<h1>Dashboard</h1>
 <div class="row">
     <div class="col-sm-12 col-md-6 co-lg-6 card border">
         <canvas id="itemChart"></canvas>
     </div>
     <div class="col-sm-12 col-md-6 co-lg-6 card border">
-        <canvas id="transactionChart"></canvas>
+        <canvas id="totalTransactionsChart"></canvas>
     </div>
     <div class="col-sm-12 col-md-6 co-lg-6 card border">
-        <canvas id="paymentChart"></canvas>
+        <canvas id="transactionCountTodayChart"></canvas>
     </div>
     <div class="col-sm-12 col-md-6 co-lg-6 card border">
-        <canvas id="todayHighestChart"></canvas>
+        <canvas id="paymentTodayChart"></canvas>
+    </div>
+    <div class="col-sm-12 col-md-6 co-lg-6 card border">
+        <canvas id="todayHighestPaysChart"></canvas>
     </div>
 </div>
 {% endblock content %}

@@ -10,7 +10,12 @@ from django.contrib import messages
 from allauth.account.models import EmailAddress
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from rest_framework.generics import ListAPIView
+from inventory.api_views import IsStafforAdmin, IsAdmin
+from rest_framework.filters import SearchFilter
+from django_filters import rest_framework as filters
+from inventory.api_views import StandardResultsSetPagination
 
+##########SERIALIZER##########
 class UserSerializer(ModelSerializer):
     edit_url = SerializerMethodField()
     class Meta:
@@ -18,14 +23,14 @@ class UserSerializer(ModelSerializer):
         fields = ['id', 'first_name', 'last_name', 'email', '_type', 'edit_url']
     def get_edit_url(self, obj):
         return reverse('accounts:user-update', kwargs = {'pk': obj.id})
-
-# Create your views here.
+##########FORM##########
 class UserCreationForm(ModelForm):
     password_2 = forms.CharField(required=True, label='Password Confirm')
     class Meta:
         model = User
         fields = ['first_name','last_name','_type','email','password','password_2', 'is_active']
 
+# Create your views here.
 class UserCreateView(LoginRequiredMixin, UserPassesTestMixin ,CreateView):
     form_class = UserCreationForm
     template_name = 'account/user_create.html'
@@ -72,10 +77,8 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin ,UpdateView):
                 messages.warning(self.request, f"Error: Please Check Your Form.")
         return redirect('/')
 
-from inventory.api_views import IsStafforAdmin, IsAdmin
-from rest_framework.filters import SearchFilter
-from django_filters import rest_framework as filters
-from inventory.api_views import StandardResultsSetPagination
+
+##########API VIEW##########
 class UserListAPIView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer

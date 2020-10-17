@@ -10,7 +10,7 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <!-- Sidebar user panel (optional) -->
-      <div class="user-panel mt-3 pb-3 mb-3 d-flex">  
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         {% if user.is_authenticated %}
           <div class="image">
             <img src="{{request.user.profile.dp.url}}" class="img-circle elevation-2" alt="User Image">
@@ -32,6 +32,14 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
+          <li class="nav-item">
+            <a href="{% url 'main:admin-home' %}" class="nav-link">
+              <i class="nav-icon fas fa-tachometer-alt active"></i>
+              <p>
+                Dashboard
+              </p>
+            </a>
+          </li><br>
           <li class="nav-item has-treeview menu-open">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-warehouse"></i>
@@ -144,7 +152,7 @@
             </ul>
           </li>
           {% if user.is_staff %}
-          <hr>
+          <br>
           <li class="nav-item has-treeview menu-closed">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-user"></i>

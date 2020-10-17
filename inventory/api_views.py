@@ -72,6 +72,7 @@ class PaymentListAPIView(ListAPIView):
     pagination_class = StandardResultsSetPagination
     filterset_fields = {
     'date':['date__range'],'transaction__balanced':['exact'], 'transaction___type':['exact'], 'transaction__id':['exact']}
+import random
 
 @api_view(['GET'])
 def dashboard_view(request):
@@ -84,8 +85,19 @@ def dashboard_view(request):
     today_cr_trans = CreditTransaction.objects.filter(date__date = timezone.now().date()).count()
     today_pay_sent = sum(today_dr_pays)
     today_pay_receive = sum(today_cr_pays)
-    today_highest_pay_sent = max(today_dr_pays or [1,2])
-    today_highest_pay_received = max(today_cr_pays or [1,2])
+    today_highest_pay_sent = max(today_dr_pays+[1])
+    today_highest_pay_received = max(today_cr_pays+[1])
+
+    all_trans = Transaction.objects.all()
+    balanced_dr_trans = all_trans.filter(balanced=True, _type='STOCK IN').count()
+    unpaid_dr_trans = all_trans.filter(balanced=False, _type='STOCK IN').count()
+    balanced_cr_trans = all_trans.filter(balanced=True, _type='STOCK OUT').count()
+    unpaid_cr_trans = all_trans.filter(balanced=False, _type='STOCK OUT').count()
+
+    data['balanced_dr_trans'] = balanced_dr_trans
+    data['unpaid_dr_trans'] = unpaid_dr_trans
+    data['balanced_cr_trans'] = balanced_cr_trans
+    data['unpaid_cr_trans'] = unpaid_cr_trans
     data['today_dr_trans'] = today_dr_trans
     data['today_cr_trans'] = today_cr_trans
     data['today_pay_recv'] = today_pay_receive
