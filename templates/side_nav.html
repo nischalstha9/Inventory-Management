@@ -40,6 +40,7 @@
               </p>
             </a>
           </li><br>
+          {% if user.is_authenticated %}
           <li class="nav-item has-treeview menu-open">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-warehouse"></i>
@@ -151,6 +152,7 @@
               </li>
             </ul>
           </li>
+          {% endif %}
           {% if user.is_staff %}
           <br>
           <li class="nav-item has-treeview menu-closed">

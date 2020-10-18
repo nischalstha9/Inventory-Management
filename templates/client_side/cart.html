@@ -1,0 +1,83 @@
+{% extends 'client_side_base.html' %}
+{% block content %}
+<table class="table">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">ID</th>
+      <th scope="col">Item</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Price</th>
+      <th scope="col">Total</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for order_item in order_items %}
+    <tr>
+      <th scope="row">{{forloop.counter}}</th>
+      <th scope="row" class='order_id'>OD-{{order_item.id}}</th>
+      <td>{{order_item.item.name}}</td>
+      <td><input type="number" value='{{order_item.quantity}}' class='item_qty' itemid='{{order_item.item.id}}'></td>
+      <td>Rs. {{order_item.item.selling_price}}</td>
+      <td>Rs. {% widthratio order_item.quantity 1 order_item.item.selling_price %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<button id='update_cart' disabled class='btn btn-warning'>Update</button>
+{% endblock content %}
+{% block javascript %}
+<script>
+$(document).ready(function(){
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+    //----------------
+    console.log("ready")
+    var cart_data = []
+    qtys = $(".item_qty")
+    qtys.change(function(){
+        $("#update_cart").prop("disabled", false)
+    })
+    $("#update_cart").click(function(){
+        qtys.each(function(e){
+            itemId = parseInt($(this).attr("itemid"))
+            qty = parseInt(qtys[e].value)
+            if (qty == 0){
+                console.log(this)//delete tat row
+            }
+            a = {'itemId' : itemId,'quantity':qty}
+            cart_data.push(a)
+        })
+        url = `${window.location.protocol}//${window.location.host}/cart-update/`
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {'data': JSON.stringify(cart_data)},
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            success: function(){
+                console.log('posted')
+            },
+            error: function(error){
+                console.log(error)
+            }
+        });
+    })
+})
+</script>
+{% endblock javascript %}

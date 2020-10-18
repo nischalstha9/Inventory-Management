@@ -1,11 +1,68 @@
-# from django.db import models
-
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+from accounts.models import User
 # from django.utils import timezone
-# from django.contrib.auth.models import User
 # from django.urls import reverse
 # from django.db.models import Q
 # from PIL import Image
 # # Create your models here.
+
+class SiteConfig(models.Model):
+    key = models.CharField(_("Key"), max_length=50)
+    value = models.CharField(_("Value"), max_length=50)
+
+    class Meta:
+        verbose_name = _("SiteConfig")
+        verbose_name_plural = _("SiteConfigs")
+
+    def __str__(self):
+        return self.key
+
+    def get_absolute_url(self):
+        return reverse("SiteConfig_detail", kwargs={"pk": self.pk})
+
+ORDER_STATUS = [
+    ('NO', 'Not-Ordered'),
+    ('O', 'Ordered'),
+    ('C', 'Confirmed'),
+    ('S', 'Fulfilled'),
+]
+
+class OrderItem(models.Model) :
+    user = models.ForeignKey("accounts.User",verbose_name=_("Orderer"),on_delete=models.CASCADE)
+    ordered = models.BooleanField(_("Is Ordered?"))
+    item = models.ForeignKey("inventory.Item", on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.quantity} of {self.item.name}"
+
+class Order(models.Model):
+    user = models.ForeignKey("accounts.User", verbose_name=_("Orderer"), on_delete=models.CASCADE)
+    items = models.ManyToManyField(OrderItem)
+    ordered_date = models.DateTimeField(null=True, blank=True)
+    status = models.CharField(max_length=20,choices=ORDER_STATUS,default='NO')
+
+    class Meta:
+        verbose_name = _("Order")
+        verbose_name_plural = _("Orders")
+
+    def __str__(self):
+        return f"Order By {self.user.email}"
+
+    def get_absolute_url(self):
+        return reverse("Order_detail", kwargs={"pk": self.pk})
+
+    
+
+
+
+
+
+
+
+
+
 # #database model for posts
 # class PostManager(models.Manager):
 #     def search(self, query=None):
@@ -21,7 +78,6 @@
 #     title=models.CharField(max_length=120)
 #     def __str__(self):
 #         return self.title
-
 
 # class Post(models.Model):
 #     title = models.CharField(max_length=100)

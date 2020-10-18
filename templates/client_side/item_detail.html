@@ -1,0 +1,78 @@
+{% extends 'client_side_base.html' %}
+{% block content %}
+<div class="row jumbotron">
+    <div class="col col-lg-6">
+        {% if item.image %}
+        <p><img src="{{item.image.url}}" alt="No image" height='400px' width='400px'></p>
+        {% endif %}
+    </div>
+    <div class="col col-lg-6 col-sm-12">
+        <p id='item_id' class='d-none'>{{item.id}}</p>
+        <p id='name'><strong>Name:</strong> {{item.name}}</p>
+        <p><strong>Brand:</strong> {{item.brand}}</p>
+        <p><strong>Category:</strong> {{item.category}}</p>
+        <p><strong>Description:</strong> {{item.description}}</p>
+        <p><strong>Price:</strong> {{item.selling_price}}</p>
+        <p><strong>Available Quantity:</strong> {{item.quantity}} units</p>
+        {% if user.is_authenticated %}
+        <label for="customRange2"><strong>Quantity:</strong></label>
+        <span id='qty_appears' class='badge badge-info'>X</span>
+        <input type="range" class="custom-range" min="1" max="{{item.quantity}}" id="add-quantity-range">
+        <br>
+        <button class='btn btn-success' disabled id='add_to_cart_btn'>Add To Cart</button>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}
+{% block javascript %}
+<script>
+$(document).ready(function(){
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+    //----------------
+    
+    var item_id = parseInt($("#item_id")[0].innerText)
+    var qty = 0
+    $("#add-quantity-range").change(function(e){
+        qty = parseInt(e.target.value)
+        $("#qty_appears").html(qty)
+        $("#add_to_cart_btn").prop("disabled", false);
+    })
+    $("#add_to_cart_btn").click(function(){
+        url = `${window.location.protocol}//${window.location.host}/create-order/`
+        console.log(url)
+        data = {}
+        data.item_id = item_id
+        data.qty = qty
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: data,
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            success: function(){
+                console.log('posted')
+            },
+            error: function(error){
+                console.log(error)
+            }
+        });
+    })
+})
+</script>
+{% endblock javascript %}
