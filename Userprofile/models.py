@@ -1,12 +1,14 @@
 from django.db import models
 from accounts.models import User
 from PIL import Image
+from django.core.validators import RegexValidator
 # Create your models here.
 from django.db.models.signals import post_save
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    contact = models.BigIntegerField(blank=True, null=True)
+    mobile_num_regex = RegexValidator(regex="^[0-9]{9,15}$", message="Entered mobile number isn't in a right format!")
+    contact = models.CharField(validators=[mobile_num_regex], max_length=13, blank=True, null=True)
     dp = models.ImageField(default='user.png',upload_to='profile_pics')
 
     def __str__(self):

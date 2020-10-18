@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import SiteConfig, OrderItem, Order
+from .models import SiteConfig, OrderItem, Order, CheckoutData
 # Register your models here.
 admin.site.register(SiteConfig)
 admin.site.register(OrderItem)
 admin.site.register(Order)
+admin.site.register(CheckoutData)

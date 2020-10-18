@@ -12,6 +12,7 @@
     </tr>
   </thead>
   <tbody>
+{% if order_items|length > 1 %}
   {% for order_item in order_items %}
     <tr>
       <th scope="row">{{forloop.counter}}</th>
@@ -25,6 +26,10 @@
   </tbody>
 </table>
 <button id='update_cart' disabled class='btn btn-warning'>Update</button>
+<a href="{% url 'main:checkout-form' %}" id='proceed_to_checkout' class='btn btn-success'>Proceed to Checkout</a href='#'>
+{% else %}
+<tr><td>Add Items To Cart</td></tr>
+{% endif %}
 {% endblock content %}
 {% block javascript %}
 <script>

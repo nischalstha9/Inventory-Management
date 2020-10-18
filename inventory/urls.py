@@ -1,6 +1,6 @@
 from django.urls import path, include
-from .views import index, ItemCreationVIew, ItemListView, ItemUpdateVIew, add_to_inventory, DebitTransactionListView, TransactionUpdateView, sell_from_inventory, CreditTransactionListView, CreditTransactionPaymentCreateView, DebitTransactionPaymentCreateView, DebitPaymentListView, CreditPaymentListView, CategoryCreateView, ItemDeleteView, QuickPaymentCreateView, TransactionListView,PaymentListView
-from .api_views import ItemQuantity, TransactionDetailAPIView, ItemDetailAPIView,TransactionListAPIView, PaymentListAPIView, PaymentDetailAPIView, dashboard_view
+from .views import index, ItemCreationVIew, ItemListView, ItemUpdateVIew, add_to_inventory, DebitTransactionListView, TransactionUpdateView, sell_from_inventory, CreditTransactionListView, CreditTransactionPaymentCreateView, DebitTransactionPaymentCreateView, DebitPaymentListView, CreditPaymentListView, CategoryCreateView, ItemDeleteView, QuickPaymentCreateView, TransactionListView,PaymentListView, OrderListView, OrderDetailView
+from .api_views import ItemQuantity, TransactionDetailAPIView, ItemDetailAPIView,TransactionListAPIView, PaymentListAPIView, PaymentDetailAPIView, dashboard_view, OrdersListAPIView
 
 app_name = 'inventory'
 urlpatterns = [
@@ -12,6 +12,7 @@ urlpatterns = [
     path("item-quantity/", ItemQuantity.as_view(), name="cat-cnt"), 
     path("api/transactions/", TransactionListAPIView.as_view(), name="transactions-api-list"), 
     path("api/payments/", PaymentListAPIView.as_view(), name="payments-api-list"), 
+    path("api/orders/", OrdersListAPIView.as_view(), name="orders-api-list"), 
     ############################################DIVIDER############################################
 
     path("category/new/", CategoryCreateView.as_view() , name="new-category"),
@@ -37,6 +38,9 @@ urlpatterns = [
     path("payment/cr/new/", CreditTransactionPaymentCreateView, name="cr-payment-create"),
     path("payments/dr/", DebitPaymentListView.as_view(), name="dr-payments"),
     path("payments/cr/", CreditPaymentListView.as_view(), name="cr-payments"),
+
+    path("orders/", OrderListView, name="orders-list"),
+    path("orders/<int:pk>/", OrderDetailView, name="order-detail"),
     
     
 ]

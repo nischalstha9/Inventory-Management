@@ -40,6 +40,14 @@
               </p>
             </a>
           </li><br>
+          <li class="nav-item">
+            <a href="{% url 'inventory:orders-list' %}" class="nav-link">
+              <i class="nav-icon fas fa-border-all active"></i>
+              <p>
+                Online Orders
+              </p>
+            </a>
+          </li><br>
           {% if user.is_authenticated %}
           <li class="nav-item has-treeview menu-open">
             <a href="#" class="nav-link">

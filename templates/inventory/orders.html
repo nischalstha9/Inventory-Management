@@ -1,0 +1,60 @@
+{% extends 'partial/base.html' %}
+{% load static %}
+{% block content %}
+<h1 id='header'>Online Orders</h1>
+<hr>
+<form action="" method="get" id='filter-form'>
+    <div class="form-row">
+    <div class="form-group col-md-3">
+      <label for="inputState"><h6>Status:</h6></label>
+      <select class="custom-select" id='status_filter'>
+        <option value="">All</option>
+        <option value="O">Ordered</option>
+        <option value="CO">Confirmed</option>
+        <option value="S">Fulfilled</option>
+        <option value="CA">Cancelled</option>
+      </select>
+    </div>
+
+    <div class="form-group col-md-3">
+    <label for="inputState"><h6>Start Date:</h6></label>
+      <input type="date" autocomplete="false" class='form-control' id='sdate-filter'>
+    </div>
+
+    <div class="form-group col-md-3">
+    <label for="inputState"><h6>End Date:</h6></label>
+      <input type="date" autocomplete="false" class='form-control' id='edate-filter'>
+    </div>
+
+    <div class="form-group col-md-4">
+      <input type="text" autocomplete="false" class='form-control' id='search-filter' placeholder='Search By Product or Client'>
+    </div>
+
+    <div class="form-group col-md-4">
+      <input type="number" autocomplete="false" class='form-control' id='id-search-filter' placeholder='Search By Order ID'>
+    </div>
+
+    <div class="form-group col-md-4">
+    <label for="inputState"><h6></h6></label>
+      <input type="button" autocomplete="false" class='btn btn-secondary' id='clear-filter' value='Clear Filters'>
+    </div>
+</form>
+<hr>
+<table id="table_id" class="table display jumbotron">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Date</th>
+            <th>Client Name</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<span class="pagination-span"></span>
+{% endblock content %}
+{% block javascript %}
+<script src="{% static 'custom_js/order_list.js' %}"></script>
+{% endblock javascript %}

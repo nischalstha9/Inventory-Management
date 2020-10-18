@@ -10,6 +10,7 @@ from .filters import DebitTransactionFilter
 from datetime import datetime
 from django.utils.timezone import make_aware
 from django_summernote.widgets import SummernoteWidget
+from main.models import Order, OrderItem
 
 #custom decorator for filtering permission
 def allowed_users(allowed_types=[]):
@@ -312,6 +313,32 @@ class CreditPaymentListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             qs = qs.filter(transaction__balanced=False)
         return qs.order_by('-id')
 
+@allowed_users(allowed_types = ['ADMIN', 'STAFF'])
+def OrderListView(request):
+    context = {'title':'Orders List'}
+    return render(request, 'inventory/orders.html', context)
+
+from django import forms
+class StatusChangeForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['status']
+
+def OrderDetailView(request, pk):
+    context = {}
+    order = get_object_or_404(Order, pk = pk)
+    order_items = order.items.all()
+    context['header'] = f"Order Detail of {order.user}"
+    context['order'] = order
+    form = StatusChangeForm(request.POST or None, instance=order)
+    context['form'] = form
+    context['order_items'] = order_items
+    if request.method=='POST':
+        print(form.data)
+        order.status = form.data.get('status')
+        order.save()
+    return render(request, 'inventory/order_detail.html', context)
+
 class QuickPaymentCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = PaymentForm
     template_name = "inventory/small-form.html"
@@ -342,3 +369,4 @@ class QuickPaymentCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView
         return redirect(reverse('inventory:payments-list'))
     def get_success_url(self):
         return redirect(reverse('inventory:payments-list'))
+

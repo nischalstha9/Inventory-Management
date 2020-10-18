@@ -1,6 +1,6 @@
 from .models import Item, Category, Transaction, Payment,DebitTransaction,CreditTransaction
 from rest_framework.generics import ListAPIView, RetrieveAPIView
-from .serializers import CategoryChartSerializer, ItemQuantitySerializer, TransactionSerializer, ItemDetailSerializer, PaymentSerializer
+from .serializers import CategoryChartSerializer, ItemQuantitySerializer, TransactionSerializer, ItemDetailSerializer, PaymentSerializer, OrderSerializer
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter
@@ -8,6 +8,7 @@ from rest_framework.pagination import LimitOffsetPagination, PageNumberPaginatio
 from rest_framework.decorators import api_view
 from django_filters import rest_framework as filters
 from django.utils import timezone
+from main.models import Order, OrderItem
 
 class IsStafforAdmin(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -72,7 +73,17 @@ class PaymentListAPIView(ListAPIView):
     pagination_class = StandardResultsSetPagination
     filterset_fields = {
     'date':['date__range'],'transaction__balanced':['exact'], 'transaction___type':['exact'], 'transaction__id':['exact']}
-import random
+
+class OrdersListAPIView(ListAPIView):
+    serializer_class = OrderSerializer
+    queryset = Order.objects.exclude(status='NO')
+    permission_class = [IsStafforAdmin]
+    filter_backends = (filters.DjangoFilterBackend, SearchFilter)
+    filterset_fields = ()
+    search_fields = ['user__first_name']
+    pagination_class = StandardResultsSetPagination
+    filterset_fields = {
+    'ordered_date':['date__range'],'status':['exact'], 'id':['exact']}
 
 @api_view(['GET'])
 def dashboard_view(request):

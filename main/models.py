@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from accounts.models import User
+from django.core.validators import RegexValidator
+from django.shortcuts import reverse
 # from django.utils import timezone
 # from django.urls import reverse
 # from django.db.models import Q
@@ -24,8 +26,9 @@ class SiteConfig(models.Model):
 ORDER_STATUS = [
     ('NO', 'Not-Ordered'),
     ('O', 'Ordered'),
-    ('C', 'Confirmed'),
+    ('CO', 'Confirmed'),
     ('S', 'Fulfilled'),
+    ('CA', 'Cancelled'),
 ]
 
 class OrderItem(models.Model) :
@@ -46,12 +49,31 @@ class Order(models.Model):
     class Meta:
         verbose_name = _("Order")
         verbose_name_plural = _("Orders")
+        ordering = ['-ordered_date']
 
     def __str__(self):
         return f"Order By {self.user.email}"
 
     def get_absolute_url(self):
         return reverse("Order_detail", kwargs={"pk": self.pk})
+
+
+class CheckoutData(models.Model):
+    order = models.OneToOneField("main.Order", verbose_name=_("Order"), on_delete=models.CASCADE, related_name='checkout')
+    mobile_num_regex = RegexValidator(regex="^[0-9]{9,15}$", message="Entered mobile number isn't in a right format!")
+    contact = models.CharField(validators=[mobile_num_regex], max_length=13)
+    message = models.TextField(_("Message"))
+    remarks = models.TextField(_("Remarks"))
+    
+    class Meta:
+        verbose_name = _("CheckoutData")
+        verbose_name_plural = _("CheckoutData")
+
+    def __str__(self):
+        return self.order.user.first_name
+
+    def get_absolute_url(self):
+        return reverse("CheckoutData_detail", kwargs={"pk": self.pk})
 
     
 

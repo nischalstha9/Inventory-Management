@@ -3,6 +3,21 @@ from rest_framework import serializers
 from .models import Category, Item, Payment, DebitTransaction, Transaction, CreditTransaction
 from django.db.models import Count
 from django.urls import reverse
+from main.models import Order, OrderItem
+
+class OrderSerializer(ModelSerializer):
+    user = SerializerMethodField()
+    ordered_date = SerializerMethodField()
+    detail_url = SerializerMethodField()
+    class Meta:
+        model = Order
+        fields = ['id', 'user', 'ordered_date', 'status', 'detail_url']
+    def get_user(self, obj):
+        return f"{obj.user.first_name} {obj.user.last_name}"
+    def get_ordered_date(self, obj):
+        return timezone.localtime(obj.ordered_date).strftime("%b. %d, %Y")
+    def get_detail_url(self, obj):
+        return reverse('inventory:order-detail', kwargs = {'pk':obj.pk})
 
 class PaymentSerializer(ModelSerializer):
     vendor_client = SerializerMethodField()
