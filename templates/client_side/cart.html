@@ -1,5 +1,6 @@
 {% extends 'client_side_base.html' %}
 {% block content %}
+<h1>My Cart</h1><hr>
 <table class="table">
   <thead class="thead-light">
     <tr>
@@ -12,17 +13,21 @@
     </tr>
   </thead>
   <tbody>
-{% if order_items|length > 1 %}
+{% if order_items|length > 0 %}
   {% for order_item in order_items %}
     <tr>
       <th scope="row">{{forloop.counter}}</th>
       <th scope="row" class='order_id'>OD-{{order_item.id}}</th>
       <td>{{order_item.item.name}}</td>
-      <td><input type="number" value='{{order_item.quantity}}' class='item_qty' itemid='{{order_item.item.id}}'></td>
+      <td><input type="number" value='{{order_item.quantity}}' class='item_qty form-control col-3' itemid='{{order_item.item.id}}'></td>
       <td>Rs. {{order_item.item.selling_price}}</td>
       <td>Rs. {% widthratio order_item.quantity 1 order_item.item.selling_price %}</td>
     </tr>
   {% endfor %}
+    <tr>
+    <td colspan='5'><strong>Grand Total</strong></td>
+    <td colspan='1'>Rs. {{order.total_amount}}</td>
+    </tr>
   </tbody>
 </table>
 <button id='update_cart' disabled class='btn btn-warning'>Update</button>
@@ -76,10 +81,25 @@ $(document).ready(function(){
                 'X-CSRFToken': csrftoken
             },
             success: function(){
-                console.log('posted')
+                $("#message-container").html(
+                    `<div class='alert alert-success alert-dismissible fade show' role='alert'>
+                        Cart Data Updated!!
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>`
+                )
             },
             error: function(error){
                 console.log(error)
+                $("#message-container").html(
+                    `<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+                        Oops Error Occoured!!
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>`
+                )
             }
         });
     })

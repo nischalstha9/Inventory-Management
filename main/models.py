@@ -57,13 +57,18 @@ class Order(models.Model):
     def get_absolute_url(self):
         return reverse("Order_detail", kwargs={"pk": self.pk})
 
+    @property
+    def total_amount(self):
+        return sum([i.quantity* i.item.selling_price for i in self.items.all()])
+        
+
 
 class CheckoutData(models.Model):
     order = models.OneToOneField("main.Order", verbose_name=_("Order"), on_delete=models.CASCADE, related_name='checkout')
     mobile_num_regex = RegexValidator(regex="^[0-9]{9,15}$", message="Entered mobile number isn't in a right format!")
     contact = models.CharField(validators=[mobile_num_regex], max_length=13)
-    message = models.TextField(_("Message"))
-    remarks = models.TextField(_("Remarks"))
+    message = models.TextField(_("Message"), null=True, blank=True)
+    remarks = models.TextField(_("Remarks"), null=True, blank=True)
     
     class Meta:
         verbose_name = _("CheckoutData")

@@ -9,70 +9,47 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Inventory</a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="{% url 'inventory:items-list' %}">Inventory List</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="{% url 'inventory:new-category' %}">New Category</a>
-          <a class="dropdown-item" href="{% url 'inventory:new-item' %}">New Item</a>
-        </div>
+        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">  Categories  </a>
+        <ul class="dropdown-menu">
+          {% for cat in categories %}
+            {% if cat.children|length > 0 %}
+              <li><a class="dropdown-item" href="{% url 'main:category-item-list' cat.id%}"> {{cat}} &raquo </a>
+              <ul class="submenu dropdown-menu">
+                {% for i in cat.children %}
+                  {% if i.children|length > 0 %}
+                    <li><a class="dropdown-item" href="{% url 'main:category-item-list' i.id%}"> {{i}} &raquo </a>
+                    <ul class="submenu dropdown-menu">
+                      {% for j in i.children %}
+                        <li><a class="dropdown-item" href="{% url 'main:category-item-list' j.id%}">{{j}}</a></li>
+                      {% endfor %}
+                    </ul>
+                  {% else %}
+                    <li><a class="dropdown-item" href="{% url 'main:category-item-list' i.id%}">{{i}}</a></li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            {% else %}
+              <li><a class="dropdown-item" href="{% url 'main:category-item-list' cat.id%}"> {{cat}} </a></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
       </li>
-      {% comment %} <li class="nav-item">
-        <a class="nav-link" href="{% url 'invoice:invoice-list' %}">Invoice</a>
-      </li> {% endcomment %}
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Transactions
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="{% url 'inventory:transactions-list' %}">All Transactions</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="{% url 'inventory:debit-transactions' %}">Stock In Transactions</a>
-          <a class="dropdown-item" href="{% url 'inventory:credit-transactions' %}">Stock Out Transactions</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="{% url 'inventory:add-stock' %}">Add Stock</a>
-          <a class="dropdown-item" href="{% url 'inventory:sell-stock' %}">Sell Stock</a>
-        </div>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Payment
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-        <a class="dropdown-item" href="{% url 'inventory:payments-list' %}">All Payments</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="{% url 'inventory:dr-payments' %}">Stock In Payments</a>
-          <a class="dropdown-item" href="{% url 'inventory:cr-payments' %}">Stock Out Payments</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="{% url 'inventory:dr-payment-create' %}">Add Stock In Payment</a>
-          <a class="dropdown-item" href="{% url 'inventory:cr-payment-create' %}">Add Stock Out Payment</a>
-        </div>
-      </li>
-      {% comment %} <li class="nav-item">
-        <a class="nav-link" href="#">Link</a>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Dropdown
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
-        </div>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="#">Disabled</a>
-      </li> {% endcomment %}
     </ul>
-    <a class="text-white mr-4" href="{% url 'main:cart' %}" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
-      <i class="fas fa-shopping-cart"></i>
-    </a>
     <form class="form-inline my-2 my-lg-0">
       <input class="form-control my-1 mr-sm-2" autocomplete='off' type='text' required='required' placeholder="Search Products" id='searchProductForm' name='q' data-toggle="popover" data-placement="bottom" value="{{ query }}" style="" data-original-title="" title="">
     </form>
       {% if user.is_authenticated %}
+        <a class="text-white mx-2" href="{% url 'main:cart' %}" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-shopping-cart"></i>({{cart_items}})
+        </a>
+        <a class="text-white mx-2" href="{% url 'main:my-orders' %}" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+          My Orders
+        </a>
+        {% if user.is_admin %}
+        <a class="text-white mx-2" href="{% url 'main:admin-homes' %}" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+          Office
+        </a>
+        {% endif %}
         <a class="text-white mr-2" href="{% url 'profile' %}" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
           <img class='rounded-circle profile-img mx-2' src='{{ user.profile.dp.url }}' height=30px width=30px>{{ user.first_name }}
         </a>

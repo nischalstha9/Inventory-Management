@@ -5,12 +5,12 @@
 <div class="row">
 {% for item in items %}
 <div class="card m-1" style="width: 18rem;">
-  <img class="card-img-top" src="https://www.google.com/photos/about/static/images/logos/logo_photos_192px.svg" alt="Card image cap">
-  <div class="card-body">
-    <p class="card-text">{{item.name}}</p>
-    <a href="{% url 'main:item-detail' item.id%}" class="btn btn-outline-info text-info btn-sm">View</a>
+  <img class="card-img-top" src="{{item.image.url}}" alt="Card image cap">
+    <div class="card-body">
+      <p class="card-text">{{item.name}}</p>
+      <a href="{% url 'main:item-detail' item.id%}" class="btn btn-outline-info text-info btn-sm">View</a>
+    </div>
   </div>
-</div>
 {% endfor %}
 </div>
 {% endblock content %}

@@ -1,0 +1,31 @@
+{% extends 'client_side_base.html' %}
+{% block content %}
+<h1>My Orders</h1><hr>
+<table class="table">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">ID</th>
+      <th scope="col">Date</th>
+      <th scope="col">Items Variety</th>
+      <th scope="col">Total Amount</th>
+      <th scope="col">Status</th>
+    </tr>
+  </thead>
+  <tbody>
+{% for order in orders %}
+    <tr>
+        <td>{{forloop.counter}}</td>
+        <td>OD-{{order.id}}</td>
+        <td>{{order.ordered_date}}</td>
+        <td>{{order.items.count}}</td>
+        <td>Rs. {{order.total_amount}}</td>
+        <td>{{order.status}}</td>
+    </tr>
+{% endfor %}
+  </tbody>
+</table>
+{% if paginated %}
+{% include 'partial/pagination.html' %}
+{% endif %}
+{% endblock content %}

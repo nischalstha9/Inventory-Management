@@ -1,9 +1,11 @@
 from django.shortcuts import render
-from inventory.models import Item
+from inventory.models import Item, Category
 from .models import Order, OrderItem, CheckoutData
 from django.views.generic import DetailView, ListView, CreateView
 from django.utils import timezone
 from django.shortcuts import redirect, reverse
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def home(request):
@@ -21,6 +23,7 @@ class ItemDetailView(DetailView):
     model = Item
     template_name = "client_side/item_detail.html"
 
+@login_required
 def cart(request):
     context = {}
     order = Order.objects.get_or_create(user=request.user, status='NO')[0]
@@ -29,7 +32,7 @@ def cart(request):
     context['order_items'] = order_items
     return render(request, 'client_side/cart.html', context)
 
-class CheckoutDataCreateView(CreateView):
+class CheckoutDataCreateView(LoginRequiredMixin, CreateView):
     model = CheckoutData
     fields = ['contact', 'message', 'remarks']
     template_name = "client_side/checkout.html"
@@ -49,10 +52,37 @@ class CheckoutDataCreateView(CreateView):
                 i.ordered = True
                 i.save()
             form.save()         
-        return redirect(reverse('main:ordering_success'))
+        return redirect(reverse('main:checkout-success'))
         # return super().form_valid(form)
 
+@login_required
 def ordering_success(request):
     return render(request, 'client_side/ordering_success.html')
+
+class MyOrderListView(LoginRequiredMixin ,ListView):
+    model = Order
+    context_object_name = 'orders'
+    template_name = "client_side/my_orders.html"
+    paginate_by = 10
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.filter(user = self.request.user).exclude(status='NO')
+        return qs
+
+class CategoryItemListView(ListView):
+    model = Item
+    template_name = "client_side/home.html"
+    context_object_name = 'items'
+    def get_queryset(self):
+        qs = super().get_queryset()
+        category = Category.objects.get(pk = self.kwargs.get('pk'))
+        qs = qs.filter(category=category)
+        print(category)
+        print(qs)
+        return qs
+    
+
+    
+
     
 

@@ -1,6 +1,7 @@
 {% extends 'client_side_base.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
+<h1>Confirm Your Order</h1><hr>
 <form action="" method="post">
 {% csrf_token %}
 {{form|crispy}}

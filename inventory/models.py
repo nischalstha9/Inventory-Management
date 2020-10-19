@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import RegexValidator
 from django.shortcuts import get_object_or_404
+from PIL import Image
 
 class CategoryManager(models.Manager):
     def parents(self):
@@ -25,7 +26,6 @@ class Category(models.Model):
         ordering = ['name']
         verbose_name_plural = 'Categories'
 
-    #replies
     def children(self):
         return Category.objects.filter(parent = self)
 
@@ -46,7 +46,7 @@ class Item(models.Model):
     brand = models.CharField(_("Product Brand"), max_length = 50, null=True, blank=True)
     category = models.ForeignKey("inventory.Category", verbose_name=_("category"), on_delete=models.CASCADE, related_name='categories')
     description = models.TextField(_("Product Description"))
-    image = models.ImageField(_("Product Image"), upload_to="product_images", height_field=None, width_field=None, max_length=None, null=True, blank=True)
+    image = models.ImageField(_("Product Image"), upload_to="product_images", height_field=None, width_field=None, max_length=None, default = 'image-not-available.jpg')
     cost_price = models.FloatField(_("Latest Cost Price"), default=0)
     quantity = models.IntegerField(_("Available Quantity"), default=0)
     selling_price = models.FloatField(_("Current Selling Price"), default=0)
@@ -57,6 +57,16 @@ class Item(models.Model):
 
     class Meta:
         ordering = ['name']
+    
+    def save(self,*args,**kwargs):
+        super().save(*args,**kwargs)
+
+        img = Image.open(self.image.path)
+
+        if img.height > 600 or img.width > 600:
+            output_size= (600,600)
+            img.thumbnail(output_size)
+            img.save(self.image.path)
 
 class Transaction(models.Model):
     class Types(models.TextChoices):

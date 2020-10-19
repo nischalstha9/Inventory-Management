@@ -324,6 +324,7 @@ class StatusChangeForm(forms.ModelForm):
         model = Order
         fields = ['status']
 
+@allowed_users(allowed_types = ['ADMIN', 'STAFF'])
 def OrderDetailView(request, pk):
     context = {}
     order = get_object_or_404(Order, pk = pk)
@@ -334,9 +335,18 @@ def OrderDetailView(request, pk):
     context['form'] = form
     context['order_items'] = order_items
     if request.method=='POST':
-        print(form.data)
-        order.status = form.data.get('status')
-        order.save()
+        sts = form.data.get('status')
+        if sts != 'NO':
+            order.status = sts
+            order.save()
+            if sts == 'S':
+                for i in order_items:
+                    item_ = i.item
+                    item_.quantity -= i.quantity
+                    item_.save()
+            messages.success(request, 'Order Status Updated!')
+        else:
+            messages.warning(request, 'Cannot Set Order To Not Ordered')
     return render(request, 'inventory/order_detail.html', context)
 
 class QuickPaymentCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):

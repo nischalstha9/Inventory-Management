@@ -27,6 +27,34 @@
     <!-- Bootstrap CSS -->
     {% comment %} <link rel="stylesheet" type="text/css" href="{% static 'news/main.css' %}"> {% endcomment %}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+      @media (min-width: 992px){
+      .dropdown-menu .dropdown-toggle:after{
+        border-top: .3em solid transparent;
+          border-right: 0;
+          border-bottom: .3em solid transparent;
+          border-left: .3em solid;
+      }
+      .dropdown-menu .dropdown-menu{
+        margin-left:0; margin-right: 0;
+      }
+      .dropdown-menu li{
+        position: relative;
+      }
+      .nav-item .submenu{ 
+        display: none;
+        position: absolute;
+        left:100%; top:-7px;
+      }
+      .nav-item .submenu-left{ 
+        right:100%; left:auto;
+      }
+      .dropdown-menu > li:hover{ background-color: #f1f1f1 }
+      .dropdown-menu > li:hover > .submenu{
+        display: block;
+      }
+    }
+  </style>
     {% block style %}
     {% endblock style %}
     
@@ -42,6 +70,7 @@
                   <br>
                   <br>
               {% endblock header %}
+              <span id="message-container"></span>
               <span id='search-result'></span>
               {% if messages %}
                 {% for message in messages %}
@@ -104,8 +133,7 @@
                   $.each(data, function(e){
                   td += `
                     <tr>
-                      <td><a href='#' class='s-item-name' value = '${data[e].id}'>${data[e].name}</a></td>
-                      <td>${data[e].quantity} units</td>
+                      <td><a href='/item/${data[e].id}' class='s-item-name' value = '${data[e].id}'>${data[e].name}</a></td>
                       <td>Rs. ${data[e].selling_price}</td>
                     </tr>
                   `
@@ -116,7 +144,6 @@
                       <tr><h4>Search Results For "${q}"</h4></tr>
                       <tr>
                         <th scope="col">Name</th>
-                        <th scope="col">Quantity Remaining</th>
                         <th scope="col">Selling Price</th>
                       </tr>
                     </thead>
@@ -138,15 +165,23 @@
         })
       })
     </script>
-    <script src="{% static 'custom_js/get_item_info_trans.js' %}"></script>
     <script>
-      $(document).ready( function () {
-        $('#search-result').on('click', '.s-item-name', function (e){
+    $(document).on('click', '.dropdown-menu', function (e) {
+        e.stopPropagation();
+      });
+
+      // make it as accordion for smaller screens
+      if ($(window).width() < 992) {
+        $('.dropdown-menu a').click(function(e){
           e.preventDefault();
-          id = e.target.attributes.value.value
-          get_item_info_trans(id)
-        });
-      })
+            if($(this).next('.submenu').length){
+              $(this).next('.submenu').toggle();
+            }
+            $('.dropdown').on('hide.bs.dropdown', function () {
+          $(this).find('.submenu').hide();
+        })
+      });
+    }
     </script>
     <!-- Optional JavaScript -->
     {% block javascript %}

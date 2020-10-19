@@ -15,11 +15,6 @@
         <h6>Remarks By Client: <span class='text-secondary card'>{{order.checkout.remarks}}<span></h6>
         <h6 class="card-text"></h6>
     </div>
-    <form action="" class='m-4 col-3' method="post">
-    {{form|crispy}}
-    {% csrf_token %}
-    <input type="submit" value="Update" class='btn btn-success m-1'>
-    </form>
 </div>
 <div class="card">
     <div class="card-body">
@@ -45,12 +40,17 @@
                 </tr>
             {% endfor %}
             <tr>
-                <td>Total</td>
-                <td></td>
+                <td><strong>Total</strong></td>
+                <td><strong>Rs. {{order.total_amount}}</strong></td>
             </tr>
             </tbody>
         </table>
     </div>
+    <form action="" class='m-4 col-3' method="post">
+    {{form|crispy}}
+    {% csrf_token %}
+    <input type="submit" value="Update" class='btn btn-success m-1'>
+    </form>
 </div><br>
 
 {% endblock content %}

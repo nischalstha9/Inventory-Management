@@ -2,16 +2,14 @@
 {% block content %}
 <div class="row jumbotron">
     <div class="col col-lg-6">
-        {% if item.image %}
         <p><img src="{{item.image.url}}" alt="No image" height='400px' width='400px'></p>
-        {% endif %}
     </div>
     <div class="col col-lg-6 col-sm-12">
         <p id='item_id' class='d-none'>{{item.id}}</p>
         <p id='name'><strong>Name:</strong> {{item.name}}</p>
         <p><strong>Brand:</strong> {{item.brand}}</p>
         <p><strong>Category:</strong> {{item.category}}</p>
-        <p><strong>Description:</strong> {{item.description}}</p>
+        <p><strong>Description:</strong> {{item.description|safe}}</p>
         <p><strong>Price:</strong> {{item.selling_price}}</p>
         <p><strong>Available Quantity:</strong> {{item.quantity}} units</p>
         {% if user.is_authenticated %}
@@ -66,9 +64,24 @@ $(document).ready(function(){
                 'X-CSRFToken': csrftoken
             },
             success: function(){
-                console.log('posted')
+                $("#message-container").html(
+                    `<div class='alert alert-success alert-dismissible fade show' role='alert'>
+                        Added to cart!!
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>`
+                )
             },
             error: function(error){
+                $("#message-container").html(
+                    `<div class='alert alert-success alert-dismissible fade show' role='alert'>
+                        Fail to add to cart!!
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>`
+                )
                 console.log(error)
             }
         });
