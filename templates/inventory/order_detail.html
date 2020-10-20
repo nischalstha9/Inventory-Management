@@ -9,7 +9,8 @@
         <h5 class="card-title">Client Name: {{order.user.first_name}} {{order.user.last_name}}</h5><br><hr>
         <h6>Order ID: <span class='text-secondary'>OD-{{order.id}}<span></h6>
         <h6>Date Ordered: <span class='text-secondary'>{{order.ordered_date}}<span></h6>
-        <h6>Client Contact: <span class='text-secondary'>{{order.checkout.contact}}<span></h6>
+        <h6>Contact: <span class='text-secondary'>{{order.user.profile.contact}}<span></h6>
+        <h6>Client Submitted Contact: <span class='text-secondary'>{{order.checkout.contact}}<span></h6>
         <h6>Status: <span class='text-secondary'>{{order.status}}<span></h6>
         <h6>Message By Client: <span class='text-secondary card'>{{order.checkout.message}}<span></h6>
         <h6>Remarks By Client: <span class='text-secondary card'>{{order.checkout.remarks}}<span></h6>

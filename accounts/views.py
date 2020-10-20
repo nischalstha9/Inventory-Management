@@ -75,7 +75,7 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin ,UpdateView):
                 messages.success(self.request, f"User Updated Successfully.")
             else:
                 messages.warning(self.request, f"Error: Please Check Your Form.")
-        return redirect('/')
+        return redirect('/administration')
 
 
 ##########API VIEW##########

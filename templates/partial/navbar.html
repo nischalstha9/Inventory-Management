@@ -45,11 +45,6 @@
         <a class="text-white mx-2" href="{% url 'main:my-orders' %}" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
           My Orders
         </a>
-        {% if user.is_admin %}
-        <a class="text-white mx-2" href="{% url 'main:admin-homes' %}" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
-          Office
-        </a>
-        {% endif %}
         <a class="text-white mr-2" href="{% url 'profile' %}" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
           <img class='rounded-circle profile-img mx-2' src='{{ user.profile.dp.url }}' height=30px width=30px>{{ user.first_name }}
         </a>

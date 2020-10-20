@@ -19,14 +19,14 @@
       <th scope="row">{{forloop.counter}}</th>
       <th scope="row" class='order_id'>OD-{{order_item.id}}</th>
       <td>{{order_item.item.name}}</td>
-      <td><input type="number" value='{{order_item.quantity}}' class='item_qty form-control col-3' itemid='{{order_item.item.id}}'></td>
-      <td>Rs. {{order_item.item.selling_price}}</td>
-      <td>Rs. {% widthratio order_item.quantity 1 order_item.item.selling_price %}</td>
+      <td><input type="number" min='0' oninput="this.value = Math.abs(this.value)" value='{{order_item.quantity}}' class='item_qty form-control col-3' itemid='{{order_item.item.id}}'></td>
+      <td class='price'>{{order_item.item.selling_price}}</td>
+      <td class='total_price'>{% widthratio order_item.quantity 1 order_item.item.selling_price %}</td>
     </tr>
   {% endfor %}
     <tr>
     <td colspan='5'><strong>Grand Total</strong></td>
-    <td colspan='1'>Rs. {{order.total_amount}}</td>
+    <td colspan='1' id='grand_total'>{{order.total_amount}}</td>
     </tr>
   </tbody>
 </table>
@@ -58,14 +58,28 @@ $(document).ready(function(){
     //----------------
     console.log("ready")
     var cart_data = []
+    var qty = 0
     qtys = $(".item_qty")
-    qtys.change(function(){
+    qtys.change(function(e){
+        par = this.parentElement.parentElement.children
+        price = parseInt(par[4].textContent)
+        qty = parseInt(e.target.value)
+        total = price*qty
+        par[5].innerHTML =total;
+        total_sel = $(".total_price")
+        totals = []
+        total_sel.each(function(e){
+            totals.push(parseInt(total_sel[e].innerHTML))
+        })
+        var grand_total = totals.reduce(function(a, b){
+            return a + b;
+        }, 0);
+        $('#grand_total').html(grand_total)
         $("#update_cart").prop("disabled", false)
     })
     $("#update_cart").click(function(){
         qtys.each(function(e){
             itemId = parseInt($(this).attr("itemid"))
-            qty = parseInt(qtys[e].value)
             if (qty == 0){
                 console.log(this)//delete tat row
             }

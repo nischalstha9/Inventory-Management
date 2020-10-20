@@ -9,7 +9,8 @@ from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def home(request):
-    return render(request, 'home.html')
+    context = {}
+    return render(request, 'home.html', context)
 
 def view_404(request, *args, **kwargs):
     return render(request,'partial/404.html',{'title':'Oops! Page Not Found!!'}, status=404)
@@ -18,6 +19,11 @@ class ItemListView(ListView):
     model = Item
     context_object_name = 'items'
     template_name = "client_side/home.html"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["header"] = 'For You'
+        return context
+    
 
 class ItemDetailView(DetailView):
     model = Item
@@ -77,9 +83,12 @@ class CategoryItemListView(ListView):
         qs = super().get_queryset()
         category = Category.objects.get(pk = self.kwargs.get('pk'))
         qs = qs.filter(category=category)
-        print(category)
-        print(qs)
         return qs
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["header"] = Category.objects.get(pk = self.kwargs.get('pk'))
+        return context
+    
     
 
     
