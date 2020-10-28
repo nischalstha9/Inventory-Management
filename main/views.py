@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.shortcuts import redirect, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-
+from django.contrib import messages
 # Create your views here.
 def home(request):
     context = {}
@@ -57,13 +57,10 @@ class CheckoutDataCreateView(LoginRequiredMixin, CreateView):
             for i in order.items.all():
                 i.ordered = True
                 i.save()
-            form.save()         
-        return redirect(reverse('main:checkout-success'))
-        # return super().form_valid(form)
+            form.save()
+        messages.success(self.request, "Your Order has been placed!")
+        return redirect(reverse('main:cart'))
 
-@login_required
-def ordering_success(request):
-    return render(request, 'client_side/ordering_success.html')
 
 class MyOrderListView(LoginRequiredMixin ,ListView):
     model = Order

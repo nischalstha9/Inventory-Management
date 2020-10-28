@@ -80,6 +80,7 @@ $(document).ready(function(){
     $("#update_cart").click(function(){
         qtys.each(function(e){
             itemId = parseInt($(this).attr("itemid"))
+            qty = parseInt($(this).val())
             if (qty == 0){
                 console.log(this)//delete tat row
             }

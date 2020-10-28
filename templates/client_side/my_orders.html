@@ -1,4 +1,5 @@
 {% extends 'client_side_base.html' %}
+{% load tag_to_value %}
 {% block content %}
 <h1>My Orders</h1><hr>
 <table class="table">
@@ -20,7 +21,7 @@
         <td>{{order.ordered_date}}</td>
         <td>{{order.items.count}}</td>
         <td>Rs. {{order.total_amount}}</td>
-        <td>{{order.status}}</td>
+        <td>{{order.status|tag_to_val|safe}}</td>
     </tr>
 {% endfor %}
   </tbody>
