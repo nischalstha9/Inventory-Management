@@ -1,0 +1,94 @@
+{% extends 'inventory_side_base.html' %}
+{% block content %}
+<h1>Manage Carousels</h1><hr>
+{% for carousel in carousels %}
+<h4><a href="" class='carousel-href-btn'><li id='{{carousel.id}}'>{{carousel}}</li></a></h4>
+{% endfor %}
+{% endblock content %}
+{% block javascript %}
+
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+$(document).ready(function(){
+    $(".carousel-href-btn").click(function(e){
+        e.preventDefault()
+        console.log(e.target.id)
+        carousel_id = 1
+        var url = `${window.location.protocol}//${window.location.host}/inventory/carousels/${carousel_id}`
+        $.ajax({
+            url:url,
+            method:"GET",
+            data : {},
+            success:function(data){
+                D_i = data.images
+                hbody = ``
+                $.each(D_i, function(i){
+                    hbody += `<div>Update Image: <input type="file"><a href='${D_i[i].image}' target='_blank' class="my-1 mx-1 text-sm">${D_i[i].image}</a><button class = 'btn btn-outline-danger btn-sm delete-photo-btn' data-id='${D_i[i].id}'>Delete</button><br></div>`
+                })
+                html = 
+                `
+                <div class="card">
+                    <div class="card-header">
+                        <h1>Carousel InfoUpdateView</h1>
+                    </div>
+                    <div class="card-body">
+                    <form action="" method='POST' enctype='multipart/form-data'>
+                        ${hbody}<br>
+                        Add New: <input class='my-1' id='new-image' type = 'file'><br>
+                        <button class='my-1 btn btn-outline-success' id='post-btn'>Post</button>
+                        <input type="reset" value="Reset Form" class='btn btn-dark'>
+                    </form>
+                    </div>
+                </div>
+                `
+                $("#content-main").html(html)
+                $("#myModal").modal();
+                console.log(data)
+            },
+            error: function(err){
+                console.log(err)
+            }
+        })
+    })
+    $("#myModal").on('click', '#post-btn', function(e){
+        e.preventDefault()
+        console.log(e.target.parentElement)
+    })
+    $("#myModal").on('click', '.delete-photo-btn', function(e){
+        e.preventDefault()
+        c_id = e.target.dataset.id
+        url = `/carousel/${c_id}/delete`
+        parent = $(this).parent()
+        $.ajax({
+            url: url,
+            method : "DELETE",
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            success: function(data){
+                parent.html('')
+            },
+            error: function(err){
+                console.log(err)
+            }
+        })
+    })
+})
+</script>
+
+{% endblock javascript %}

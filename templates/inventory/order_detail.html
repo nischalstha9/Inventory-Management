@@ -1,4 +1,5 @@
 {% extends 'partial/base.html' %}
+{% load tag_to_value %}
 {% load static %}
 {% load crispy_forms_tags %}
 {% block content %}
@@ -11,7 +12,7 @@
         <h6>Date Ordered: <span class='text-secondary'>{{order.ordered_date}}<span></h6>
         <h6>Contact: <span class='text-secondary'>{{order.user.profile.contact}}<span></h6>
         <h6>Client Submitted Contact: <span class='text-secondary'>{{order.checkout.contact}}<span></h6>
-        <h6>Status: <span class='text-secondary'>{{order.status}}<span></h6>
+        <h6>Status: <span class='text-secondary'>{{order.status|tag_to_val|safe}}<span></h6>
         <h6>Message By Client: <span class='text-secondary card'>{{order.checkout.message}}<span></h6>
         <h6>Remarks By Client: <span class='text-secondary card'>{{order.checkout.remarks}}<span></h6>
         <h6 class="card-text"></h6>
@@ -47,11 +48,13 @@
             </tbody>
         </table>
     </div>
+    {% if order.status != 'S' %}
     <form action="" class='m-4 col-3' method="post">
     {{form|crispy}}
     {% csrf_token %}
     <input type="submit" value="Update" class='btn btn-success m-1'>
     </form>
+    {% endif %}
 </div><br>
 
 {% endblock content %}

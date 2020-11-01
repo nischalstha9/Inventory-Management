@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView
 from .forms import ItemCreationForm, DebitTransactionForm, CreditTransactionForm, DebitPaymentForm, CreditPaymentForm,PaymentForm
-from .models import Item, DebitTransaction, Category, CreditTransaction, Payment, Transaction
+from .models import Item, DebitTransaction, Category, CreditTransaction, Payment, Transaction, Carousel
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.urls import reverse
 from django_filters.views import FilterView
@@ -384,3 +384,7 @@ class QuickPaymentCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView
     def get_success_url(self):
         return redirect(reverse('inventory:payments-list'))
 
+class CarouselListView(ListView):
+    model = Carousel
+    context_object_name = 'carousels'
+    template_name = "inventory/carousel_list.html"

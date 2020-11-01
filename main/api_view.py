@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Order, OrderItem
-from inventory.models import Item
+from inventory.models import Item, CarouselPhoto
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework.serializers import Serializer, SerializerMethodField
@@ -71,6 +71,13 @@ def api_cart(request):
                 orderitem.quantity = qty
                 orderitem.save()
     return Response('request.data')
+
+@api_view(['DELETE'])
+def CarouselImageDeleteView(request, pk):
+    obj = CarouselPhoto.objects.get(pk=pk)
+    obj.delete()
+    return Response('Image Deleted')
+
 
 
 

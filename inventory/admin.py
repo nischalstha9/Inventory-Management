@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Item, Category, Transaction, DebitTransaction, CreditTransaction, Payment
+from .models import Item, Category, Transaction, DebitTransaction, CreditTransaction, Payment, Carousel, CarouselPhoto
 from django.utils.translation import ugettext_lazy as _
 from django_summernote.admin import SummernoteModelAdmin
 from rangefilter.filter import DateRangeFilter, DateTimeRangeFilter
@@ -57,3 +57,11 @@ class PaymentAdmin(admin.ModelAdmin):
     readonly_fields = ('transaction', 'amount')
     list_filter = ('transaction__item', 'transaction__balanced')
   
+
+class PhotoInline(admin.TabularInline):
+    model= CarouselPhoto
+    extra= 3
+
+class CarouselAdmin(admin.ModelAdmin):
+    inlines=[PhotoInline]
+admin.site.register(Carousel, CarouselAdmin)

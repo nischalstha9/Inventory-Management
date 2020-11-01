@@ -1,6 +1,6 @@
 from django.urls import path, include
-from .views import index, ItemCreationVIew, ItemListView, ItemUpdateVIew, add_to_inventory, DebitTransactionListView, TransactionUpdateView, sell_from_inventory, CreditTransactionListView, CreditTransactionPaymentCreateView, DebitTransactionPaymentCreateView, DebitPaymentListView, CreditPaymentListView, CategoryCreateView, ItemDeleteView, QuickPaymentCreateView, TransactionListView,PaymentListView, OrderListView, OrderDetailView
-from .api_views import ItemQuantity, TransactionDetailAPIView, ItemDetailAPIView,TransactionListAPIView, PaymentListAPIView, PaymentDetailAPIView, dashboard_view, OrdersListAPIView
+from .views import index, ItemCreationVIew, ItemListView, ItemUpdateVIew, add_to_inventory, DebitTransactionListView, TransactionUpdateView, sell_from_inventory, CreditTransactionListView, CreditTransactionPaymentCreateView, DebitTransactionPaymentCreateView, DebitPaymentListView, CreditPaymentListView, CategoryCreateView, ItemDeleteView, QuickPaymentCreateView, TransactionListView,PaymentListView, OrderListView, OrderDetailView, CarouselListView
+from .api_views import ItemQuantity, TransactionDetailAPIView, ItemDetailAPIView,TransactionListAPIView, PaymentListAPIView, PaymentDetailAPIView, dashboard_view, OrdersListAPIView, carousel_info_view
 
 app_name = 'inventory'
 urlpatterns = [
@@ -41,6 +41,10 @@ urlpatterns = [
 
     path("orders/", OrderListView, name="orders-list"),
     path("orders/<int:pk>/", OrderDetailView, name="order-detail"),
+    path("carousels/", CarouselListView.as_view(), name="carousels-list"),
+    path("carousels/<int:pk>/", carousel_info_view, name="carousels-api"),
+
+
     
     
 ]

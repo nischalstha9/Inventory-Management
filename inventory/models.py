@@ -236,3 +236,13 @@ class Payment(models.Model):
 #     @property
 #     def sp(self):#selling_price
 #         return self.transaction.item.selling_price
+
+
+class Carousel(models.Model):
+    carousel_name = models.CharField(max_length=50)
+    def __str__(self):
+        return self.carousel_name
+
+class CarouselPhoto(models.Model):
+    carousel = models.ForeignKey(Carousel, on_delete=models.CASCADE, related_name='photo_set')
+    image =models.ImageField(upload_to="carousel_image", height_field=None, width_field=None, max_length=None)

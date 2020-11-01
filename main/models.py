@@ -14,8 +14,8 @@ class SiteConfig(models.Model):
     value = models.CharField(_("Value"), max_length=50)
 
     class Meta:
-        verbose_name = _("SiteConfig")
-        verbose_name_plural = _("SiteConfigs")
+        verbose_name = _("Site Config")
+        verbose_name_plural = _("Site Configs")
 
     def __str__(self):
         return self.key

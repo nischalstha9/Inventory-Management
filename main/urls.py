@@ -1,6 +1,6 @@
 from django.urls import path, include
 from .views import home,ItemListView, ItemDetailView, cart, CheckoutDataCreateView, MyOrderListView, CategoryItemListView
-from .api_view import create_order,api_cart
+from .api_view import create_order,api_cart, CarouselImageDeleteView
 
 app_name = 'main'
 urlpatterns = [
@@ -14,4 +14,8 @@ urlpatterns = [
     path("create-order/", create_order, name="api-create-order"),
     path("cart-update/", api_cart, name="api-cart-form"),
     path("myorders/", MyOrderListView.as_view(), name="my-orders"),
+
+    path("carousel/<int:pk>/delete", CarouselImageDeleteView, name="carousel-image-del"),
+
+
 ]

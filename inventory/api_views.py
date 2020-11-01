@@ -1,4 +1,4 @@
-from .models import Item, Category, Transaction, Payment,DebitTransaction,CreditTransaction
+from .models import Item, Category, Transaction, Payment,DebitTransaction,CreditTransaction, Carousel, CarouselPhoto
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from .serializers import CategoryChartSerializer, ItemQuantitySerializer, TransactionSerializer, ItemDetailSerializer, PaymentSerializer, OrderSerializer
 from rest_framework import permissions
@@ -84,6 +84,15 @@ class OrdersListAPIView(ListAPIView):
     pagination_class = StandardResultsSetPagination
     filterset_fields = {
     'ordered_date':['date__range'],'status':['exact'], 'id':['exact']}
+
+from .serializers import CarouselDetailSerializer
+@api_view(['GET', 'PUT', 'POST', 'DELETE'])
+def carousel_info_view(request, pk):
+    carousel = Carousel.objects.get(pk = pk)
+    data = CarouselDetailSerializer(carousel).data
+    if request.method=='POST':
+        print(request.POST)
+    return Response(data)
 
 @api_view(['GET'])
 def dashboard_view(request):

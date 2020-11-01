@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from inventory.models import Item, Category
+from inventory.models import Item, Category, Carousel
 from .models import Order, OrderItem, CheckoutData
 from django.views.generic import DetailView, ListView, CreateView
 from django.utils import timezone
@@ -7,10 +7,9 @@ from django.shortcuts import redirect, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-# Create your views here.
-def home(request):
-    context = {}
-    return render(request, 'home.html', context)
+
+def home(request):#admin home
+    return render(request, 'home.html')
 
 def view_404(request, *args, **kwargs):
     return render(request,'partial/404.html',{'title':'Oops! Page Not Found!!'}, status=404)
@@ -21,10 +20,11 @@ class ItemListView(ListView):
     template_name = "client_side/home.html"
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        carousel = Carousel.objects.first()
+        context['carousel'] = carousel
         context["header"] = 'For You'
         return context
     
-
 class ItemDetailView(DetailView):
     model = Item
     template_name = "client_side/item_detail.html"
@@ -85,10 +85,3 @@ class CategoryItemListView(ListView):
         context = super().get_context_data(**kwargs)
         context["header"] = Category.objects.get(pk = self.kwargs.get('pk'))
         return context
-    
-    
-
-    
-
-    
-

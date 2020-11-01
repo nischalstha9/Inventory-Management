@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer, Serializer, SerializerMethodField, HyperlinkedIdentityField
 from rest_framework import serializers
-from .models import Category, Item, Payment, DebitTransaction, Transaction, CreditTransaction
+from .models import Category, Item, Payment, DebitTransaction, Transaction, CreditTransaction, CarouselPhoto, Carousel
 from django.db.models import Count
 from django.urls import reverse
 from main.models import Order, OrderItem
@@ -106,4 +106,17 @@ class ItemDetailSerializer(ModelSerializer):
          cr_trans_qs = CreditTransaction.objects.unpaid().filter(item = obj)
          cr_trans = TransactionSerializer(cr_trans_qs, many=True, context=self.context).data
          return cr_trans
+
+class CarouselPhotoSerializer(ModelSerializer):
+    class Meta:
+        model = CarouselPhoto
+        fields = '__all__'
     
+class CarouselDetailSerializer(ModelSerializer):
+    images = SerializerMethodField()
+    class Meta:
+        model = Carousel
+        fields = '__all__'
+    def get_images(self, obj):
+        return CarouselPhotoSerializer(obj.photo_set.all(), many=True).data
+
