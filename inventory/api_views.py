@@ -1,6 +1,6 @@
 from .models import Item, Category, Transaction, Payment,DebitTransaction,CreditTransaction, Carousel, CarouselPhoto
-from rest_framework.generics import ListAPIView, RetrieveAPIView
-from .serializers import CategoryChartSerializer, ItemQuantitySerializer, TransactionSerializer, ItemDetailSerializer, PaymentSerializer, OrderSerializer
+from rest_framework.generics import ListAPIView, RetrieveAPIView, ListCreateAPIView
+from .serializers import CategoryChartSerializer, ItemQuantitySerializer, TransactionSerializer, ItemDetailSerializer, PaymentSerializer, OrderSerializer, CarouselDetailSerializer, CarouselPhotoSerializer
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter
@@ -9,6 +9,7 @@ from rest_framework.decorators import api_view
 from django_filters import rest_framework as filters
 from django.utils import timezone
 from main.models import Order, OrderItem
+from rest_framework.parsers import FormParser, MultiPartParser, FileUploadParser
 
 class IsStafforAdmin(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -85,7 +86,16 @@ class OrdersListAPIView(ListAPIView):
     filterset_fields = {
     'ordered_date':['date__range'],'status':['exact'], 'id':['exact']}
 
-from .serializers import CarouselDetailSerializer
+class CarouselPhotoUploadView(ListCreateAPIView):
+    serializer_class = CarouselPhotoSerializer
+    parser_classes = [FormParser, MultiPartParser, FileUploadParser]
+    def get_queryset(self, *args, **kwargs):
+        qs = CarouselPhoto.objects.filter(carousel=int(self.kwargs.get('pk')))
+        return qs
+    def perform_create(self, serializer):
+        carosel = Carousel.objects.get(pk=int(self.kwargs.get('pk')))
+        serializer.save(carousel=carosel)
+
 @api_view(['GET', 'PUT', 'POST', 'DELETE'])
 def carousel_info_view(request, pk):
     carousel = Carousel.objects.get(pk = pk)

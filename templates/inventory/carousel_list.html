@@ -27,7 +27,6 @@ const csrftoken = getCookie('csrftoken');
 $(document).ready(function(){
     $(".carousel-href-btn").click(function(e){
         e.preventDefault()
-        console.log(e.target.id)
         carousel_id = 1
         var url = `${window.location.protocol}//${window.location.host}/inventory/carousels/${carousel_id}`
         $.ajax({
@@ -35,21 +34,20 @@ $(document).ready(function(){
             method:"GET",
             data : {},
             success:function(data){
-                D_i = data.images
                 hbody = ``
-                $.each(D_i, function(i){
-                    hbody += `<div>Update Image: <input type="file"><a href='${D_i[i].image}' target='_blank' class="my-1 mx-1 text-sm">${D_i[i].image}</a><button class = 'btn btn-outline-danger btn-sm delete-photo-btn' data-id='${D_i[i].id}'>Delete</button><br></div>`
+                $.each(data, function(i){
+                    hbody += `<div><li><a href='${data[i].image}' target='_blank' class="my-1 mx-1 text-sm">${data[i].image}</a><button class = 'btn btn-outline-danger btn-sm delete-photo-btn' data-id='${data[i].id}'>Delete</button></li></div><br>`
                 })
                 html = 
                 `
-                <div class="card">
+                <div class="">
                     <div class="card-header">
                         <h1>Carousel InfoUpdateView</h1>
                     </div>
                     <div class="card-body">
+                    ${hbody}<br>
                     <form action="" method='POST' enctype='multipart/form-data'>
-                        ${hbody}<br>
-                        Add New: <input class='my-1' id='new-image' type = 'file'><br>
+                        Add New: <input class='my-1' id='image' name='image' type = 'file'><br>
                         <button class='my-1 btn btn-outline-success' id='post-btn'>Post</button>
                         <input type="reset" value="Reset Form" class='btn btn-dark'>
                     </form>
@@ -65,15 +63,51 @@ $(document).ready(function(){
             }
         })
     })
+    $('post-btn').click(function(e) {
+        e.preventDefault()
+        console.log($(this))
+        
+        //$.ajax({
+        //    url: `${window.location.protocol}//${window.location.host}/inventory/carousels/1/`,
+        //    method:'POST',
+        //    data: formData,
+        //    headers: {'X-CSRFToken': csrftoken},
+        //    contentType: 'multipart/form-data',
+        //    success: function() { alert('it works') },
+        //    error: function(err){
+        //        console.log(err)
+        //    }
+        //});
+    });
     $("#myModal").on('click', '#post-btn', function(e){
         e.preventDefault()
-        console.log(e.target.parentElement)
+        var formData = new FormData();
+        img = $('#image')[0].files[0]
+        formData.append('image', img);
+        $.ajax({
+            url: `${window.location.protocol}//${window.location.host}/inventory/carousels/1/`,
+            method:'POST',
+            data: formData,
+            headers: {'X-CSRFToken': csrftoken},
+            contentType: false,
+            processData: false,
+            cache: false,
+            success: function(data) {
+                $("#myModal").modal('hide')
+                alert("Image Successfully Added!")
+            },
+            error: function(err){
+                alert("Oops!!! Upload Error!! Make Sure You have Choosen File First!")
+                console.log(err)
+            }
+        });
+
     })
     $("#myModal").on('click', '.delete-photo-btn', function(e){
         e.preventDefault()
         c_id = e.target.dataset.id
-        url = `/carousel/${c_id}/delete`
-        parent = $(this).parent()
+        url = `/carousels/${c_id}/delete`
+        parent = $(this).parent().parent()
         $.ajax({
             url: url,
             method : "DELETE",

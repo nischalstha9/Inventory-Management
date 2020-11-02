@@ -1,6 +1,6 @@
 from django.urls import path, include
 from .views import index, ItemCreationVIew, ItemListView, ItemUpdateVIew, add_to_inventory, DebitTransactionListView, TransactionUpdateView, sell_from_inventory, CreditTransactionListView, CreditTransactionPaymentCreateView, DebitTransactionPaymentCreateView, DebitPaymentListView, CreditPaymentListView, CategoryCreateView, ItemDeleteView, QuickPaymentCreateView, TransactionListView,PaymentListView, OrderListView, OrderDetailView, CarouselListView
-from .api_views import ItemQuantity, TransactionDetailAPIView, ItemDetailAPIView,TransactionListAPIView, PaymentListAPIView, PaymentDetailAPIView, dashboard_view, OrdersListAPIView, carousel_info_view
+from .api_views import ItemQuantity, TransactionDetailAPIView, ItemDetailAPIView,TransactionListAPIView, PaymentListAPIView, PaymentDetailAPIView, dashboard_view, OrdersListAPIView, carousel_info_view, CarouselPhotoUploadView
 
 app_name = 'inventory'
 urlpatterns = [
@@ -13,6 +13,7 @@ urlpatterns = [
     path("api/transactions/", TransactionListAPIView.as_view(), name="transactions-api-list"), 
     path("api/payments/", PaymentListAPIView.as_view(), name="payments-api-list"), 
     path("api/orders/", OrdersListAPIView.as_view(), name="orders-api-list"), 
+    path("carousels/<int:pk>/", CarouselPhotoUploadView.as_view(), name="carousels-api"),
     ############################################DIVIDER############################################
 
     path("category/new/", CategoryCreateView.as_view() , name="new-category"),
@@ -42,7 +43,6 @@ urlpatterns = [
     path("orders/", OrderListView, name="orders-list"),
     path("orders/<int:pk>/", OrderDetailView, name="order-detail"),
     path("carousels/", CarouselListView.as_view(), name="carousels-list"),
-    path("carousels/<int:pk>/", carousel_info_view, name="carousels-api"),
 
 
     

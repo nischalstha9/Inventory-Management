@@ -2,9 +2,47 @@
 {% load crispy_forms_tags %}
 {% block content %}
 <h1>Confirm Your Order</h1><hr>
-<form action="" method="post">
-{% csrf_token %}
-{{form|crispy}}
-<input type="submit" value="Confirm Order" class='btn btn-primary'>
-</form>
+<div class="row">
+    <div class="col-sm-12 col-md-8 col-lg-6">
+        <div class="">
+        <h3>Your order summary:</h3><hr>
+            <table class="table table-success">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Item</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for order_item in order.items.all %}
+                <tr>
+                    <th scope="row">{{forloop.counter}}</th>
+                    <th scope="row" class='order_id'>OD-{{order_item.id}}</th>
+                    <td>{{order_item.item.name}}</td>
+                    <td><strong>{{order_item.quantity}}</strong></td>
+                    <td class='price'>{{order_item.item.selling_price}}</td>
+                    <td class='total_price'>{% widthratio order_item.quantity 1 order_item.item.selling_price %}</td>
+                </tr>
+            {% endfor %}
+                <tr>
+                    <td colspan='5'><strong>Grand Total</strong></td>
+                    <td colspan='1' id='grand_total'><strong>Rs. {{order.total_amount}}</strong></td>
+                </tr>
+            </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-8 col-lg-6">
+        <form action="" method="post">
+            {% csrf_token %}
+            {{form|crispy}}
+            <input type="submit" value="Confirm Order" class='btn btn-primary'>
+        </form>
+    </div>
+</div>
+
 {% endblock content %}

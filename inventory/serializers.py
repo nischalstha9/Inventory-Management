@@ -110,7 +110,7 @@ class ItemDetailSerializer(ModelSerializer):
 class CarouselPhotoSerializer(ModelSerializer):
     class Meta:
         model = CarouselPhoto
-        fields = '__all__'
+        fields = ['id','image']
     
 class CarouselDetailSerializer(ModelSerializer):
     images = SerializerMethodField()

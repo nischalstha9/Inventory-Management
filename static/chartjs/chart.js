@@ -62,10 +62,6 @@ $.ajax({
     method : "GET",
     data:{},
     success: function(data){
-        var today_drs = data.today_dr_trans
-        var today_crs = data.today_cr_trans
-        var today_pay_recv = data.today_pay_recv
-        var today_pay_sent = data.today_pay_sent
         //balanced and Unbalanced chart4
         var ctx = document.getElementById('totalTransactionsChart');
         var myChart = new Chart(ctx, {

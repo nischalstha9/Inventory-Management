@@ -15,7 +15,7 @@ urlpatterns = [
     path("cart-update/", api_cart, name="api-cart-form"),
     path("myorders/", MyOrderListView.as_view(), name="my-orders"),
 
-    path("carousel/<int:pk>/delete", CarouselImageDeleteView, name="carousel-image-del"),
+    path("carousels/<int:pk>/delete", CarouselImageDeleteView, name="carousel-image-del"),
 
 
 ]

@@ -58,7 +58,7 @@ class CheckoutDataCreateView(LoginRequiredMixin, CreateView):
                 i.ordered = True
                 i.save()
             form.save()
-        messages.success(self.request, "Your Order has been placed!")
+        messages.success(self.request, "Your Order has been placed successfully!")
         return redirect(reverse('main:cart'))
 
 
