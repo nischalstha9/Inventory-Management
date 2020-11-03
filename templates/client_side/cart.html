@@ -60,7 +60,7 @@ $(document).ready(function(){
     qtys = $(".item_qty")
     qtys.change(function(e){
         par = this.parentElement.parentElement.children
-        price = parseInt(par[4].textContent)
+        price = parseInt(par[3].textContent)
         qty = parseInt(e.target.value)
         total = price*qty
         par[4].innerHTML =total;

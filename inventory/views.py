@@ -346,9 +346,11 @@ def OrderDetailView(request, pk):
                     item_ = i.item
                     item_.quantity -= i.quantity
                     item_.save()
-                    trans = Transaction.objects.create(_type="STOCK OUT",vendor_client = str(f"{order.user.first_name} {order.user.last_name}"), item = item_, quantity = i.quantity, cost = item_.selling_price, paid = item_.selling_price, remarks=order.checkout.remarks, contact = order.checkout.contact)
+                    amount = item_.selling_price * i.quantity
+                    trans = Transaction.objects.create(_type="STOCK OUT",vendor_client = str(f"{order.user.first_name} {order.user.last_name}"), item = item_, quantity = i.quantity, cost = item_.selling_price, paid = amount, remarks=order.checkout.remarks, contact = order.checkout.contact)
                     trans.save()
-                    pay = Payment.objects.create(transaction = trans, amount = item_.selling_price, base_payment=True)
+                    print(amount)
+                    pay = Payment.objects.create(transaction = trans, amount = amount, base_payment=True)
                     pay.save()
             messages.success(request, 'Order Status Updated!')
         else:

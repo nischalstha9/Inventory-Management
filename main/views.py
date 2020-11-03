@@ -18,6 +18,7 @@ def home(request):#admin home
 def view_404(request, *args, **kwargs):
     return render(request,'partial/404.html',{'title':'Oops! Page Not Found!!'}, status=404)
 
+import random
 class ItemListView(ListView):
     model = Item
     context_object_name = 'items'
