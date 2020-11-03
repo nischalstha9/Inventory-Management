@@ -2,30 +2,63 @@
 {% load tag_to_value %}
 {% block content %}
 <h1>My Orders</h1><hr>
-<table class="table">
-  <thead class="thead-light">
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">ID</th>
-      <th scope="col">Date</th>
-      <th scope="col">Items Variety</th>
-      <th scope="col">Total Amount</th>
-      <th scope="col">Status</th>
-    </tr>
-  </thead>
-  <tbody>
 {% for order in orders %}
-    <tr>
-        <td>{{forloop.counter}}</td>
-        <td>OD-{{order.id}}</td>
-        <td>{{order.ordered_date}}</td>
-        <td>{{order.items.count}}</td>
-        <td>Rs. {{order.total_amount}}</td>
-        <td>{{order.status|tag_to_val|safe}}</td>
-    </tr>
+      <div id="accordion">
+        <div class="card">
+          <div class="card-header" id="headingOne">
+            <h5 class="mb-0">
+              <button class="btn" data-toggle="collapse" data-target="#collapse-{{order.id}}" aria-expanded="true" aria-controls="collapseOne">
+                <div class="">
+                  <div class="">
+                      <h5 class="">Order ID: OD-{{order.id}}</h5>
+                      <h6>Date Ordered: <span class='text-secondary'>{{order.ordered_date}}<span></h6>
+                      <h6>Status: <span class='text-secondary'>{{order.status|tag_to_val|safe}}<span></h6>
+                      <h6>Total Amount: <span class='text-secondary card'>Rs. {{order.total_amount}}<span></h6>
+                      <h6 class="card-text"></h6>
+                  </div>
+                </div>             
+              </button>
+            </h5>
+          </div>
+          
+          <div id="collapse-{{order.id}}" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+            <div class="card-body">
+              <h5 class="card-title">Order Detail</h5>
+              <table id="table_id" class="table display jumbotron">
+                  <thead>
+                      <tr>
+                          <th>#</th>
+                          <th>Item Name</th>
+                          <th>Quantity</th>
+                          <th>Price Per Unit</th>
+                          <th>Total Payable</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                  {% for order_item in order.items.all %}
+                      <tr>
+                          <td>{{forloop.counter}}</td>
+                          <td>{{order_item.item.name}}</td>
+                          <td>{{order_item.quantity}}</td>
+                          <td>Rs. {{order_item.item.selling_price}}</td>
+                          <td>Rs. {% widthratio order_item.item.selling_price 1 order_item.quantity%}</td>
+                      </tr>
+                  {% endfor %}
+                  <tr>
+                      <td><strong>Total</strong></td>
+                      <td><strong>Rs. {{order.total_amount}}</strong></td>
+                  </tr>
+                  </tbody>
+              </table>
+              <h6>Submitted Contact: <span class='text-secondary'>{{order.checkout.contact}}<span></h6>
+              <h6>Message By Client: <span class='text-secondary card'>{{order.checkout.message}}<span></h6>
+              <h6>Remarks By Client: <span class='text-secondary card'>{{order.checkout.remarks}}<span></h6>
+            </div>
+          </div>
+        </div>
+      </div>
 {% endfor %}
-  </tbody>
-</table>
+  
 {% if paginated %}
 {% include 'partial/pagination.html' %}
 {% endif %}

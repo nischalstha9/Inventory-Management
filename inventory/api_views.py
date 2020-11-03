@@ -108,12 +108,10 @@ def CarouselImageDeleteView(request, pk):
     obj.delete()
     return Response('Image Deleted')
 
-@api_view(['GET', 'PUT', 'POST', 'DELETE'])
+@api_view(['GET'])
 def carousel_info_view(request, pk):
     carousel = Carousel.objects.get(pk = pk)
     data = CarouselDetailSerializer(carousel).data
-    if request.method=='POST':
-        print(request.POST)
     return Response(data)
 
 @api_view(['GET'])

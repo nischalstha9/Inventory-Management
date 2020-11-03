@@ -126,7 +126,7 @@ function get_item_info_trans(id){
         data:{},
         success: handleResponse,
         error: function(error){
-            console.log(error)
+            $(".trans-info").html('<h4>Select Object From Dropdown to view info.</h4>')
         }
     });
 };

@@ -5,7 +5,6 @@
   <thead class="thead-light">
     <tr>
       <th scope="col">#</th>
-      <th scope="col">ID</th>
       <th scope="col">Item</th>
       <th scope="col">Quantity</th>
       <th scope="col">Price</th>
@@ -17,7 +16,6 @@
   {% for order_item in order_items %}
     <tr>
       <th scope="row">{{forloop.counter}}</th>
-      <th scope="row" class='order_id'>OD-{{order_item.id}}</th>
       <td>{{order_item.item.name}}</td>
       <td><input type="number" min='0' oninput="this.value = Math.abs(this.value)" value='{{order_item.quantity}}' class='item_qty form-control col-3' itemid='{{order_item.item.id}}'></td>
       <td class='price'>{{order_item.item.selling_price}}</td>
@@ -25,7 +23,7 @@
     </tr>
   {% endfor %}
     <tr>
-    <td colspan='5'><strong>Grand Total</strong></td>
+    <td colspan='4'><strong>Grand Total</strong></td>
     <td colspan='1' id='grand_total'>{{order.total_amount}}</td>
     </tr>
   </tbody>
@@ -65,7 +63,7 @@ $(document).ready(function(){
         price = parseInt(par[4].textContent)
         qty = parseInt(e.target.value)
         total = price*qty
-        par[5].innerHTML =total;
+        par[4].innerHTML =total;
         total_sel = $(".total_price")
         totals = []
         total_sel.each(function(e){

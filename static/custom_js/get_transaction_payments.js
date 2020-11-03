@@ -26,6 +26,7 @@ function get_trans_payments(e, trans_id){
         },
         error: function(error){
             console.log(error)
+            $(".trans-info").html('<h4>Select Object From Dropdown to view info.</h4>')
         }
     });
 }
