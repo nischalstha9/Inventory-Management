@@ -1,0 +1,18 @@
+{% extends "inventory_side_base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container" style="max-width: 40rem">
+
+<h1>{{header}}</h1><hr>
+
+
+<form method="post">
+  {% csrf_token %}
+  {{ form|crispy }}
+  <input value='{{header}}' class='btn btn-primary' type="submit"><br>
+</form>
+
+</div>
+{% endblock content%}

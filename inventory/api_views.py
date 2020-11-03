@@ -10,15 +10,19 @@ from django_filters import rest_framework as filters
 from django.utils import timezone
 from main.models import Order, OrderItem
 from rest_framework.parsers import FormParser, MultiPartParser, FileUploadParser
+from django.contrib.auth.decorators import login_required
+from .views import allowed_users
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 
 class IsStafforAdmin(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
+    message = "Permission Required"
+    def has_permission(self, request, view):
         if request.user.is_authenticated:
             return request.user._type in ['ADMIN', 'STAFF']
         return False
     
 class IsAdmin(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
+    def has_permission(self, request, view):
         if request.user.is_authenticated:
             return request.user._type in ['ADMIN']
         return False
@@ -42,22 +46,22 @@ class ItemQuantity(ListAPIView):
 class TransactionDetailAPIView(RetrieveAPIView):
     serializer_class = TransactionSerializer
     queryset = Transaction.objects.all()
-    permission_class = [IsStafforAdmin]
+    permission_classes = [IsStafforAdmin]
 
 class PaymentDetailAPIView(RetrieveAPIView):
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
-    permission_class = [IsStafforAdmin]
+    permission_classes = [IsStafforAdmin]
 
 class ItemDetailAPIView(RetrieveAPIView):
     serializer_class = ItemDetailSerializer
     queryset = Item.objects.all()
-    permission_class = [IsStafforAdmin]
+    permission_classes = [IsStafforAdmin]
 
-class TransactionListAPIView(ListAPIView):
+class TransactionListAPIView(LoginRequiredMixin, ListAPIView):
     serializer_class = TransactionSerializer
     queryset = Transaction.objects.all()
-    permission_class = [IsStafforAdmin]
+    permission_classes = [IsStafforAdmin]
     filter_backends = (filters.DjangoFilterBackend, SearchFilter)
     filterset_fields = ()
     search_fields = ['vendor_client', 'item__name',]
@@ -68,7 +72,7 @@ class TransactionListAPIView(ListAPIView):
 class PaymentListAPIView(ListAPIView):
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
-    permission_class = [IsStafforAdmin]
+    permission_classes = [IsStafforAdmin]
     filter_backends = (filters.DjangoFilterBackend, SearchFilter)
     search_fields = ['transaction__vendor_client', 'transaction__item__name',]
     pagination_class = StandardResultsSetPagination
@@ -78,7 +82,7 @@ class PaymentListAPIView(ListAPIView):
 class OrdersListAPIView(ListAPIView):
     serializer_class = OrderSerializer
     queryset = Order.objects.exclude(status='NO')
-    permission_class = [IsStafforAdmin]
+    permission_classes = [IsStafforAdmin]
     filter_backends = (filters.DjangoFilterBackend, SearchFilter)
     filterset_fields = ()
     search_fields = ['user__first_name']
@@ -87,6 +91,7 @@ class OrdersListAPIView(ListAPIView):
     'ordered_date':['date__range'],'status':['exact'], 'id':['exact']}
 
 class CarouselPhotoUploadView(ListCreateAPIView):
+    permission_classes = [IsStafforAdmin]
     serializer_class = CarouselPhotoSerializer
     parser_classes = [FormParser, MultiPartParser, FileUploadParser]
     def get_queryset(self, *args, **kwargs):
@@ -95,6 +100,13 @@ class CarouselPhotoUploadView(ListCreateAPIView):
     def perform_create(self, serializer):
         carosel = Carousel.objects.get(pk=int(self.kwargs.get('pk')))
         serializer.save(carousel=carosel)
+
+@allowed_users(allowed_types = ['ADMIN', 'STAFF'])
+@api_view(['DELETE'])
+def CarouselImageDeleteView(request, pk):
+    obj = CarouselPhoto.objects.get(pk=pk)
+    obj.delete()
+    return Response('Image Deleted')
 
 @api_view(['GET', 'PUT', 'POST', 'DELETE'])
 def carousel_info_view(request, pk):

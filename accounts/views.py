@@ -10,10 +10,10 @@ from django.contrib import messages
 from allauth.account.models import EmailAddress
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from rest_framework.generics import ListAPIView
-from inventory.api_views import IsStafforAdmin, IsAdmin
+from inventory.api_views import IsStafforAdmin, IsAdmin, StandardResultsSetPagination
 from rest_framework.filters import SearchFilter
 from django_filters import rest_framework as filters
-from inventory.api_views import StandardResultsSetPagination
+from inventory.views import allowed_users
 
 ##########SERIALIZER##########
 class UserSerializer(ModelSerializer):
@@ -33,12 +33,11 @@ class UserCreationForm(ModelForm):
 # Create your views here.
 class UserCreateView(LoginRequiredMixin, UserPassesTestMixin ,CreateView):
     form_class = UserCreationForm
-    template_name = 'account/user_create.html'
+    template_name = 'account/admin-user-create.html'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["header"] = 'Create New User'
         return context
-    
     def test_func(self):
         return self.request.user._type in ['ADMIN']
     def form_valid(self, form):
@@ -82,11 +81,12 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin ,UpdateView):
 class UserListAPIView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAdmin, IsStafforAdmin]
     filter_backends = (filters.DjangoFilterBackend, SearchFilter)
     pagination_class = StandardResultsSetPagination
     filterset_fields = {'_type':['exact']}
     search_fields = ['first_name','last_name', 'email']
 
+@allowed_users(allowed_types = ['ADMIN', 'STAFF'])
 def userlistview(request):
     return render(request, 'account/user-list.html')

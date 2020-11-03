@@ -11,6 +11,7 @@ from datetime import datetime
 from django.utils.timezone import make_aware
 from django_summernote.widgets import SummernoteWidget
 from main.models import Order, OrderItem
+from django.http import HttpResponseForbidden
 
 #custom decorator for filtering permission
 def allowed_users(allowed_types=[]):
@@ -19,6 +20,8 @@ def allowed_users(allowed_types=[]):
             if request.user.is_authenticated:
                 if request.user._type in allowed_types:
                     return view_func(request, *args, **kwargs)
+                else:
+                    return HttpResponseForbidden()
             else:
                 return redirect(reverse('account_login'))
         return wrapper_func
@@ -154,7 +157,6 @@ class DebitTransactionListView(LoginRequiredMixin, UserPassesTestMixin, FilterVi
         context["title"] = "Debit Transactions"
         return context
     
-
 class TransactionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Transaction
     fields = ['quantity', 'contact', 'remarks']
@@ -384,7 +386,9 @@ class QuickPaymentCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView
     def get_success_url(self):
         return redirect(reverse('inventory:payments-list'))
 
-class CarouselListView(ListView):
+class CarouselListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Carousel
     context_object_name = 'carousels'
     template_name = "inventory/carousel_list.html"
+    def test_func(self):
+        return self.request.user._type in ['ADMIN', 'STAFF']

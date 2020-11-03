@@ -72,12 +72,6 @@ def api_cart(request):
                 orderitem.save()
     return Response('request.data')
 
-@api_view(['DELETE'])
-def CarouselImageDeleteView(request, pk):
-    obj = CarouselPhoto.objects.get(pk=pk)
-    obj.delete()
-    return Response('Image Deleted')
-
 
 
 

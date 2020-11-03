@@ -246,3 +246,12 @@ class Carousel(models.Model):
 class CarouselPhoto(models.Model):
     carousel = models.ForeignKey(Carousel, on_delete=models.CASCADE, related_name='photo_set')
     image =models.ImageField(upload_to="carousel_image", height_field=None, width_field=None, max_length=None)
+    class Meta:
+        ordering=['-id']
+    def save(self,*args,**kwargs):
+        super().save(*args,**kwargs)
+        img = Image.open(self.image.path)
+        if img.height > 1000 or img.width > 1000:
+            output_size= (1000,1000)
+            img.thumbnail(output_size)
+            img.save(self.image.path)

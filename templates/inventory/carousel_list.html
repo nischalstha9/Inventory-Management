@@ -56,36 +56,19 @@ $(document).ready(function(){
                 `
                 $("#content-main").html(html)
                 $("#myModal").modal();
-                console.log(data)
             },
             error: function(err){
                 console.log(err)
             }
         })
     })
-    $('post-btn').click(function(e) {
-        e.preventDefault()
-        console.log($(this))
-        
-        //$.ajax({
-        //    url: `${window.location.protocol}//${window.location.host}/inventory/carousels/1/`,
-        //    method:'POST',
-        //    data: formData,
-        //    headers: {'X-CSRFToken': csrftoken},
-        //    contentType: 'multipart/form-data',
-        //    success: function() { alert('it works') },
-        //    error: function(err){
-        //        console.log(err)
-        //    }
-        //});
-    });
     $("#myModal").on('click', '#post-btn', function(e){
         e.preventDefault()
         var formData = new FormData();
         img = $('#image')[0].files[0]
         formData.append('image', img);
         $.ajax({
-            url: `${window.location.protocol}//${window.location.host}/inventory/carousels/1/`,
+            url: `${window.location.protocol}//${window.location.host}/inventory/carousels/${carousel_id}/`,
             method:'POST',
             data: formData,
             headers: {'X-CSRFToken': csrftoken},
@@ -106,7 +89,7 @@ $(document).ready(function(){
     $("#myModal").on('click', '.delete-photo-btn', function(e){
         e.preventDefault()
         c_id = e.target.dataset.id
-        url = `/carousels/${c_id}/delete`
+        url = `/inventory/carousels/${c_id}/delete/`
         parent = $(this).parent().parent()
         $.ajax({
             url: url,

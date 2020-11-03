@@ -7,9 +7,13 @@ from django.shortcuts import redirect, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from inventory.views import allowed_users
 
+@allowed_users(allowed_types = ['ADMIN', 'STAFF'])
 def home(request):#admin home
-    return render(request, 'home.html')
+    context = {}
+    context['title']='Dashboard'
+    return render(request, 'home.html', context)
 
 def view_404(request, *args, **kwargs):
     return render(request,'partial/404.html',{'title':'Oops! Page Not Found!!'}, status=404)

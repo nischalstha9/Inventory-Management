@@ -1,6 +1,6 @@
 from django.urls import path, include
 from .views import index, ItemCreationVIew, ItemListView, ItemUpdateVIew, add_to_inventory, DebitTransactionListView, TransactionUpdateView, sell_from_inventory, CreditTransactionListView, CreditTransactionPaymentCreateView, DebitTransactionPaymentCreateView, DebitPaymentListView, CreditPaymentListView, CategoryCreateView, ItemDeleteView, QuickPaymentCreateView, TransactionListView,PaymentListView, OrderListView, OrderDetailView, CarouselListView
-from .api_views import ItemQuantity, TransactionDetailAPIView, ItemDetailAPIView,TransactionListAPIView, PaymentListAPIView, PaymentDetailAPIView, dashboard_view, OrdersListAPIView, carousel_info_view, CarouselPhotoUploadView
+from .api_views import ItemQuantity, TransactionDetailAPIView, ItemDetailAPIView,TransactionListAPIView, PaymentListAPIView, PaymentDetailAPIView, dashboard_view, OrdersListAPIView, carousel_info_view, CarouselPhotoUploadView, CarouselImageDeleteView
 
 app_name = 'inventory'
 urlpatterns = [
@@ -14,6 +14,7 @@ urlpatterns = [
     path("api/payments/", PaymentListAPIView.as_view(), name="payments-api-list"), 
     path("api/orders/", OrdersListAPIView.as_view(), name="orders-api-list"), 
     path("carousels/<int:pk>/", CarouselPhotoUploadView.as_view(), name="carousels-api"),
+    path("carousels/<int:pk>/delete/", CarouselImageDeleteView, name="carousel-image-del"),
     ############################################DIVIDER############################################
 
     path("category/new/", CategoryCreateView.as_view() , name="new-category"),
